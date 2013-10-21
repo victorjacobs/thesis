@@ -1,0 +1,82 @@
+/**
+ *
+ */
+package ca;
+
+import rinde.logistics.pdptw.mas.comm.AbstractCommModel;
+import rinde.logistics.pdptw.mas.comm.AuctionCommModel;
+import rinde.sim.pdptw.common.DefaultParcel;
+import rinde.sim.util.SupplierRng;
+import rinde.sim.util.SupplierRng.DefaultSupplierRng;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkState;
+
+/**
+ * A communication model that supports combinatorial auctions.
+ * Based off {@link rinde.logistics.pdptw.mas.comm.AuctionCommModel}
+ *
+ * @author Victor Jacobs <victor.jacobs@me.com>
+ */
+public class CombAuctionCommModel extends AbstractCommModel<CombAuctionBidder> {
+
+	/**
+	 * New instance.
+	 */
+	public CombAuctionCommModel() {}
+
+	private static final int QUEUE_TIME_WINDOW = 100;
+	private static final int QUEUE_MAX_LENGTH = 3;
+
+	private List<DefaultParcel> queuedParcels = new LinkedList<DefaultParcel>();
+	private int startWindow = 0;
+
+	@Override
+	protected void receiveParcel(DefaultParcel p, long time) {
+		checkState(!communicators.isEmpty(), "there are no bidders..");
+
+		// For now just keep queuing until max_length
+		if (queuedParcels.size() != QUEUE_MAX_LENGTH) {
+			System.out.println("Parcel " + p.toString() + " queued");
+			queuedParcels.add(p);
+			return;
+		} else {
+			// Send entire lot to all communicators
+
+			// Do bidding round
+			final Iterator<CombAuctionBidder> it = communicators.iterator();
+			CombAuctionBidder bestBidder = it.next();
+			// if there are no other bidders, there is no need to organize an
+			// auction at all (mainly used in test cases)
+			if (it.hasNext()) {
+				// Winner determination problem
+				double bestValue = bestBidder.getBidFor(queuedParcels, time);
+
+				while (it.hasNext()) {
+					final CombAuctionBidder cur = it.next();
+					final double curValue = cur.getBidFor(queuedParcels, time);
+					if (curValue < bestValue) {
+						bestValue = curValue;
+						bestBidder = cur;
+					}
+				}
+			}
+			// For now best bidder wins everything
+			bestBidder.receiveParcels(queuedParcels);
+			// Reset queue
+			queuedParcels = new LinkedList<DefaultParcel>();
+		}
+	}
+
+	public static SupplierRng<AuctionCommModel> supplier() {
+		return new DefaultSupplierRng<AuctionCommModel>() {
+			@Override
+			public AuctionCommModel get(long seed) {
+				return new AuctionCommModel();
+			}
+		};
+	}
+}

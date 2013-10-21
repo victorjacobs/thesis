@@ -1,2 +1,5 @@
 /.idea/
 /untitled.iml
+/files/
+/target/
+.DS_Store
