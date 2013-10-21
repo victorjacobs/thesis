@@ -4,7 +4,6 @@
 package ca;
 
 import rinde.logistics.pdptw.mas.comm.AbstractCommModel;
-import rinde.logistics.pdptw.mas.comm.AuctionCommModel;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
 import rinde.sim.util.SupplierRng.DefaultSupplierRng;
@@ -38,44 +37,42 @@ public class CombAuctionCommModel extends AbstractCommModel<CombAuctionBidder> {
 	protected void receiveParcel(DefaultParcel p, long time) {
 		checkState(!communicators.isEmpty(), "there are no bidders..");
 
-		// For now just keep queuing until max_length
-		if (queuedParcels.size() != QUEUE_MAX_LENGTH) {
-			System.out.println("Parcel " + p.toString() + " queued");
-			queuedParcels.add(p);
-			return;
-		} else {
-			// Send entire lot to all communicators
+		queuedParcels.add(p);
 
-			// Do bidding round
-			final Iterator<CombAuctionBidder> it = communicators.iterator();
-			CombAuctionBidder bestBidder = it.next();
-			// if there are no other bidders, there is no need to organize an
-			// auction at all (mainly used in test cases)
-			if (it.hasNext()) {
-				// Winner determination problem
-				double bestValue = bestBidder.getBidFor(queuedParcels, time);
+		if (queuedParcels.size() != QUEUE_MAX_LENGTH)
+			return;		// Don't do anything for now
 
-				while (it.hasNext()) {
-					final CombAuctionBidder cur = it.next();
-					final double curValue = cur.getBidFor(queuedParcels, time);
-					if (curValue < bestValue) {
-						bestValue = curValue;
-						bestBidder = cur;
-					}
+		// Send entire lot to all communicators
+
+		// Do bidding round
+		final Iterator<CombAuctionBidder> it = communicators.iterator();
+		CombAuctionBidder bestBidder = it.next();
+		// if there are no other bidders, there is no need to organize an
+		// auction at all (mainly used in test cases)
+		if (it.hasNext()) {
+			// Winner determination problem
+			double bestValue = bestBidder.getBidFor(queuedParcels, time);
+
+			while (it.hasNext()) {
+				final CombAuctionBidder cur = it.next();
+				final double curValue = cur.getBidFor(queuedParcels, time);
+				if (curValue < bestValue) {
+					bestValue = curValue;
+					bestBidder = cur;
 				}
 			}
-			// For now best bidder wins everything
-			bestBidder.receiveParcels(queuedParcels);
-			// Reset queue
-			queuedParcels = new LinkedList<DefaultParcel>();
 		}
+		// For now best bidder wins everything
+		bestBidder.receiveParcels(queuedParcels);
+		// Reset queue
+		queuedParcels = new LinkedList<DefaultParcel>();
 	}
 
-	public static SupplierRng<AuctionCommModel> supplier() {
-		return new DefaultSupplierRng<AuctionCommModel>() {
+	public static SupplierRng<CombAuctionCommModel> supplier() {
+		return new DefaultSupplierRng<CombAuctionCommModel>() {
 			@Override
-			public AuctionCommModel get(long seed) {
-				return new AuctionCommModel();
+			public CombAuctionCommModel get(long seed) {
+				return new CombAuctionCommModel();
 			}
 		};
 	}

@@ -1,24 +1,45 @@
 package ca;
 
+import rinde.sim.core.graph.Point;
 import rinde.sim.pdptw.common.DefaultParcel;
+import rinde.sim.pdptw.common.ObjectiveFunction;
+import rinde.sim.util.SupplierRng;
 
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: victor
- * Date: 21/10/13
- * Time: 11:47
+ * Implements a naive combinatorial bidding strategy, based off {@link rinde.logistics.pdptw.mas.comm.InsertionCostBidder}.
+ * For now just sums over the distance from agent to all parcels, doesn't re-auction
+ *
+ * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class NaiveCombAuctionBidder extends AbstractCombAuctionBidder {
 
-	@Override
-	public double getBidFor(List<DefaultParcel> p, long time) {
-		return 0;  //To change body of implemented methods use File | Settings | File Templates.
+	private ObjectiveFunction objFunc;
+
+	public NaiveCombAuctionBidder(ObjectiveFunction objFunc) {
+		this.objFunc = objFunc;
 	}
 
 	@Override
-	public void receiveParcels(List<DefaultParcel> p) {
-		//To change body of implemented methods use File | Settings | File Templates.
+	public double getBidFor(List<DefaultParcel> p, long time) {
+		// Naive, bid is total distance to self
+		int totalDistance = 0;
+		Point myPos = roadModel.get().getPosition(vehicle.get());
+
+		for (DefaultParcel curP : p) {
+			totalDistance += Point.distance(myPos, curP.getDestination());
+		}
+
+		return totalDistance;
+	}
+
+	public static SupplierRng<NaiveCombAuctionBidder> supplier(final ObjectiveFunction objFunc) {
+		return new SupplierRng.DefaultSupplierRng<NaiveCombAuctionBidder>() {
+			@Override
+			public NaiveCombAuctionBidder get(long seed) {
+				return new NaiveCombAuctionBidder(objFunc);
+			}
+		};
 	}
 }
