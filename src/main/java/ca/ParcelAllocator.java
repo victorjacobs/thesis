@@ -3,10 +3,7 @@ package ca;
 import common.Bid;
 import rinde.sim.pdptw.common.DefaultParcel;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents an allocation of parcels according to some set of bids. This basically is a solver for the WDP
@@ -31,5 +28,10 @@ public abstract class ParcelAllocator {
 		bids.addAll(newBids);
 	}
 
-	abstract boolean distributeParcels();
+	abstract public boolean distributeParcels();
+
+	/*
+	 * For testing purposes
+	 */
+	abstract Set<Bid> solve();
 }
