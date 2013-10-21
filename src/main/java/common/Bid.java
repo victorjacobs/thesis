@@ -1,5 +1,6 @@
-package ca;
+package common;
 
+import ca.CombAuctionBidder;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 import java.util.ArrayList;

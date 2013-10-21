@@ -1,5 +1,6 @@
 package ca;
 
+import common.Bid;
 import rinde.sim.core.graph.Point;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
@@ -23,7 +24,12 @@ public class NaiveCombAuctionBidder extends AbstractCombAuctionBidder {
 	}
 
 	@Override
-	public List<Bid> getBidFor(List<DefaultParcel> p, long time) {
+	public double getBidFor(List<DefaultParcel> p, long time) {
+		return 0;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public List<Bid> getBidsFor(List<DefaultParcel> p, long time) {
 		// Naive, bid is total distance to self
 		int totalDistance = 0;
 		Point myPos = roadModel.get().getPosition(vehicle.get());

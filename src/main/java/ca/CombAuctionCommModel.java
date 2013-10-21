@@ -43,7 +43,7 @@ public class CombAuctionCommModel extends AbstractCommModel<CombAuctionBidder> {
 			return;		// Don't do anything for now
 
 		// Solve WDP
-		ParcelAllocator allocation = new NaiveParcelAllocator();
+		ParcelAllocator allocator = new NaiveParcelAllocator();
 
 		// Do bidding round
 		final Iterator<CombAuctionBidder> it = communicators.iterator();
@@ -52,11 +52,11 @@ public class CombAuctionCommModel extends AbstractCommModel<CombAuctionBidder> {
 		while (it.hasNext()) {
 			bidder = it.next();
 
-			allocation.addAllBids(bidder.getBidFor(queuedParcels, time));
+			allocator.addAllBids(bidder.getBidsFor(queuedParcels, time));
 		}
 
 		// Solve
-		allocation.distributeParcels();
+		allocator.distributeParcels();
 
 		// Reset queue
 		queuedParcels = new LinkedList<DefaultParcel>();
@@ -69,11 +69,11 @@ public class CombAuctionCommModel extends AbstractCommModel<CombAuctionBidder> {
 //		// auction at all (mainly used in test cases)
 //		if (it.hasNext()) {
 //			// Winner determination problem
-//			double bestValue = bestBidder.getBidFor(queuedParcels, time);
+//			double bestValue = bestBidder.getBidsFor(queuedParcels, time);
 //
 //			while (it.hasNext()) {
 //				final CombAuctionBidder cur = it.next();
-//				final double curValue = cur.getBidFor(queuedParcels, time);
+//				final double curValue = cur.getBidsFor(queuedParcels, time);
 //				if (curValue < bestValue) {
 //					bestValue = curValue;
 //					bestBidder = cur;

@@ -3,6 +3,7 @@
  */
 package ca;
 
+import common.Bid;
 import rinde.logistics.pdptw.mas.comm.Communicator;
 import rinde.sim.pdptw.common.DefaultParcel;
 
@@ -24,9 +25,9 @@ public interface CombAuctionBidder extends Communicator {
 	 * @param time The current time.
 	 * @return The bid value, the lower the better (i.e. cheaper).
 	 */
-	//double getBidFor(List<DefaultParcel> p, long time);
+	double getBidFor(List<DefaultParcel> p, long time);
 
-	List<Bid> getBidFor(List<DefaultParcel> p, long time);
+	List<Bid> getBidsFor(List<DefaultParcel> p, long time);
 
 	/**
 	 * When an auction has been won by this {@link rinde.logistics.pdptw.mas.comm.Bidder}, the

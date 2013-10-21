@@ -1,35 +1,28 @@
 package ca;
 
-import java.util.ArrayList;
-import java.util.List;
+import common.Bid;
+import rinde.sim.pdptw.common.DefaultParcel;
+
+import java.util.Collection;
 
 /**
- * Represents an allocation of parcels according to some set of bids. This basically is a solver for the WDP
+ * Naively allocates parcels to bids, only works when there are no conflicts
+ * Just to make sure the code infrastructure sort of works
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class NaiveParcelAllocator implements ParcelAllocator {
+public class NaiveParcelAllocator extends ParcelAllocator {
 
-	private List<Bid> bids;
-	private boolean finished = false;
+	private Collection<Bid> solve() {
+		for (Bid curBid : bids) {
+			for (DefaultParcel par : curBid.getParcels()) {		// Oops O(n^2)
+				if (!allocation.containsKey(par) || curBid.getBid() < allocation.get(par).getBid()) {
+					allocation.put(par, curBid);
+				}
+			}
+		}
 
-	public NaiveParcelAllocator() {
-		bids = new ArrayList<Bid>();
-	}
-
-	@Override
-	public void addBid(Bid newBid) {
-		bids.add(newBid);
-	}
-
-	@Override
-	public void addAllBids(List<Bid> newBids) {
-		bids.addAll(newBids);
-	}
-
-	private List<Bid> solve() {
-
-		return null;
+		return allocation.values();
 	}
 
 	@Override

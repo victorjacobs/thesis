@@ -1,5 +1,3 @@
-package experimental;
-
 import ca.CombAuctionCommModel;
 import ca.NaiveCombAuctionBidder;
 import com.google.common.collect.ImmutableList;
