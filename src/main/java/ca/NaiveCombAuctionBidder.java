@@ -5,6 +5,7 @@ import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.util.SupplierRng;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ public class NaiveCombAuctionBidder extends AbstractCombAuctionBidder {
 	}
 
 	@Override
-	public double getBidFor(List<DefaultParcel> p, long time) {
+	public List<Bid> getBidFor(List<DefaultParcel> p, long time) {
 		// Naive, bid is total distance to self
 		int totalDistance = 0;
 		Point myPos = roadModel.get().getPosition(vehicle.get());
@@ -31,7 +32,10 @@ public class NaiveCombAuctionBidder extends AbstractCombAuctionBidder {
 			totalDistance += Point.distance(myPos, curP.getDestination());
 		}
 
-		return totalDistance;
+		ArrayList<Bid> ret = new ArrayList<Bid>();
+		ret.add(new Bid(this, p, totalDistance));
+
+		return ret;
 	}
 
 	public static SupplierRng<NaiveCombAuctionBidder> supplier(final ObjectiveFunction objFunc) {

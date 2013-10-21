@@ -1,6 +1,9 @@
 package ca;
 
-import rinde.sim.core.model.pdp.Parcel;
+import rinde.sim.pdptw.common.DefaultParcel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a bid made by an agent
@@ -9,20 +12,30 @@ import rinde.sim.core.model.pdp.Parcel;
  */
 public class Bid {
 
-	private Parcel parcel;
+	private List<DefaultParcel> parcels;
 	private double bid;
-	// Some link to bidder/agent?
+	private CombAuctionBidder bidder;
 
-	public Bid(Parcel parcel, double bid) {
-		this.parcel = parcel;
+	public Bid(CombAuctionBidder bidder, final DefaultParcel parcel, double bid) {
+		// NOTE double brace initialisation
+		this(bidder, new ArrayList<DefaultParcel>() {{ add(parcel); }}, bid);
+	}
+
+	public Bid(CombAuctionBidder bidder, List<DefaultParcel> parcels, double bid) {
+		this.parcels = parcels;
 		this.bid = bid;
+		this.bidder = bidder;
 	}
 
 	public double getBid() {
 		return bid;
 	}
 
-	public Parcel getParcel() {
-		return parcel;
+	public List<DefaultParcel> getParcels() {
+		return parcels;
+	}
+
+	public CombAuctionBidder getBidder() {
+		return bidder;
 	}
 }

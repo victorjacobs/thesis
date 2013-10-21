@@ -42,30 +42,46 @@ public class CombAuctionCommModel extends AbstractCommModel<CombAuctionBidder> {
 		if (queuedParcels.size() != QUEUE_MAX_LENGTH)
 			return;		// Don't do anything for now
 
-		// Send entire lot to all communicators
+		// Solve WDP
+		ParcelAllocator allocation = new NaiveParcelAllocator();
 
 		// Do bidding round
 		final Iterator<CombAuctionBidder> it = communicators.iterator();
-		CombAuctionBidder bestBidder = it.next();
-		// if there are no other bidders, there is no need to organize an
-		// auction at all (mainly used in test cases)
-		if (it.hasNext()) {
-			// Winner determination problem
-			double bestValue = bestBidder.getBidFor(queuedParcels, time);
+		CombAuctionBidder bidder;
 
-			while (it.hasNext()) {
-				final CombAuctionBidder cur = it.next();
-				final double curValue = cur.getBidFor(queuedParcels, time);
-				if (curValue < bestValue) {
-					bestValue = curValue;
-					bestBidder = cur;
-				}
-			}
+		while (it.hasNext()) {
+			bidder = it.next();
+
+			allocation.addAllBids(bidder.getBidFor(queuedParcels, time));
 		}
-		// For now best bidder wins everything
-		bestBidder.receiveParcels(queuedParcels);
+
+		// Solve
+		allocation.distributeParcels();
+
 		// Reset queue
 		queuedParcels = new LinkedList<DefaultParcel>();
+
+
+//		// Do bidding round
+//		final Iterator<CombAuctionBidder> it = communicators.iterator();
+//		CombAuctionBidder bestBidder = it.next();
+//		// if there are no other bidders, there is no need to organize an
+//		// auction at all (mainly used in test cases)
+//		if (it.hasNext()) {
+//			// Winner determination problem
+//			double bestValue = bestBidder.getBidFor(queuedParcels, time);
+//
+//			while (it.hasNext()) {
+//				final CombAuctionBidder cur = it.next();
+//				final double curValue = cur.getBidFor(queuedParcels, time);
+//				if (curValue < bestValue) {
+//					bestValue = curValue;
+//					bestBidder = cur;
+//				}
+//			}
+//		}
+//		// For now best bidder wins everything
+//		bestBidder.receiveParcels(queuedParcels);
 	}
 
 	public static SupplierRng<CombAuctionCommModel> supplier() {
