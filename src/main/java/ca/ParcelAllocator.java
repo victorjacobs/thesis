@@ -28,10 +28,19 @@ public abstract class ParcelAllocator {
 		bids.addAll(newBids);
 	}
 
-	abstract public boolean distributeParcels();
+	public boolean distributeParcels() {
+		if (finished)
+			throw new IllegalStateException("NaiveParcelAllocator already distributed to bidders");
+
+		for (Bid curBid : solve()) {
+			curBid.getBidder().receiveParcels(curBid.getParcels());
+		}
+
+		return false;
+	}
 
 	/*
-	 * For testing purposes
+	 * For testing purposes set package visibility
 	 */
 	abstract Set<Bid> solve();
 }

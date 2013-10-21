@@ -28,16 +28,4 @@ public class NaiveParcelAllocator extends ParcelAllocator {
 		return new HashSet<Bid>(allocation.values());
 	}
 
-	@Override
-	public boolean distributeParcels() {
-		if (finished)
-			throw new IllegalStateException("NaiveParcelAllocator already distributed to bidders");
-
-		for (Bid curBid : solve()) {
-			curBid.getBidder().receiveParcels(curBid.getParcels());
-		}
-
-		return false;
-	}
-
 }
