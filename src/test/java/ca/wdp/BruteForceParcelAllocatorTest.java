@@ -70,6 +70,7 @@ public class BruteForceParcelAllocatorTest extends ParcelAllocatorTest {
 
 		ParcelAllocation sol = alloc.solve();
 
+		System.out.println();
 //		assertEquals(5, sol.getValueOfParcel(p1), 0.000001f);
 //		assertEquals(5, sol.getValueOfParcel(p1), 0.000001f); TODO
 //		assertEquals(5, sol.getValueOfParcel(p1), 0.000001f);

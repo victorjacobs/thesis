@@ -40,35 +40,42 @@ public class BruteForceParcelAllocator extends ParcelAllocator {
 		// If good already allocated continue deeper
 		// Backtrack etc
 
-		return solveRecursiveStep(getBinQueue(prunedBids));
+		return solveRecursiveStep(getBinQueue(prunedBids), new ParcelAllocation());
 	}
 
-	private ParcelAllocation solveRecursiveStep(Queue<Set<Bid>> queue) {
+	private ParcelAllocation solveRecursiveStep(Queue<Set<Bid>> queue, ParcelAllocation acc) {
 		// Base case
 		if (queue.isEmpty())
 			return new ParcelAllocation();
 
 		Iterator<Bid> it = queue.poll().iterator();
-
-		// Get next step
-		ParcelAllocation nextStep = solveRecursiveStep(new LinkedList<Set<Bid>>(queue));
-
-		double localBest = Double.MAX_VALUE;
-		ParcelAllocation bestAllocation = null;
 		Bid curBid;
+		double localBest = Double.MAX_VALUE;
+		ParcelAllocation localBestAllocation = null;
+		ParcelAllocation nextStep;
+		ParcelAllocation nextAcc;
 
 		while (it.hasNext()) {
 			curBid = it.next();
 
-			// Is curBid conflicting with the allocation returned from lower nodes?
-			if (!nextStep.conflictingBid(curBid) && nextStep.getValue() + curBid.getBidValue() < localBest) {
-				localBest = nextStep.getValue() + curBid.getBidValue();
-				bestAllocation = new ParcelAllocation(nextStep);
-				bestAllocation.allocateBid(curBid);
+			nextAcc = acc;
+
+			// Already added, don't do it a second time
+			if (!acc.containsBid(curBid) && !acc.conflictingBid(curBid)) {
+				// Recursion to next level
+				nextAcc = new ParcelAllocation(acc);
+				nextAcc.allocateBid(curBid);
+			}
+
+			nextStep = solveRecursiveStep(new LinkedList<Set<Bid>>(queue), nextAcc);
+
+			if (nextStep != null && nextStep.getValue() < localBest) {
+				localBest = nextStep.getValue();
+				localBestAllocation = nextStep;
 			}
 		}
 
-		return bestAllocation;
+		return localBestAllocation;
 	}
 
 	private Queue<Set<Bid>> getBinQueue(List<Bid> bids) {
