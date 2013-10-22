@@ -3,8 +3,8 @@ package ca.wdp;
 import common.Bid;
 import rinde.sim.pdptw.common.DefaultParcel;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Naively allocates parcels to bids, only works when there are no conflicts. This is not enforced, weird results ensue
@@ -16,7 +16,7 @@ import java.util.Set;
 public class NaiveParcelAllocator extends ParcelAllocator {
 
 	@Override
-	Set<Bid> solve() {
+	Collection<Bid> solve() {
 		for (Bid curBid : bids) {
 			for (DefaultParcel par : curBid.getParcels()) {		// Oops O(n^2)
 				if (!allocation.containsKey(par) || curBid.getBidValue() < allocation.get(par).getBidValue()) {

@@ -2,6 +2,7 @@ package ca.wdp;
 
 import common.Bid;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ import java.util.Set;
 public class CASSParcelAllocator extends ParcelAllocator {
 
 	@Override
-	Set<Bid> solve() {
+	Collection<Bid> solve() {
 		// Prune all bids a that are contained by bid b and have a lower value
 		Set<Bid> prunedBidsList = new HashSet<Bid>();	// Don't need doubles
 		Bid bi, bj;
@@ -30,8 +31,32 @@ public class CASSParcelAllocator extends ParcelAllocator {
 			}
 		}
 
-		//
-		int x = 0, y = bids.size() - 1;
+//		int x = 0, y = workingCopy.size() - 1;
+//		Bid xBid, yBid = workingCopy.get(y);
+//
+//		while (y != 0) {
+//
+//			do {
+//				xBid = workingCopy.get(x);
+//				allocateBid(xBid);
+//				x++;
+//			} while (!conflictingBid(xBid));
+//
+//			// Update
+//			if (getValueOfCurrentAllocation() < bestValue) {
+//				bestValue = getValueOfCurrentAllocation();	// TODO two calls to get...()
+//				bestAllocation = allocation.values();
+//			}
+//
+//			while (y != 0) {
+//				if (containsBid(yBid)) {
+//					workingCopy.remove(y);
+//					x = y + 1;
+//				} else {
+//					y--;
+//				}
+//			}
+//		}
 
 
 

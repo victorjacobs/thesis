@@ -1,7 +1,6 @@
 package ca.wdp;
 
 import ca.CombAuctionBidder;
-import ca.wdp.NaiveParcelAllocator;
 import common.Bid;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,9 +20,7 @@ import static org.mockito.Mockito.mock;
  * Date: 21/10/13
  * Time: 17:06
  */
-public class NaiveParcelAllocatorTest {
-	private NaiveParcelAllocator alloc;
-
+public class NaiveParcelAllocatorTest extends ParcelAllocatorTest {
 	@Before
 	public void setUp() {
 		alloc = new NaiveParcelAllocator();

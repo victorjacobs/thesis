@@ -1,8 +1,6 @@
 package ca.wdp;
 
 import ca.CombAuctionBidder;
-import ca.wdp.CASSParcelAllocator;
-import ca.wdp.ParcelAllocator;
 import common.Bid;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,9 +20,7 @@ import static org.mockito.Mockito.mock;
  * Date: 22/10/13
  * Time: 09:38
  */
-public class CASSParcelAllocatorTest {
-
-	ParcelAllocator alloc;
+public class CASSParcelAllocatorTest extends ParcelAllocatorTest {
 
 	@Before
 	public void setUp() {

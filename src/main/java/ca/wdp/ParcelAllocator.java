@@ -53,10 +53,8 @@ public abstract class ParcelAllocator {
 	protected void allocateBid(Bid b) {
 		checkArgument(bids.contains(b));	// Bid passed should be in the allocator
 
-		for (DefaultParcel p : allocation.keySet()) {
-			if (b.getParcels().contains(p)) {
-				allocation.put(p, b);
-			}
+		for (DefaultParcel p : b.getParcels()) {
+			allocation.put(p, b);
 		}
 	}
 
@@ -75,17 +73,44 @@ public abstract class ParcelAllocator {
 		return false;
 	}
 
+	protected boolean containsBid(Bid b) {
+		for (DefaultParcel p : b.getParcels()) {
+			if (!allocation.containsKey(p))
+				return false;
+		}
+
+		return true;
+	}
+
+	protected void resetAllocation() {
+		allocation.clear();
+	}
+
+	/**
+	 * Evaluates the current allocation of parcels.
+	 * @return
+	 */
 	protected double getValueOfCurrentAllocation() {
 		double ret = 0;
 
-		for (Bid b : allocation.values())
+		for (Bid b : new HashSet<Bid>(allocation.values()))
 			ret += b.getBidValue();
 
 		return ret;
 	}
 
+	public boolean areAllParcelsAllocated() {
+		Set<DefaultParcel> ret = new HashSet<DefaultParcel>();
+
+		for (Bid b : bids) {
+			ret.addAll(b.getParcels());
+		}
+
+		return ret.size() == allocation.keySet().size();
+	}
+
 	/*
 	 * For testing purposes set package visibility
 	 */
-	abstract Set<Bid> solve();
+	abstract Collection<Bid> solve();
 }
