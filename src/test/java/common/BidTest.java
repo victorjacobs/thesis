@@ -23,6 +23,7 @@ public class BidTest {
 	public void testContains() throws Exception {
 		DefaultParcel p1 = mock(DefaultParcel.class);
 		DefaultParcel p2 = mock(DefaultParcel.class);
+		DefaultParcel p3 = mock(DefaultParcel.class);
 
 		List<DefaultParcel> bundle1 = new ArrayList<DefaultParcel>();
 		bundle1.add(p1);
@@ -35,5 +36,15 @@ public class BidTest {
 
 		assertTrue(b1.contains(b2));
 		assertFalse(b2.contains(b1));
+
+		// Partly overlapping
+		List<DefaultParcel> bundle3 = new ArrayList<DefaultParcel>();
+		bundle3.add(p2);
+		bundle3.add(p3);
+
+		Bid b3 = new Bid(mock(CombAuctionBidder.class), bundle3, 20);
+
+		assertFalse(b3.contains(b1));
+		assertFalse(b1.contains(b3));
 	}
 }

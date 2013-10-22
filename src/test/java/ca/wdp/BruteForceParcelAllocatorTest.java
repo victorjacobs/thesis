@@ -80,4 +80,28 @@ public class BruteForceParcelAllocatorTest extends ParcelAllocatorTest {
 		assertTrue(sol.contains(b5));
 	}
 
+	@Test
+	public void testPruning() {
+		DefaultParcel p1 = mock(DefaultParcel.class);
+		DefaultParcel p2 = mock(DefaultParcel.class);
+
+		List<DefaultParcel> bundle1 = new ArrayList<DefaultParcel>();
+		bundle1.add(p1);
+		bundle1.add(p2);
+
+		List<DefaultParcel> bundle2 = new ArrayList<DefaultParcel>();
+		bundle2.add(p2);
+
+		Bid b1 = new Bid(mock(CombAuctionBidder.class), bundle1, 20);
+		Bid b2 = new Bid(mock(CombAuctionBidder.class), bundle2, 10);
+
+		alloc.addBid(b1);
+		alloc.addBid(b2);
+
+		Collection<Bid> sol = alloc.solve();
+
+		assertTrue(sol.contains(b1));
+		assertFalse(sol.contains(b2));
+	}
+
 }
