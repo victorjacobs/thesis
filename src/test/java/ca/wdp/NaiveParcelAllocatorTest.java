@@ -1,5 +1,7 @@
-package ca;
+package ca.wdp;
 
+import ca.CombAuctionBidder;
+import ca.wdp.NaiveParcelAllocator;
 import common.Bid;
 import org.junit.Before;
 import org.junit.Test;

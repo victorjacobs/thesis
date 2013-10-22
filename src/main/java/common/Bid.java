@@ -41,6 +41,15 @@ public class Bid {
 		return bidder;
 	}
 
+	/**
+	 * Does this bid contain the parcels of an other bid o?
+	 * @param o Other bid
+	 * @return This bid contains all parcels in o
+	 */
+	public boolean contains(Bid o) {
+		return parcels.containsAll(o.getParcels());
+	}
+
 	// TODO
 	@Override
 	public int hashCode() {

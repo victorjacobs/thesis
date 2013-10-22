@@ -1,4 +1,4 @@
-package ca;
+package ca.wdp;
 
 import common.Bid;
 import rinde.sim.pdptw.common.DefaultParcel;

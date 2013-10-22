@@ -3,6 +3,8 @@
  */
 package ca;
 
+import ca.wdp.NaiveParcelAllocator;
+import ca.wdp.ParcelAllocator;
 import rinde.logistics.pdptw.mas.comm.AbstractCommModel;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
