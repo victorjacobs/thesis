@@ -7,11 +7,9 @@ import org.junit.Test;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -48,8 +46,8 @@ public class NaiveParcelAllocatorTest extends ParcelAllocatorTest {
 		alloc.addBid(b1);
 		alloc.addBid(b2);
 
-		Collection<Bid> sol = alloc.solve();
-		assertTrue(sol.contains(b1));
-		assertFalse(sol.contains(b2));
+		ParcelAllocation sol = alloc.solve();
+		assertEquals(10, sol.getValueOfParcel(p1), 0.00001d);
+		assertEquals(10, sol.getValueOfParcel(p2), 0.00001d);
 	}
 }

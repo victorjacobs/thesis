@@ -19,7 +19,7 @@ public class BruteForceParcelAllocator extends ParcelAllocator {
 	}
 
 	@Override
-	Collection<Bid> solve() {
+	ParcelAllocation solve() {
 		Collection<Bid> bestAllocation = null;
 		double bestValue = Double.MAX_VALUE;
 
@@ -53,26 +53,13 @@ public class BruteForceParcelAllocator extends ParcelAllocator {
 
 		fillBins();
 
-		return bestAllocation;
+		return null;
 	}
 
 	private Collection<Bid> solveRecursiveStep(Iterator<Map.Entry<DefaultParcel, Set<Bid>>> it) {
 		// Base case
 		if (!it.hasNext())
 			return null;
-
-		double localBest = Double.MAX_VALUE;
-
-		Set<Bid> assignments = (Set<Bid>)((Map.Entry) it.next()).getValue();
-
-		for (Bid b : assignments) {
-			if (conflictingBid(b))
-				continue;
-
-			allocateBid(b);
-
-			solveRecursiveStep(it);
-		}
 
 		return null;
 	}

@@ -2,7 +2,6 @@ package ca.wdp;
 
 import common.Bid;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,7 +14,7 @@ import java.util.Set;
 public class CASSParcelAllocator extends ParcelAllocator {
 
 	@Override
-	Collection<Bid> solve() {
+	ParcelAllocation solve() {
 		// Prune all bids a that are contained by bid b and have a lower value
 		Set<Bid> prunedBidsList = new HashSet<Bid>();	// Don't need doubles
 		Bid bi, bj;
@@ -60,7 +59,7 @@ public class CASSParcelAllocator extends ParcelAllocator {
 
 
 
-		return prunedBidsList;  //To change body of implemented methods use File | Settings | File Templates.
+		return null;
 	}
 
 }

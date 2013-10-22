@@ -3,9 +3,6 @@ package ca.wdp;
 import common.Bid;
 import rinde.sim.pdptw.common.DefaultParcel;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 /**
  * Naively allocates parcels to bids, only works when there are no conflicts. This is not enforced, weird results ensue
  * when trying to allocate conflicting bids.
@@ -16,16 +13,18 @@ import java.util.HashSet;
 public class NaiveParcelAllocator extends ParcelAllocator {
 
 	@Override
-	Collection<Bid> solve() {
+	ParcelAllocation solve() {
+		ParcelAllocation allocation = new ParcelAllocation();
+
 		for (Bid curBid : bids) {
 			for (DefaultParcel par : curBid.getParcels()) {		// Oops O(n^2)
-				if (!allocation.containsKey(par) || curBid.getBidValue() < allocation.get(par).getBidValue()) {
-					allocation.put(par, curBid);
+				if (!allocation.parcelExists(par) || curBid.getBidValue() < allocation.getValueOfParcel(par)) {
+					allocation.allocateBid(curBid);
 				}
 			}
 		}
 
-		return new HashSet<Bid>(allocation.values());
+		return allocation;
 	}
 
 }

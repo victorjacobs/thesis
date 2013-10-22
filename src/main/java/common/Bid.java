@@ -50,6 +50,10 @@ public class Bid {
 		return parcels.containsAll(o.getParcels());
 	}
 
+	public void receiveParcels() {
+		bidder.receiveParcels(parcels);
+	}
+
 	// TODO
 	@Override
 	public int hashCode() {
