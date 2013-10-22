@@ -80,5 +80,4 @@ public class BruteForceParcelAllocatorTest extends ParcelAllocatorTest {
 		assertTrue(sol.contains(b5));
 	}
 
-	// TODO test whether all parcels are auctioned
 }

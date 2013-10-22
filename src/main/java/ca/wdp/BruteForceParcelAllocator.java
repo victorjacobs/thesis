@@ -57,7 +57,7 @@ public class BruteForceParcelAllocator extends ParcelAllocator {
 			resetAllocation();
 		}
 
-		return bestAllocation;  //To change body of implemented methods use File | Settings | File Templates.
+		return bestAllocation;
 	}
 
 }
