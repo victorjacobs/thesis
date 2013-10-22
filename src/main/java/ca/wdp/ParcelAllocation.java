@@ -3,6 +3,7 @@ package ca.wdp;
 import common.Bid;
 import rinde.sim.pdptw.common.DefaultParcel;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,6 +20,12 @@ public class ParcelAllocation {
 
 	public ParcelAllocation() {
 		this.allocation = new HashMap<DefaultParcel, Bid>();
+	}
+
+	public ParcelAllocation(ParcelAllocation copy) {
+		this();
+
+		this.allocation = new HashMap<DefaultParcel, Bid>(copy.allocation);
 	}
 
 	/**
@@ -50,6 +57,15 @@ public class ParcelAllocation {
 	public boolean containsBid(Bid b) {
 		for (DefaultParcel p : b.getParcels()) {
 			if (!allocation.containsKey(p))
+				return false;
+		}
+
+		return true;
+	}
+
+	public boolean containsAll(Collection<Bid> bids) {
+		for (Bid b : bids) {
+			if (!allocation.containsValue(b))
 				return false;
 		}
 

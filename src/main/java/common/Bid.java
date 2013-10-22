@@ -59,4 +59,18 @@ public class Bid {
 	public int hashCode() {
 		return Objects.hashCode(getBidValue(), getBidder(), getParcels());
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Bid value " + getBidValue() + " for parcel [");
+
+		for (DefaultParcel p : parcels) {
+			sb.append(p.toString());
+			sb.append(" ");
+		}
+
+		sb.append("]");
+		return sb.toString();
+	}
 }

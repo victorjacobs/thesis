@@ -8,7 +8,9 @@ import rinde.sim.pdptw.common.DefaultParcel;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,6 +23,7 @@ public abstract class ParcelAllocatorTest {
 
 	@Test
 	public void stressTestWithTimings() {
+		// TODO still something not completely ok here
 		final int nbParcels = 6;
 		final int bundleSize = 2;
 		final int nbBundles = (int) Math.ceil(nbParcels / bundleSize);
@@ -28,8 +31,11 @@ public abstract class ParcelAllocatorTest {
 
 		// Generate a lot of parcels
 		List<DefaultParcel> parcels = new LinkedList<DefaultParcel>();
+		DefaultParcel temp;
 		for (int i = 0; i < nbParcels; i++) {
-			parcels.add(mock(DefaultParcel.class));
+			temp = mock(DefaultParcel.class);
+			when(temp.toString()).thenReturn(i + "");
+			parcels.add(temp);
 		}
 
 		// Generate two sets of bundles, shifted by one so they all overlap (worst case)
@@ -85,6 +91,6 @@ public abstract class ParcelAllocatorTest {
 
 		System.out.println("Running time " + Long.toString(System.currentTimeMillis() - start));
 
-		//assertTrue(sol.containsAll(bidSet2)); TODO
+		assertTrue(sol.containsAll(bidSet2));
 	}
 }

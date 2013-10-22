@@ -11,12 +11,6 @@ import java.util.*;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class BruteForceParcelAllocator extends ParcelAllocator {
-	private Map<DefaultParcel, Set<Bid>> bins;
-
-	public BruteForceParcelAllocator() {
-		super();
-		bins = new HashMap<DefaultParcel, Set<Bid>>();
-	}
 
 	@Override
 	ParcelAllocation solve() {
@@ -39,11 +33,6 @@ public class BruteForceParcelAllocator extends ParcelAllocator {
 			}
 		}
 
-
-		// Now enumerate do a depth-first search of all possibilities
-		int x = 0, y = prunedBids.size() - 1;
-		Bid xBid, yBid = prunedBids.get(y);
-
 		// Loop over goods
 		// Select some bid for some good
 		// Allocate it -> this spreads it out over the goods it belongs to
@@ -51,20 +40,41 @@ public class BruteForceParcelAllocator extends ParcelAllocator {
 		// If good already allocated continue deeper
 		// Backtrack etc
 
-		fillBins();
-
-		return null;
+		return solveRecursiveStep(getBinQueue(prunedBids));
 	}
 
-	private Collection<Bid> solveRecursiveStep(Iterator<Map.Entry<DefaultParcel, Set<Bid>>> it) {
+	private ParcelAllocation solveRecursiveStep(Queue<Set<Bid>> queue) {
 		// Base case
-		if (!it.hasNext())
-			return null;
+		if (queue.isEmpty())
+			return new ParcelAllocation();
 
-		return null;
+		Iterator<Bid> it = queue.poll().iterator();
+
+		// Get next step
+		ParcelAllocation nextStep = solveRecursiveStep(new LinkedList<Set<Bid>>(queue));
+
+		double localBest = Double.MAX_VALUE;
+		ParcelAllocation bestAllocation = null;
+		Bid curBid;
+
+		while (it.hasNext()) {
+			curBid = it.next();
+
+			// Is curBid conflicting with the allocation returned from lower nodes?
+			if (!nextStep.conflictingBid(curBid) && nextStep.getValue() + curBid.getBidValue() < localBest) {
+				localBest = nextStep.getValue() + curBid.getBidValue();
+				bestAllocation = new ParcelAllocation(nextStep);
+				bestAllocation.allocateBid(curBid);
+			}
+		}
+
+		return bestAllocation;
 	}
 
-	private void fillBins() {
+	private Queue<Set<Bid>> getBinQueue(List<Bid> bids) {
+		// First bin all bids, then convert to queue
+		Map<DefaultParcel, Set<Bid>> bins = new HashMap<DefaultParcel, Set<Bid>>();
+
 		for (Bid b : bids) {
 			for (DefaultParcel p : b.getParcels()) {
 				if (!bins.containsKey(p)) {
@@ -76,6 +86,14 @@ public class BruteForceParcelAllocator extends ParcelAllocator {
 				bins.get(p).add(b);
 			}
 		}
+
+		Queue<Set<Bid>> ret = new LinkedList<Set<Bid>>();
+
+		for (Set<Bid> bin : bins.values()) {
+			ret.offer(bin);
+		}
+
+		return ret;
 	}
 
 }
