@@ -3,6 +3,8 @@ package common;
 import rinde.logistics.pdptw.mas.comm.Communicator;
 import rinde.sim.pdptw.common.DefaultParcel;
 
+import java.util.List;
+
 /**
  * Implementations of this interface can participate in auctions. This differs from rinde.logistics.pdptw.mas.comm
  * .Bidder in that uses a Bid object to represent bids.
@@ -21,6 +23,7 @@ public interface Bidder extends Communicator {
 	 * @return The bid value, the lower the better (i.e. cheaper).
 	 */
 	Bid getBidFor(DefaultParcel p, long time);
+	List<Bid> getBidsFor(List<DefaultParcel> p, long time);
 
 	/**
 	 * When an auction has been won by this {@link Bidder}, the
@@ -28,4 +31,6 @@ public interface Bidder extends Communicator {
 	 * @param p The {@link DefaultParcel} that is won.
 	 */
 	void receiveParcel(DefaultParcel p);
+	void receiveParcels(List<DefaultParcel> p);
+
 }

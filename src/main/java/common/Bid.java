@@ -1,6 +1,5 @@
 package common;
 
-import ca.CombAuctionBidder;
 import com.google.common.base.Objects;
 import rinde.sim.pdptw.common.DefaultParcel;
 
@@ -16,14 +15,14 @@ public class Bid {
 
 	private List<DefaultParcel> parcels;
 	private double bidValue;
-	private CombAuctionBidder bidder;
+	private Bidder bidder;
 
-	public Bid(CombAuctionBidder bidder, final DefaultParcel parcel, double bidValue) {
+	public Bid(Bidder bidder, final DefaultParcel parcel, double bidValue) {
 		// NOTE double brace initialisation
 		this(bidder, new ArrayList<DefaultParcel>() {{ add(parcel); }}, bidValue);
 	}
 
-	public Bid(CombAuctionBidder bidder, List<DefaultParcel> parcels, double bidValue) {
+	public Bid(Bidder bidder, List<DefaultParcel> parcels, double bidValue) {
 		this.parcels = parcels;
 		this.bidValue = bidValue;
 		this.bidder = bidder;
@@ -37,7 +36,7 @@ public class Bid {
 		return parcels;
 	}
 
-	public CombAuctionBidder getBidder() {
+	public Bidder getBidder() {
 		return bidder;
 	}
 

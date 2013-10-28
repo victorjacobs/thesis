@@ -1,7 +1,7 @@
 package ca.wdp;
 
-import ca.CombAuctionBidder;
 import common.Bid;
+import common.Bidder;
 import org.junit.Test;
 import rinde.sim.pdptw.common.DefaultParcel;
 
@@ -67,8 +67,8 @@ public abstract class ParcelAllocatorTest {
 			bundleSet2.add(bundle);
 		}
 
-		CombAuctionBidder b1 = mock(CombAuctionBidder.class);
-		CombAuctionBidder b2 = mock(CombAuctionBidder.class);
+		Bidder b1 = mock(Bidder.class);
+		Bidder b2 = mock(Bidder.class);
 
 		// Create bids
 		List<Bid> bidSet1 = new LinkedList<Bid>();

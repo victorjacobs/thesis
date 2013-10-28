@@ -1,7 +1,7 @@
 package ca.wdp;
 
-import ca.CombAuctionBidder;
 import common.Bid;
+import common.Bidder;
 import org.junit.Before;
 import org.junit.Test;
 import rinde.sim.pdptw.common.DefaultParcel;
@@ -56,11 +56,11 @@ public class BruteForceParcelAllocatorTest extends ParcelAllocatorTest {
 		bundle5.add(p4);
 		bundle5.add(p5);
 
-		Bid b1 = new Bid(mock(CombAuctionBidder.class), bundle1, 10);
-		Bid b2 = new Bid(mock(CombAuctionBidder.class), bundle2, 20);
-		Bid b3 = new Bid(mock(CombAuctionBidder.class), bundle3, 5);
-		Bid b4 = new Bid(mock(CombAuctionBidder.class), bundle4, 5);
-		Bid b5 = new Bid(mock(CombAuctionBidder.class), bundle5, 5);
+		Bid b1 = new Bid(mock(Bidder.class), bundle1, 10);
+		Bid b2 = new Bid(mock(Bidder.class), bundle2, 20);
+		Bid b3 = new Bid(mock(Bidder.class), bundle3, 5);
+		Bid b4 = new Bid(mock(Bidder.class), bundle4, 5);
+		Bid b5 = new Bid(mock(Bidder.class), bundle5, 5);
 
 		alloc.addBid(b1);
 		alloc.addBid(b2);
@@ -94,8 +94,8 @@ public class BruteForceParcelAllocatorTest extends ParcelAllocatorTest {
 		List<DefaultParcel> bundle2 = new ArrayList<DefaultParcel>();
 		bundle2.add(p2);
 
-		Bid b1 = new Bid(mock(CombAuctionBidder.class), bundle1, 20);
-		Bid b2 = new Bid(mock(CombAuctionBidder.class), bundle2, 10);
+		Bid b1 = new Bid(mock(Bidder.class), bundle1, 20);
+		Bid b2 = new Bid(mock(Bidder.class), bundle2, 10);
 
 		alloc.addBid(b1);
 		alloc.addBid(b2);

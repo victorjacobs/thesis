@@ -4,6 +4,7 @@
 package ca;
 
 import com.google.common.base.Optional;
+import common.Bidder;
 import rinde.sim.core.model.pdp.PDPModel;
 import rinde.sim.core.model.road.RoadModel;
 import rinde.sim.event.Event;
@@ -26,7 +27,7 @@ import static java.util.Collections.unmodifiableSet;
  * Basic implementation for {@link rinde.logistics.pdptw.mas.comm.Bidder}.
  * @author Rinde van Lon <rinde.vanlon@cs.kuleuven.be>
  */
-public abstract class AbstractCombAuctionBidder implements CombAuctionBidder {
+public abstract class AbstractCombAuctionBidder implements Bidder {
 
 	/**
 	 * The set of parcels that are assigned to this bidder.

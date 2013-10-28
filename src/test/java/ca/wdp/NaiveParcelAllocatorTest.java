@@ -1,7 +1,7 @@
 package ca.wdp;
 
-import ca.CombAuctionBidder;
 import common.Bid;
+import common.Bidder;
 import org.junit.Before;
 import org.junit.Test;
 import rinde.sim.pdptw.common.DefaultParcel;
@@ -37,8 +37,8 @@ public class NaiveParcelAllocatorTest extends ParcelAllocatorTest {
 		List<DefaultParcel> bundle2 = new ArrayList<DefaultParcel>();
 		bundle2.add(p3);
 
-		CombAuctionBidder bidder1 = mock(CombAuctionBidder.class);
-		CombAuctionBidder bidder2 = mock(CombAuctionBidder.class);
+		Bidder bidder1 = mock(Bidder.class);
+		Bidder bidder2 = mock(Bidder.class);
 
 		Bid b1 = new Bid(bidder1, bundle1, 10);
 		Bid b2 = new Bid(bidder2, bundle1, 20);

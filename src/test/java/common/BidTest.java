@@ -1,6 +1,5 @@
 package common;
 
-import ca.CombAuctionBidder;
 import org.junit.Test;
 import rinde.sim.pdptw.common.DefaultParcel;
 
@@ -31,8 +30,8 @@ public class BidTest {
 		List<DefaultParcel> bundle2 = new ArrayList<DefaultParcel>();
 		bundle2.add(p1);
 
-		Bid b1 = new Bid(mock(CombAuctionBidder.class), bundle1, 20);
-		Bid b2 = new Bid(mock(CombAuctionBidder.class), bundle2, 20);
+		Bid b1 = new Bid(mock(Bidder.class), bundle1, 20);
+		Bid b2 = new Bid(mock(Bidder.class), bundle2, 20);
 
 		assertTrue(b1.contains(b2));
 		assertFalse(b2.contains(b1));
@@ -42,7 +41,7 @@ public class BidTest {
 		bundle3.add(p2);
 		bundle3.add(p3);
 
-		Bid b3 = new Bid(mock(CombAuctionBidder.class), bundle3, 20);
+		Bid b3 = new Bid(mock(Bidder.class), bundle3, 20);
 
 		assertFalse(b3.contains(b1));
 		assertFalse(b1.contains(b3));
