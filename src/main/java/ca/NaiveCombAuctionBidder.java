@@ -24,11 +24,6 @@ public class NaiveCombAuctionBidder extends AbstractCombAuctionBidder {
 	}
 
 	@Override
-	public double getBidFor(List<DefaultParcel> p, long time) {
-		return 0;  //To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	@Override
 	public List<Bid> getBidsFor(List<DefaultParcel> p, long time) {
 		// Naive, bid is total distance to self
 		int totalDistance = 0;
@@ -51,5 +46,10 @@ public class NaiveCombAuctionBidder extends AbstractCombAuctionBidder {
 				return new NaiveCombAuctionBidder(objFunc);
 			}
 		};
+	}
+
+	@Override
+	public Bid getBidFor(DefaultParcel p, long time) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 }

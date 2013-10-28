@@ -1,5 +1,6 @@
 package ra;
 
+import common.Bid;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.util.SupplierRng;
@@ -20,12 +21,12 @@ public class TestReAuctionBidder extends AbstractReAuctionBidder {
 	@Override
 	protected void reEvaluateParcels() {
 		System.out.println("tick");
-		commModel.reAuction(null);
+		commModel.reAuction(null, 0);
 	}
 
 	@Override
-	public double getBidFor(DefaultParcel p, long time) {
-		return 0;
+	public Bid getBidFor(DefaultParcel p, long time) {
+		return null;
 	}
 
 	public static SupplierRng<TestReAuctionBidder> supplier(final ObjectiveFunction objFunc) {

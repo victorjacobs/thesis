@@ -1,6 +1,6 @@
 package ra;
 
-import rinde.logistics.pdptw.mas.comm.Bidder;
+import common.Bidder;
 
 /**
  * Adds An extra method to a Bidder to allow for double binding to the model

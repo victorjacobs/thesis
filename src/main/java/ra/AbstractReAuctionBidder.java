@@ -1,6 +1,6 @@
 package ra;
 
-import rinde.logistics.pdptw.mas.comm.AbstractBidder;
+import common.AbstractBidder;
 import rinde.sim.core.TickListener;
 import rinde.sim.core.TimeLapse;
 

@@ -1,15 +1,14 @@
 package ra;
 
-import common.Bid;
 import rinde.logistics.pdptw.mas.comm.AbstractCommModel;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
 
 /**
- * Created with IntelliJ IDEA.
- * User: victor
- * Date: 28/10/13
- * Time: 15:18
+ * Communication model that supports re-auctioning. ReAuctionBidders are doubly bound to this model so they can call
+ * the reAuction method.
+ *
+ * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class ReAuctionCommModel extends AbstractCommModel<ReAuctionBidder> {
 
@@ -26,7 +25,7 @@ public class ReAuctionCommModel extends AbstractCommModel<ReAuctionBidder> {
 		return super.register(communicator);
 	}
 
-	public boolean reAuction(Bid bid) {
+	public boolean reAuction(DefaultParcel par, double reservationPrice) {
 		System.out.println("tock");
 		return false;
 	}

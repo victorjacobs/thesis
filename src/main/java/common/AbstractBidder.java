@@ -1,7 +1,7 @@
 /**
  *
  */
-package ca;
+package common;
 
 import com.google.common.base.Optional;
 import rinde.sim.core.model.pdp.PDPModel;
@@ -12,10 +12,8 @@ import rinde.sim.event.Listener;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.DefaultVehicle;
 import rinde.sim.pdptw.common.PDPRoadModel;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -23,10 +21,10 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
 import static java.util.Collections.unmodifiableSet;
 
 /**
- * Basic implementation for {@link rinde.logistics.pdptw.mas.comm.Bidder}.
+ * Basic implementation for {@link Bidder}.
  * @author Rinde van Lon <rinde.vanlon@cs.kuleuven.be>
  */
-public abstract class AbstractCombAuctionBidder implements CombAuctionBidder {
+public abstract class AbstractBidder implements Bidder {
 
 	/**
 	 * The set of parcels that are assigned to this bidder.
@@ -56,7 +54,7 @@ public abstract class AbstractCombAuctionBidder implements CombAuctionBidder {
 	/**
 	 * Initializes bidder.
 	 */
-	public AbstractCombAuctionBidder() {
+	public AbstractBidder() {
 		assignedParcels = newLinkedHashSet();
 		eventDispatcher = new EventDispatcher(CommunicatorEventType.values());
 		roadModel = Optional.absent();
@@ -85,8 +83,8 @@ public abstract class AbstractCombAuctionBidder implements CombAuctionBidder {
 	}
 
 	@Override
-	public void receiveParcels(List<DefaultParcel> p) {
-		assignedParcels.addAll(p);
+	public void receiveParcel(DefaultParcel p) {
+		assignedParcels.add(p);
 		eventDispatcher
 				.dispatchEvent(new Event(CommunicatorEventType.CHANGE, this));
 	}
@@ -104,9 +102,4 @@ public abstract class AbstractCombAuctionBidder implements CombAuctionBidder {
 	 * after {@link #init(RoadModel, PDPModel, DefaultVehicle)} is called.
 	 */
 	protected void afterInit() {}
-
-	@Override
-	public void receiveParcel(DefaultParcel p) {
-		throw new NotImplementedException();
-	}
 }
