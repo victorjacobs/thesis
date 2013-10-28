@@ -1,7 +1,9 @@
 package ra;
 
+import common.Bid;
 import rinde.logistics.pdptw.mas.comm.AbstractCommModel;
 import rinde.sim.pdptw.common.DefaultParcel;
+import rinde.sim.util.SupplierRng;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,5 +24,19 @@ public class ReAuctionCommModel extends AbstractCommModel<ReAuctionBidder> {
 		communicator.register(this);
 
 		return super.register(communicator);
+	}
+
+	public boolean reAuction(Bid bid) {
+		System.out.println("tock");
+		return false;
+	}
+
+	public static SupplierRng<ReAuctionCommModel> supplier() {
+		return new SupplierRng.DefaultSupplierRng<ReAuctionCommModel>() {
+			@Override
+			public ReAuctionCommModel get(long seed) {
+				return new ReAuctionCommModel();
+			}
+		};
 	}
 }
