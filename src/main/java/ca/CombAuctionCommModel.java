@@ -5,6 +5,7 @@ package ca;
 
 import ca.wdp.NaiveParcelAllocator;
 import ca.wdp.ParcelAllocator;
+import common.Bidder;
 import rinde.logistics.pdptw.mas.comm.AbstractCommModel;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
@@ -22,7 +23,7 @@ import static com.google.common.base.Preconditions.checkState;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class CombAuctionCommModel extends AbstractCommModel<CombAuctionBidder> {
+public class CombAuctionCommModel extends AbstractCommModel<Bidder> {
 
 	/**
 	 * New instance.
@@ -48,8 +49,8 @@ public class CombAuctionCommModel extends AbstractCommModel<CombAuctionBidder> {
 		ParcelAllocator allocator = new NaiveParcelAllocator();
 
 		// Do bidding round
-		final Iterator<CombAuctionBidder> it = communicators.iterator();
-		CombAuctionBidder bidder;
+		final Iterator<Bidder> it = communicators.iterator();
+		Bidder bidder;
 
 		while (it.hasNext()) {
 			bidder = it.next();

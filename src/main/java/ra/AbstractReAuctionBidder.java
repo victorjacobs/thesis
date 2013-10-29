@@ -1,8 +1,13 @@
 package ra;
 
-import common.AbstractBidder;
+import common.SolverBidder;
+import org.apache.commons.math3.random.MersenneTwister;
+import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.core.TickListener;
 import rinde.sim.core.TimeLapse;
+import rinde.sim.event.Event;
+import rinde.sim.pdptw.central.Solver;
+import rinde.sim.pdptw.gendreau06.Gendreau06ObjectiveFunction;
 
 import java.util.Random;
 
@@ -11,10 +16,12 @@ import java.util.Random;
  * the assigned parcels regularly.
  *
  * TODO: use tick() or afterTick()?
+ * TODO: since Java lacks double dispatch + want to extend SolverBidder, the get bid functions return doubles and not Bids
+ * 		-> Change Bidder interface to use Bids instead of doubles?
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public abstract class AbstractReAuctionBidder extends AbstractBidder implements TickListener, ReAuctionBidder {
+public abstract class AbstractReAuctionBidder extends SolverBidder implements TickListener, ReAuctionBidder {
 
 	protected ReAuctionCommModel commModel;
 	protected int ticksUntilNextEvaluation;
@@ -22,6 +29,7 @@ public abstract class AbstractReAuctionBidder extends AbstractBidder implements 
 	protected Random rng;
 
 	public AbstractReAuctionBidder() {
+		super(new Gendreau06ObjectiveFunction(), (Solver) new MultiVehicleHeuristicSolver(new MersenneTwister(123), 50, 1000));
 		rng = new Random();
 		ticksUntilNextEvaluation = getDelay();
 	}
@@ -42,6 +50,14 @@ public abstract class AbstractReAuctionBidder extends AbstractBidder implements 
 	@Override
 	public void register(ReAuctionCommModel model) {
 		commModel = model;
+	}
+
+	/**
+	 * Notify the route planner that some change has happened
+	 */
+	protected void notifyChange() {
+		eventDispatcher
+				.dispatchEvent(new Event(CommunicatorEventType.CHANGE, this));
 	}
 
 	/**
