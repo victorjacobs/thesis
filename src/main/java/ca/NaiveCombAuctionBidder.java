@@ -1,5 +1,6 @@
 package ca;
 
+import common.AbstractBidder;
 import common.Bid;
 import rinde.sim.core.graph.Point;
 import rinde.sim.pdptw.common.DefaultParcel;
@@ -15,12 +16,17 @@ import java.util.List;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class NaiveCombAuctionBidder extends AbstractCombAuctionBidder {
+public class NaiveCombAuctionBidder extends AbstractBidder {
 
 	private ObjectiveFunction objFunc;
 
 	public NaiveCombAuctionBidder(ObjectiveFunction objFunc) {
 		this.objFunc = objFunc;
+	}
+
+	@Override
+	public Bid getBidFor(DefaultParcel p, long time) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
@@ -46,10 +52,5 @@ public class NaiveCombAuctionBidder extends AbstractCombAuctionBidder {
 				return new NaiveCombAuctionBidder(objFunc);
 			}
 		};
-	}
-
-	@Override
-	public Bid getBidFor(DefaultParcel p, long time) {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 }

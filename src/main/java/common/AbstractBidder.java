@@ -14,6 +14,7 @@ import rinde.sim.pdptw.common.DefaultVehicle;
 import rinde.sim.pdptw.common.PDPRoadModel;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -85,6 +86,13 @@ public abstract class AbstractBidder implements Bidder {
 	@Override
 	public void receiveParcel(DefaultParcel p) {
 		assignedParcels.add(p);
+		eventDispatcher
+				.dispatchEvent(new Event(CommunicatorEventType.CHANGE, this));
+	}
+
+	@Override
+	public void receiveParcels(List<DefaultParcel> p) {
+		assignedParcels.addAll(p);
 		eventDispatcher
 				.dispatchEvent(new Event(CommunicatorEventType.CHANGE, this));
 	}

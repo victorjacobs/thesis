@@ -9,6 +9,8 @@ import java.util.List;
  * Implementations of this interface can participate in auctions. This differs from rinde.logistics.pdptw.mas.comm
  * .Bidder in that uses a Bid object to represent bids.
  *
+ * TODO is this an antipattern?
+ *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public interface Bidder extends Communicator {
