@@ -4,12 +4,13 @@ import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.util.SupplierRng;
 
+import java.util.Iterator;
+
 /**
  * Random re-auctioner:
  * <ul>
  *     <li>Re-evaluates parcels at random times</li>
  *     <li>Every time pick random parcel to re-auction</li>
- *     <li>For now don't use reservation price</li>
  * </ul>
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
@@ -23,19 +24,21 @@ public class RandomReAuctionBidder extends AbstractReAuctionBidder {
 
 	@Override
 	protected void reEvaluateParcels() {
-		for (DefaultParcel par : assignedParcels) {
+		// Something's not quite right yet here, Iterators throw ConcurrentModificationExceptions when set is changed
+		// between creating iterator and trying to remove it.
+		Iterator<DefaultParcel> it = assignedParcels.iterator();
+		DefaultParcel par;
+
+		while (it.hasNext()) {
+			par = it.next();
+
 			if (rng.nextInt(10) < 1) {		// 10% chance of re-auctioning something
 				System.out.println("I'm going to re-auction " + par.toString());
+				// Temporary remove the parcel to allow for proper re-auctioning
+				it.remove();
 
-				if (commModel.reAuction(par, Double.MAX_VALUE)) {
-					System.out.println("Auction succeeded");
-					// Remove from parcels
-					assignedParcels.remove(par);
-					// Message the route planner to update schedule
-					notifyChange();
-				}
-
-				return;
+				commModel.reAuction(par);
+				notifyChange();
 			}
 		}
 	}

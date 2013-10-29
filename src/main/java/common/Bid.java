@@ -1,6 +1,7 @@
 package common;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ComparisonChain;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class Bid {
+public class Bid implements Comparable<Bid> {
 
 	private List<DefaultParcel> parcels;
 	private double bidValue;
@@ -71,5 +72,12 @@ public class Bid {
 
 		sb.append("]");
 		return sb.toString();
+	}
+
+	@Override
+	public int compareTo(Bid that) {
+		return ComparisonChain.start()
+				.compare(this.bidValue, that.bidValue)
+				.result();
 	}
 }

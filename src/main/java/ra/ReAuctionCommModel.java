@@ -19,26 +19,35 @@ public class ReAuctionCommModel extends AbstractCommModel<ReAuctionBidder> {
 
 	@Override
 	protected void receiveParcel(DefaultParcel p, long time) {
+		bestBid(p, time).receiveParcels();
+	}
+
+	/**
+	 * TODO reservation price not really needed when just re-auctioning again because agent that started the
+	 * re-auction will just win the auction again
+	 *
+	 * @param par Parcel to re-auction
+	 * @return True if another agent won the bid at reservationPrice
+	 */
+	public void reAuction(DefaultParcel par) {
+		bestBid(par, 0).receiveParcels();	// TODO what about time? + this method is the same as receiveparcel
+	}
+
+	private Bid bestBid(DefaultParcel p, long time) {
 		checkState(!communicators.isEmpty(), "there are no bidders..");
 
 		final Iterator<ReAuctionBidder> it = communicators.iterator();
-		Bid bestBid;
-		ReAuctionBidder bestBidder = it.next();
-		// if there are no other bidders, there is no need to organize an
-		// auction at all (mainly used in test cases)
-		if (it.hasNext()) {
-			double bestValue = bestBidder.getBidFor(p, time);
-
-			while (it.hasNext()) {
-				final ReAuctionBidder cur = it.next();
-				final double curValue = cur.getBidFor(p, time);
-				if (curValue < bestValue) {
-					bestValue = curValue;
-					bestBidder = cur;
-				}
+		Bid bestBid  = it.next().getBidFor(p, time);
+		Bid curBid;
+		while (it.hasNext()) {
+			final ReAuctionBidder cur = it.next();
+			curBid = cur.getBidFor(p, time);
+			if (curBid.compareTo(bestBid) < 0) {
+				bestBid = curBid;
 			}
 		}
-		bestBidder.receiveParcel(p);
+
+		return bestBid;
 	}
 
 	@Override
@@ -47,17 +56,6 @@ public class ReAuctionCommModel extends AbstractCommModel<ReAuctionBidder> {
 		communicator.register(this);
 
 		return super.register(communicator);
-	}
-
-	/**
-	 *
-	 * @param par Parcel to re-auction
-	 * @param reservationPrice Price other agents at least have to match for them to win the bid
-	 * @return True if another agent won the bid at reservationPrice
-	 */
-	public boolean reAuction(DefaultParcel par, double reservationPrice) {
-		System.out.println("tock");
-		return true;
 	}
 
 	public static SupplierRng<ReAuctionCommModel> supplier() {

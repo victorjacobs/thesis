@@ -54,7 +54,7 @@ public class Run {
 				.withRandomSeed(SEED)
 				.repeat(REPETITIONS)
 				.withThreads(THREADS)
-				.addScenario(Gendreau06Parser.parse(SCENARIOS_PATH + "req_rapide_1_240_24", 1))
+				.addScenario(Gendreau06Parser.parse(SCENARIOS_PATH + "req_rapide_1_240_24", 2))
 				.addConfiguration(
 						new TruckConfiguration(SolverRoutePlanner
 								.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),

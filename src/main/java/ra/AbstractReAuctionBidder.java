@@ -1,12 +1,10 @@
 package ra;
 
 import common.SolverBidder;
-import org.apache.commons.math3.random.MersenneTwister;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.core.TickListener;
 import rinde.sim.core.TimeLapse;
 import rinde.sim.event.Event;
-import rinde.sim.pdptw.central.Solver;
 import rinde.sim.pdptw.gendreau06.Gendreau06ObjectiveFunction;
 
 import java.util.Random;
@@ -29,7 +27,7 @@ public abstract class AbstractReAuctionBidder extends SolverBidder implements Ti
 	protected Random rng;
 
 	public AbstractReAuctionBidder() {
-		super(new Gendreau06ObjectiveFunction(), (Solver) new MultiVehicleHeuristicSolver(new MersenneTwister(123), 50, 1000));
+		super(new Gendreau06ObjectiveFunction(), MultiVehicleHeuristicSolver.supplier(50, 1000).get(123));
 		rng = new Random();
 		ticksUntilNextEvaluation = getDelay();
 	}
