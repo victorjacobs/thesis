@@ -13,12 +13,9 @@ import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.DefaultVehicle;
 import rinde.sim.pdptw.common.PDPRoadModel;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.collect.Sets.newLinkedHashSet;
 import static java.util.Collections.unmodifiableSet;
 
 /**
@@ -56,7 +53,8 @@ public abstract class AbstractBidder implements Bidder {
 	 * Initializes bidder.
 	 */
 	public AbstractBidder() {
-		assignedParcels = newLinkedHashSet();
+		// TODO get rid of synchronizedSet since
+		assignedParcels = Collections.synchronizedSet(new LinkedHashSet<DefaultParcel>());
 		eventDispatcher = new EventDispatcher(CommunicatorEventType.values());
 		roadModel = Optional.absent();
 		pdpModel = Optional.absent();

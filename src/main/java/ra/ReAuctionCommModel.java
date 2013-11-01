@@ -30,7 +30,10 @@ public class ReAuctionCommModel extends AbstractCommModel<ReAuctionBidder> {
 	 * @return True if another agent won the bid at reservationPrice
 	 */
 	public void reAuction(DefaultParcel par) {
-		bestBid(par, 0).receiveParcels();	// TODO what about time? + this method is the same as receiveparcel
+		Bid bid = bestBid(par, 0);	// TODO what about time? + this method is the same as receiveparcel
+		System.out.println("[" + bid.getBidder().toString() + "] wins re-auction");
+
+		bid.receiveParcels();
 	}
 
 	private Bid bestBid(DefaultParcel p, long time) {
