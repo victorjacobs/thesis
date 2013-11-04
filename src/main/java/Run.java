@@ -60,7 +60,7 @@ public class Run {
 								.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								RandomReAuctionBidder.supplier(objFunc),
 								ImmutableList.of(ReAuctionCommModel.supplier())))
-				.showGui()
+				//.showGui()
 				.perform();
 	}
 

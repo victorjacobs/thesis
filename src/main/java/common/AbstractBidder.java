@@ -53,7 +53,7 @@ public abstract class AbstractBidder implements Bidder {
 	 * Initializes bidder.
 	 */
 	public AbstractBidder() {
-		// TODO get rid of synchronizedSet since
+		// TODO get rid of synchronizedSet since reasons
 		assignedParcels = Collections.synchronizedSet(new LinkedHashSet<DefaultParcel>());
 		eventDispatcher = new EventDispatcher(CommunicatorEventType.values());
 		roadModel = Optional.absent();

@@ -4,7 +4,6 @@ import common.SolverBidder;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.core.TickListener;
 import rinde.sim.core.TimeLapse;
-import rinde.sim.event.Event;
 import rinde.sim.pdptw.gendreau06.Gendreau06ObjectiveFunction;
 
 import java.util.Random;
@@ -28,7 +27,7 @@ public abstract class AbstractReAuctionBidder extends SolverBidder implements Ti
 
 	public AbstractReAuctionBidder() {
 		super(new Gendreau06ObjectiveFunction(), MultiVehicleHeuristicSolver.supplier(50, 1000).get(123));
-		rng = new Random();
+		rng = new Random(42);
 		ticksUntilNextEvaluation = getDelay();
 	}
 
@@ -40,6 +39,7 @@ public abstract class AbstractReAuctionBidder extends SolverBidder implements Ti
 	public void afterTick(TimeLapse timeLapse) {
 		if (--ticksUntilNextEvaluation == 0) {
 			reEvaluateParcels();
+
 			// Reset counter
 			ticksUntilNextEvaluation = getDelay();
 		}
@@ -48,14 +48,6 @@ public abstract class AbstractReAuctionBidder extends SolverBidder implements Ti
 	@Override
 	public void register(ReAuctionCommModel model) {
 		commModel = model;
-	}
-
-	/**
-	 * Notify the route planner that some change has happened
-	 */
-	protected void notifyChange() {
-		eventDispatcher
-				.dispatchEvent(new Event(CommunicatorEventType.CHANGE, this));
 	}
 
 	/**
