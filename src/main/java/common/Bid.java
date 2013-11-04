@@ -2,10 +2,13 @@ package common;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.ImmutableList;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Represents a bid made by an agent
@@ -14,9 +17,10 @@ import java.util.List;
  */
 public class Bid implements Comparable<Bid> {
 
-	private List<DefaultParcel> parcels;
-	private double bidValue;
-	private Bidder bidder;
+	private ImmutableList<DefaultParcel> parcels;
+	private final double bidValue;
+	private final Bidder bidder;
+	private boolean parcelsReceived = false;
 
 	public Bid(Bidder bidder, final DefaultParcel parcel, double bidValue) {
 		// NOTE double brace initialisation
@@ -24,7 +28,7 @@ public class Bid implements Comparable<Bid> {
 	}
 
 	public Bid(Bidder bidder, List<DefaultParcel> parcels, double bidValue) {
-		this.parcels = parcels;
+		this.parcels = ImmutableList.copyOf(parcels);
 		this.bidValue = bidValue;
 		this.bidder = bidder;
 	}
@@ -33,7 +37,7 @@ public class Bid implements Comparable<Bid> {
 		return bidValue;
 	}
 
-	public List<DefaultParcel> getParcels() {
+	public ImmutableList<DefaultParcel> getParcels() {
 		return parcels;
 	}
 
@@ -50,8 +54,13 @@ public class Bid implements Comparable<Bid> {
 		return parcels.containsAll(o.getParcels());
 	}
 
+	/**
+	 * The bidder that made this bid, receives all parcels that this bid represents, this can happen only once
+	 */
 	public void receiveParcels() {
+		checkState(!parcelsReceived, "Bidder already received parcels");
 		bidder.receiveParcels(parcels);
+		parcelsReceived = true;
 	}
 
 	// TODO
