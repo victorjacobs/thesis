@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  *
@@ -26,8 +27,9 @@ public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, S
 	private Set<DefaultParcel> state;
 	private DefaultParcel nextParcel;
 	private List<StateChangeListener> stateChangeListeners;
-	private Communicator comm;
+	private Bidder bidder;
 	private RoutePlanner routePlanner;
+	// TODO needs getter to routeplanner
 
 	/**
 	 * Initializes the vehicle.
@@ -61,6 +63,23 @@ public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, S
 		checkArgument(!state.contains(par));
 		state.add(par);
 		stateChanged();
+	}
+
+	public ImmutableSet<DefaultParcel> getParcels() {
+		return ImmutableSet.copyOf(state);
+	}
+
+	public void bindBidder(Bidder bidder) {
+		checkState(bidder == null, "Bidder already bound to Truck");
+
+		this.bidder = bidder;
+		bidder.bindTruck(this);
+	}
+
+	public void bindRoutePlanner(RoutePlanner routePlanner) {
+		checkState(routePlanner == null, "Routeplanner already bound to Truck");
+
+		this.routePlanner = routePlanner;
 	}
 
 	@Override

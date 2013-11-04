@@ -1,7 +1,7 @@
 import ca.CombAuctionCommModel;
 import ca.NaiveCombAuctionBidder;
 import com.google.common.collect.ImmutableList;
-import ra.RandomReAuctionBidder;
+import ra.RandomReAuctionBidderOld;
 import ra.ReAuctionCommModel;
 import rinde.logistics.pdptw.mas.TruckConfiguration;
 import rinde.logistics.pdptw.mas.comm.AuctionCommModel;
@@ -58,7 +58,7 @@ public class Run {
 				.addConfiguration(
 						new TruckConfiguration(SolverRoutePlanner
 								.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								RandomReAuctionBidder.supplier(objFunc),
+								RandomReAuctionBidderOld.supplier(objFunc),
 								ImmutableList.of(ReAuctionCommModel.supplier())))
 				//.showGui()
 				.perform();

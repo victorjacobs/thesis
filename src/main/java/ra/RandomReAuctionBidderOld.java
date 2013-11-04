@@ -20,7 +20,7 @@ import java.util.Queue;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class RandomReAuctionBidder extends AbstractReAuctionBidder {
+public class RandomReAuctionBidderOld extends AbstractReAuctionBidder {
 
 	@Override
 	protected int getDelay() {
@@ -99,11 +99,11 @@ public class RandomReAuctionBidder extends AbstractReAuctionBidder {
 		commModel.reAuction(par);
 	}
 
-	public static SupplierRng<RandomReAuctionBidder> supplier(final ObjectiveFunction objFunc) {
-		return new SupplierRng.DefaultSupplierRng<RandomReAuctionBidder>() {
+	public static SupplierRng<RandomReAuctionBidderOld> supplier(final ObjectiveFunction objFunc) {
+		return new SupplierRng.DefaultSupplierRng<RandomReAuctionBidderOld>() {
 			@Override
-			public RandomReAuctionBidder get(long seed) {
-				return new RandomReAuctionBidder();
+			public RandomReAuctionBidderOld get(long seed) {
+				return new RandomReAuctionBidderOld();
 			}
 		};
 	}
