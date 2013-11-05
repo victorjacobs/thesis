@@ -2,7 +2,7 @@ package common;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import rinde.logistics.pdptw.mas.Truck;
+import common.truck.Bidder;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
 import rinde.sim.pdptw.central.GlobalStateObject;
@@ -14,12 +14,11 @@ import rinde.sim.pdptw.central.Solvers.SolveArgs;
 import rinde.sim.pdptw.central.Solvers.StateContext;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
+import rinde.sim.pdptw.common.PDPRoadModel;
 import rinde.sim.pdptw.common.ParcelDTO;
 import rinde.sim.util.SupplierRng;
 import rinde.sim.util.SupplierRng.DefaultSupplierRng;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
@@ -30,7 +29,7 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
  * This is a slightly altered version that uses Bid object instead of just doubles for get bid functions
  * @author Rinde van Lon <rinde.vanlon@cs.kuleuven.be>
  */
-public class SolverBidder extends AbstractBidder implements SimulatorUser {
+public class SolverBidder extends Bidder implements SimulatorUser {
 
 	private final ObjectiveFunction objectiveFunction;
 	private final Solver solver;
@@ -56,10 +55,13 @@ public class SolverBidder extends AbstractBidder implements SimulatorUser {
 
 	@Override
 	public Bid getBidFor(DefaultParcel p, long time) {
-		final Set<DefaultParcel> parcels = newLinkedHashSet(assignedParcels);
+		// TODO re-init solver every time. Time consuming!
+		initSolver();
+
+		final Set<DefaultParcel> parcels = newLinkedHashSet(truck.getParcels());
 		parcels.add(p);
 		final ImmutableList<DefaultParcel> currentRoute = ImmutableList
-				.copyOf(((Truck) vehicle.get()).getRoute());
+				.copyOf(truck.getRoute());
 		final ImmutableList<ParcelDTO> dtoRoute = Solvers.toDtoList(currentRoute);
 		final StateContext context = solverHandle.get().convert(
 				SolveArgs.create().noCurrentRoutes().useParcels(parcels));
@@ -69,7 +71,7 @@ public class SolverBidder extends AbstractBidder implements SimulatorUser {
 		// make sure that all parcels in the route are always in the available
 		// parcel list when needed. This is needed to satisfy the solver.
 		for (final DefaultParcel dp : currentRoute) {
-			if (!pdpModel.get().getParcelState(dp).isPickedUp()) {
+			if (!truck.getPdpModel().getParcelState(dp).isPickedUp()) {
 				parcels.add(dp);
 			}
 		}
@@ -91,12 +93,9 @@ public class SolverBidder extends AbstractBidder implements SimulatorUser {
 		return new Bid(this, p, newCost - baseline);
 	}
 
-	@Override
-	public List<Bid> getBidsFor(List<DefaultParcel> p, long time) {
-		throw new NotImplementedException();
-	}
-
-	@Override
+	//@Override
+	// Left over from original implementation, now every getBid call re-initialises the solver to make sure no state
+	// is left over TODO betterify this
 	protected void afterInit() {
 		initSolver();
 	}
@@ -104,15 +103,15 @@ public class SolverBidder extends AbstractBidder implements SimulatorUser {
 	@Override
 	public void setSimulator(SimulatorAPI api) {
 		simulator = Optional.of(api);
-		initSolver();
+		//initSolver();
 	}
 
 	private void initSolver() {
-		if (simulator.isPresent() && roadModel.isPresent()
+		if (simulator.isPresent() && truck.getRoadModel() != null
 				&& !solverHandle.isPresent()) {
 			solverHandle = Optional.of(Solvers.solverBuilder(solver)
-					.with(roadModel.get()).with(pdpModel.get()).with(simulator.get())
-					.with(vehicle.get()).buildSingle());
+					.with((PDPRoadModel) truck.getRoadModel()).with(truck.getPdpModel()).with(simulator.get())
+					.with(truck).buildSingle());
 
 		}
 	}

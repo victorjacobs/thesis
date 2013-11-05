@@ -1,10 +1,13 @@
 package common.truck;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import rinde.logistics.pdptw.mas.route.RoutePlanner;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
 import rinde.sim.core.TimeLapse;
+import rinde.sim.core.model.pdp.PDPModel;
+import rinde.sim.core.model.road.RoadModel;
 import rinde.sim.event.Event;
 import rinde.sim.event.Listener;
 import rinde.sim.pdptw.common.DefaultParcel;
@@ -25,8 +28,10 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, SimulatorUser {
 
+	// State
 	private Set<DefaultParcel> state;
 	private DefaultParcel nextParcel;
+	// Components
 	private List<StateObserver> stateObservers;
 	private Bidder bidder;
 	private RoutePlanner routePlanner;
@@ -44,6 +49,7 @@ public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, S
 	 */
 	public ReAuctionTruck(VehicleDTO pDto, boolean allowDelayedRouteChanging) {
 		super(pDto, allowDelayedRouteChanging);
+		pdpModel = Optional.absent();
 	}
 
 
@@ -107,6 +113,13 @@ public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, S
 	}
 
 	@Override
+	public void initRoadPDP(RoadModel pRoadModel, PDPModel pPdpModel) {
+		super.initRoadPDP(pRoadModel, pPdpModel);
+		// Don't need to actually do anything here, the truck already has references to both the roadmodel as the
+		// pdpmodel through PDPObjectImpl
+	}
+
+	@Override
 	public void handleEvent(Event e) {
 		// TODO do something on state change here (?)
 		//To change body of implemented methods use File | Settings | File Templates.
@@ -118,5 +131,12 @@ public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, S
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
+	// TODO these next two are private in PDPObjectImpl, is there any problem just exposing them?
+	public PDPModel getPdpModel() {
+		return this.pdpModel.get();
+	}
 
+	public RoadModel getRoadModel() {
+		return getRoadModel();
+	}
 }
