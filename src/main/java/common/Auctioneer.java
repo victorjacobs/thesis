@@ -1,29 +1,41 @@
 package common;
 
+import com.google.common.base.Optional;
 import common.truck.Bidder;
+import rinde.sim.core.model.AbstractModel;
+import rinde.sim.core.model.ModelProvider;
+import rinde.sim.core.model.ModelReceiver;
+import rinde.sim.core.model.pdp.PDPModel;
+import rinde.sim.core.model.pdp.PDPModelEvent;
+import rinde.sim.event.Event;
+import rinde.sim.event.Listener;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 import java.util.Iterator;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Sets.newLinkedHashSet;
 
 /**
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 // TODO binding with model
-public class Auctioneer {
+public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 	private Set<Bidder> bidders;
 
-
-	public void auction(DefaultParcel par) {
-		auction(par, 0);
+	public Auctioneer() {
+		bidders = newLinkedHashSet();
 	}
 
-	public void auction(DefaultParcel par, double reservationPrice) {
-		// TODO get time from somewhere
-		checkState(!bidders.isEmpty(), "there are no bidders..");
+	public void auction(DefaultParcel par, long time) {
+		auction(par, 0, time);
+	}
+
+	public void auction(DefaultParcel par, double reservationPrice, long time) {
+		checkState(!bidders.isEmpty(), "There are no bidders..");
 
 		final Iterator<Bidder> it = bidders.iterator();
 		Bid bestBid  = it.next().getBidFor(par, 0);
@@ -39,7 +51,31 @@ public class Auctioneer {
 		bestBid.receiveParcels();
 	}
 
-	public void registerBidder(Bidder bidder) {
-		bidders.add(bidder);
+	@Override
+	public boolean register(Bidder element) {
+		bidders.add(element);
+		element.bindAuctioneer(this);
+		return true;
+	}
+
+	@Override
+	public boolean unregister(Bidder element) {
+		throw new UnsupportedOperationException();	// TODO for now
+	}
+
+	@Override
+	public void registerModelProvider(ModelProvider mp) {
+		final PDPModel pm = Optional.fromNullable(mp.getModel(PDPModel.class))
+				.get();
+		pm.getEventAPI().addListener(new Listener() {
+			@Override
+			public void handleEvent(Event e) {
+				final PDPModelEvent event = (PDPModelEvent) e;
+				checkArgument(event.parcel instanceof DefaultParcel,
+						"This class is only compatible with DefaultParcel and subclasses.");
+				final DefaultParcel dp = (DefaultParcel) event.parcel;
+				auction(dp, event.time);
+			}
+		}, PDPModel.PDPModelEventType.NEW_PARCEL);
 	}
 }

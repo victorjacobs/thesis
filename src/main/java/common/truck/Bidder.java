@@ -1,10 +1,11 @@
 package common.truck;
 
+import com.google.common.collect.ImmutableSet;
 import common.Auctioneer;
 import common.Bid;
 import rinde.sim.pdptw.common.DefaultParcel;
 
-import java.util.Set;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  *
@@ -12,11 +13,11 @@ import java.util.Set;
  */
 public abstract class Bidder {
 	protected ReAuctionTruck truck;
-	protected final Auctioneer auctioneer;
+	protected Auctioneer auctioneer;
 
-	public Bidder(Auctioneer auctioneer) {
+	public void bindAuctioneer(Auctioneer auctioneer) {
+		checkState(this.auctioneer == null);
 		this.auctioneer = auctioneer;
-		auctioneer.registerBidder(this);
 	}
 
 	public void bindTruck(ReAuctionTruck truck) {
@@ -27,9 +28,9 @@ public abstract class Bidder {
 		truck.addParcel(par);
 	}
 
-	public void receiveParcels(Set<DefaultParcel> pars) {
+	public void receiveParcels(ImmutableSet<DefaultParcel> pars) {
 		for (DefaultParcel par : pars) {
-			truck.addParcel(par);
+			receiveParcel(par);
 		}
 	}
 

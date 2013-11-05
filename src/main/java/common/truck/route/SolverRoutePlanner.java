@@ -7,7 +7,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import common.truck.ReAuctionTruck;
-import common.truck.StateChangeListener;
+import common.truck.StateObserver;
 import rinde.logistics.pdptw.mas.route.AbstractRoutePlanner;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
@@ -33,7 +33,7 @@ import static com.google.common.collect.Lists.newLinkedList;
  * @author Rinde van Lon <rinde.vanlon@cs.kuleuven.be>
  */
 public class SolverRoutePlanner extends AbstractRoutePlanner implements
-		SimulatorUser, StateChangeListener {
+		SimulatorUser, StateObserver {
 
 	private final Solver solver;
 	private ReAuctionTruck truck;
@@ -55,7 +55,7 @@ public class SolverRoutePlanner extends AbstractRoutePlanner implements
 	}
 
 	@Override
-	public void notifyStateChanged(ImmutableSet<DefaultParcel> newState, long time) {
+	public void stateChanged(ImmutableSet<DefaultParcel> newState, long time) {
 		// For now just re-initialize the entire Route Planner to make sure no state is left over in the solver
 		// TODO this is a LOT of computation that's done every state change.
 		solverHandle = Optional.absent();
@@ -64,6 +64,11 @@ public class SolverRoutePlanner extends AbstractRoutePlanner implements
 
 		doUpdate(newState, time);
 		truck.setRoute(new LinkedList<DefaultParcel>(route));
+	}
+
+	@Override
+	public boolean reEvaluateState(int ticksSinceLastCall, long time) {
+		return false;
 	}
 
 	/**

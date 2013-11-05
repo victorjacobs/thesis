@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import rinde.logistics.pdptw.mas.route.RoutePlanner;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
+import rinde.sim.core.TimeLapse;
 import rinde.sim.event.Event;
 import rinde.sim.event.Listener;
 import rinde.sim.pdptw.common.DefaultParcel;
@@ -26,10 +27,13 @@ public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, S
 
 	private Set<DefaultParcel> state;
 	private DefaultParcel nextParcel;
-	private List<StateChangeListener> stateChangeListeners;
+	private List<StateObserver> stateObservers;
 	private Bidder bidder;
 	private RoutePlanner routePlanner;
+	// TODO actually need ticksSinceLastReEvaluation per listener, but for now assume only one
+	private int ticksSinceLastReEvaluation = 0;
 	// TODO needs getter to routeplanner
+	// TODO binding for TickListener?
 
 	/**
 	 * Initializes the vehicle.
@@ -43,32 +47,11 @@ public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, S
 	}
 
 
-	public void addStateListener(StateChangeListener l) {
-		stateChangeListeners.add(l);
+	public void addStateObserver(StateObserver l) {
+		stateObservers.add(l);
 	}
 
-	private void stateChanged() {
-		for (StateChangeListener l : stateChangeListeners) {
-			l.notifyStateChanged(ImmutableSet.copyOf(state), getCurrentTime().getTime());
-		}
-	}
-
-	public void removeParcel(DefaultParcel par) {
-		checkArgument(state.contains(par));
-		state.remove(par);
-		stateChanged();
-	}
-
-	public void addParcel(DefaultParcel par) {
-		checkArgument(!state.contains(par));
-		state.add(par);
-		stateChanged();
-	}
-
-	public ImmutableSet<DefaultParcel> getParcels() {
-		return ImmutableSet.copyOf(state);
-	}
-
+	// Setup
 	public void bindBidder(Bidder bidder) {
 		checkState(bidder == null, "Bidder already bound to Truck");
 
@@ -82,6 +65,29 @@ public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, S
 		this.routePlanner = routePlanner;
 	}
 
+	// Manage state
+	public void removeParcel(DefaultParcel par) {
+		checkArgument(state.contains(par));
+		state.remove(par);
+		stateChanged();
+	}
+
+	public void addParcel(DefaultParcel par) {
+		checkArgument(!state.contains(par));
+		state.add(par);
+		stateChanged();
+	}
+
+	private void stateChanged() {
+		for (StateObserver l : stateObservers) {
+			l.stateChanged(ImmutableSet.copyOf(state), getCurrentTime().getTime());
+		}
+	}
+
+	public ImmutableSet<DefaultParcel> getParcels() {
+		return ImmutableSet.copyOf(state);
+	}
+
 	@Override
 	public void setRoute(Collection<DefaultParcel> r) {
 		super.setRoute(r);
@@ -90,12 +96,27 @@ public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, S
 	}
 
 	@Override
+	public void afterTick(TimeLapse time) {
+		for (StateObserver o : stateObservers) {
+			if (o.reEvaluateState(ticksSinceLastReEvaluation, getCurrentTime().getTime())) {
+				ticksSinceLastReEvaluation = 0;	// Reset
+			}
+		}
+
+		ticksSinceLastReEvaluation++;
+	}
+
+	@Override
 	public void handleEvent(Event e) {
+		// TODO do something on state change here (?)
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
 	public void setSimulator(SimulatorAPI api) {
+		// TODO What here?
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
+
+
 }

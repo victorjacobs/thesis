@@ -2,13 +2,15 @@ package common;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import common.truck.Bidder;
 import rinde.sim.pdptw.common.DefaultParcel;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Sets.newLinkedHashSet;
 
 /**
  * Represents a bid made by an agent
@@ -17,18 +19,18 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class Bid implements Comparable<Bid> {
 
-	private ImmutableList<DefaultParcel> parcels;
+	private ImmutableSet<DefaultParcel> parcels;
 	private final double bidValue;
 	private final Bidder bidder;
 	private boolean parcelsReceived = false;
 
 	public Bid(Bidder bidder, final DefaultParcel parcel, double bidValue) {
 		// NOTE double brace initialisation
-		this(bidder, new ArrayList<DefaultParcel>() {{ add(parcel); }}, bidValue);
+		this(bidder, newLinkedHashSet(Collections.singleton(parcel)), bidValue);
 	}
 
-	public Bid(Bidder bidder, List<DefaultParcel> parcels, double bidValue) {
-		this.parcels = ImmutableList.copyOf(parcels);
+	public Bid(Bidder bidder, Set<DefaultParcel> parcels, double bidValue) {
+		this.parcels = ImmutableSet.copyOf(parcels);
 		this.bidValue = bidValue;
 		this.bidder = bidder;
 	}
@@ -37,7 +39,7 @@ public class Bid implements Comparable<Bid> {
 		return bidValue;
 	}
 
-	public ImmutableList<DefaultParcel> getParcels() {
+	public ImmutableSet<DefaultParcel> getParcels() {
 		return parcels;
 	}
 

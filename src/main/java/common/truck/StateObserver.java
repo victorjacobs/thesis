@@ -9,6 +9,8 @@ import rinde.sim.pdptw.common.DefaultParcel;
  * Date: 04/11/13
  * Time: 17:53
  */
-public interface StateChangeListener {
-	public void notifyStateChanged(ImmutableSet<DefaultParcel> newState, long time);
+public interface StateObserver {
+	public void stateChanged(ImmutableSet<DefaultParcel> newState, long time);
+
+	public boolean reEvaluateState(int ticksSinceLastCall, long time);
 }
