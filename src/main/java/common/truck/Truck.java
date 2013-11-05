@@ -13,14 +13,15 @@ import rinde.sim.event.Listener;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.RouteFollowingVehicle;
 import rinde.sim.pdptw.common.VehicleDTO;
+import rinde.sim.util.fsm.StateMachine;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
+import static com.google.common.collect.Sets.newLinkedHashSet;
 
 /**
  *
@@ -29,9 +30,9 @@ import static com.google.common.collect.Lists.newLinkedList;
  */
 public class Truck extends RouteFollowingVehicle implements Listener, SimulatorUser {
 
-	// State
-	private Set<DefaultParcel> state;
-	private DefaultParcel nextParcel;
+	// State TODO rename variable to something less ambiguous
+	private Set<DefaultParcel> state;			// All parcels that will be/are(!) being handled by this truck
+	private Set<DefaultParcel> fixedParcels;	// Parcels (plural!) that shouldn't be removed from the state
 	// Components
 	private List<StateObserver> stateObservers;
 	private List<StateEvaluator> stateEvaluators;
@@ -53,6 +54,8 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		super(pDto, allowDelayedRouteChanging);
 		pdpModel = Optional.absent();
 
+		state = newLinkedHashSet();
+		fixedParcels = newLinkedHashSet();
 		stateObservers = newLinkedList();
 		stateEvaluators = newLinkedList();
 	}
@@ -84,7 +87,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * @param routePlanner
 	 */
 	public void bindRoutePlanner(RoutePlanner routePlanner) {
-		checkState(routePlanner == null, "Routeplanner already bound to Truck");
+		checkState(routePlanner == null, "Route planner already bound to Truck");
 
 		routePlanner.bindTruck(this);
 		this.routePlanner = routePlanner;	// TODO is this needed?
@@ -95,6 +98,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	public void removeParcel(DefaultParcel par) {
 		checkArgument(state.contains(par));
 		state.remove(par);
+		fixedParcels.remove(par);
 		stateChanged();
 	}
 
@@ -112,13 +116,6 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 
 	public ImmutableSet<DefaultParcel> getParcels() {
 		return ImmutableSet.copyOf(state);
-	}
-
-	@Override
-	public void setRoute(Collection<DefaultParcel> r) {
-		super.setRoute(r);
-		if (r.size() > 0)
-			nextParcel = r.iterator().next();
 	}
 
 	@Override
@@ -141,7 +138,28 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 
 	@Override
 	public void handleEvent(Event e) {
-		// TODO do something on state change here (?)
+		try {
+			StateMachine.StateTransitionEvent<StateEvent, RouteFollowingVehicle> event =
+					(StateMachine.StateTransitionEvent<StateEvent, RouteFollowingVehicle>) e;
+
+			// TODO is this safe? Normally it is.
+			DefaultParcel cur = getRoute().iterator().next();
+
+			if (event.event == StateEvent.GOTO) {
+				// Update state
+				if (pdpModel.get().getParcelState(cur) == PDPModel.ParcelState.IN_CARGO) {
+					// Don't do anything, TODO however need to update route?
+				} else {
+					// Not yet in cargo, but commited to going there
+					fixedParcels.add(cur);
+				}
+			} else if (event.event == StateEvent.DONE) {
+				// TODO this is a lot of overhead since this will re-invoke the solver
+				removeParcel(cur);
+			}
+		} catch (ClassCastException ex) {
+			// Just continue, this wasn't an event that concerns us
+		}
 	}
 
 	@Override
