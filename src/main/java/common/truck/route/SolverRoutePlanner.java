@@ -6,9 +6,6 @@ package common.truck.route;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import common.truck.Truck;
-import common.truck.StateObserver;
-import rinde.logistics.pdptw.mas.route.AbstractRoutePlanner;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
 import rinde.sim.pdptw.central.GlobalStateObject;
@@ -32,11 +29,10 @@ import static com.google.common.collect.Lists.newLinkedList;
  * called.
  * @author Rinde van Lon <rinde.vanlon@cs.kuleuven.be>
  */
-public class SolverRoutePlanner extends AbstractRoutePlanner implements
-		SimulatorUser, StateObserver {
+public class SolverRoutePlanner extends RoutePlanner implements
+		SimulatorUser {
 
 	private final Solver solver;
-	private Truck truck;
 	private Queue<? extends DefaultParcel> route;
 	private Optional<SimulationSolver> solverHandle;
 	private Optional<SimulatorAPI> simulator;
@@ -46,9 +42,8 @@ public class SolverRoutePlanner extends AbstractRoutePlanner implements
 	 * the best route.
 	 * @param s {@link Solver} used for route planning.
 	 */
-	public SolverRoutePlanner(Solver s, Truck truck) {
+	public SolverRoutePlanner(Solver s) {
 		solver = s;
-		this.truck = truck;
 		route = newLinkedList();
 		solverHandle = Optional.absent();
 		simulator = Optional.absent();

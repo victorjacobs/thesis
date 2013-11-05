@@ -2,7 +2,7 @@ package common.truck;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import rinde.logistics.pdptw.mas.route.RoutePlanner;
+import common.truck.route.RoutePlanner;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
 import rinde.sim.core.TimeLapse;
@@ -34,10 +34,10 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	private DefaultParcel nextParcel;
 	// Components
 	private List<StateObserver> stateObservers;
-	private List<StateEvaluator> stateReEvaluators;
+	private List<StateEvaluator> stateEvaluators;
 	private Bidder bidder;
 	private RoutePlanner routePlanner;	// TODO RP is both set here and in the stateObservers -> no longer needed?
-	// TODO actually need ticksSinceLastReEvaluation per listener, but for now assume only one
+	// TODO actually need ticksSinceLastReEvaluation per evaluator, but for now assume only one
 	private int ticksSinceLastReEvaluation = 0;
 	// TODO needs getter to routeplanner
 	// TODO binding for TickListener?
@@ -54,19 +54,23 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		pdpModel = Optional.absent();
 
 		stateObservers = newLinkedList();
-		stateReEvaluators = newLinkedList();
+		stateEvaluators = newLinkedList();
 	}
 
-
+	// Setup
+	// TODO for now these are public since anything should be allowed to subscribe to the events (?)
 	public void addStateObserver(StateObserver l) {
 		stateObservers.add(l);
 	}
 
 	public void addStateEvaluator(StateEvaluator s) {
-		stateReEvaluators.add(s);
+		stateEvaluators.add(s);
 	}
 
-	// Setup
+	/**
+	 * Doubly binds a bidder to the current truck. Result is that Truck has a reference to the bidder and vice versa.
+	 * @param bidder Bidder to be bound to this Truck
+	 */
 	public void bindBidder(Bidder bidder) {
 		checkState(bidder == null, "Bidder already bound to Truck");
 
@@ -74,10 +78,17 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		bidder.bindTruck(this);
 	}
 
+	/**
+	 * Doubly binds a route planner to this truck. Result is that the truck has a reference to the route planner and
+	 * that the route planner is subscribed to state change notifications from the Truck.
+	 * @param routePlanner
+	 */
 	public void bindRoutePlanner(RoutePlanner routePlanner) {
 		checkState(routePlanner == null, "Routeplanner already bound to Truck");
 
-		this.routePlanner = routePlanner;
+		routePlanner.bindTruck(this);
+		this.routePlanner = routePlanner;	// TODO is this needed?
+		addStateObserver(routePlanner);
 	}
 
 	// Manage state
@@ -131,13 +142,11 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	@Override
 	public void handleEvent(Event e) {
 		// TODO do something on state change here (?)
-		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
 	public void setSimulator(SimulatorAPI api) {
 		// TODO What here?
-		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	// TODO these next two are private in PDPObjectImpl, is there any problem just exposing them?

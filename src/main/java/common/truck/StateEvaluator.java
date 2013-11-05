@@ -7,6 +7,12 @@ package common.truck;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public interface StateEvaluator {
-	public boolean evaluateState(int ticksSinceLastCall, long time);
+public abstract class StateEvaluator {
+	protected Truck truck;
+
+	public StateEvaluator(Truck truck) {
+		this.truck = truck;
+	}
+
+	public abstract boolean evaluateState(int ticksSinceLastCall, long time);
 }
