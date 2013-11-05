@@ -6,7 +6,7 @@ package common.truck.route;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import common.truck.ReAuctionTruck;
+import common.truck.Truck;
 import common.truck.StateObserver;
 import rinde.logistics.pdptw.mas.route.AbstractRoutePlanner;
 import rinde.sim.core.SimulatorAPI;
@@ -36,7 +36,7 @@ public class SolverRoutePlanner extends AbstractRoutePlanner implements
 		SimulatorUser, StateObserver {
 
 	private final Solver solver;
-	private ReAuctionTruck truck;
+	private Truck truck;
 	private Queue<? extends DefaultParcel> route;
 	private Optional<SimulationSolver> solverHandle;
 	private Optional<SimulatorAPI> simulator;
@@ -46,7 +46,7 @@ public class SolverRoutePlanner extends AbstractRoutePlanner implements
 	 * the best route.
 	 * @param s {@link Solver} used for route planning.
 	 */
-	public SolverRoutePlanner(Solver s, ReAuctionTruck truck) {
+	public SolverRoutePlanner(Solver s, Truck truck) {
 		solver = s;
 		this.truck = truck;
 		route = newLinkedList();
@@ -55,7 +55,7 @@ public class SolverRoutePlanner extends AbstractRoutePlanner implements
 	}
 
 	@Override
-	public void stateChanged(ImmutableSet<DefaultParcel> newState, long time) {
+	public void notifyStateChanged(ImmutableSet<DefaultParcel> newState, long time) {
 		// For now just re-initialize the entire Route Planner to make sure no state is left over in the solver
 		// TODO this is a LOT of computation that's done every state change.
 		solverHandle = Optional.absent();

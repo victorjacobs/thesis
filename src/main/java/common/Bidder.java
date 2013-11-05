@@ -12,6 +12,7 @@ import java.util.List;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
+@Deprecated
 public interface Bidder extends Communicator {
 
 	/**

@@ -22,6 +22,7 @@ import static java.util.Collections.unmodifiableSet;
  * Basic implementation for {@link Bidder}.
  * @author Rinde van Lon <rinde.vanlon@cs.kuleuven.be>
  */
+@Deprecated
 public abstract class AbstractBidder implements Bidder {
 
 	/**

@@ -1,6 +1,5 @@
 package ra;
 
-import common.Auctioneer;
 import common.Bid;
 import common.truck.Bidder;
 import rinde.sim.pdptw.common.DefaultParcel;
@@ -12,10 +11,6 @@ import rinde.sim.pdptw.common.DefaultParcel;
  * Time: 19:01
  */
 public class RandomReauctionBidder extends Bidder {
-
-	public RandomReauctionBidder(Auctioneer auctioneer) {
-		super(auctioneer);
-	}
 
 	@Override
 	public Bid getBidFor(DefaultParcel par, long time) {

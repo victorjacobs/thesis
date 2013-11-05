@@ -20,21 +20,23 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Lists.newLinkedList;
 
 /**
  *
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, SimulatorUser {
+public class Truck extends RouteFollowingVehicle implements Listener, SimulatorUser {
 
 	// State
 	private Set<DefaultParcel> state;
 	private DefaultParcel nextParcel;
 	// Components
 	private List<StateObserver> stateObservers;
+	private List<StateEvaluator> stateReEvaluators;
 	private Bidder bidder;
-	private RoutePlanner routePlanner;
+	private RoutePlanner routePlanner;	// TODO RP is both set here and in the stateObservers -> no longer needed?
 	// TODO actually need ticksSinceLastReEvaluation per listener, but for now assume only one
 	private int ticksSinceLastReEvaluation = 0;
 	// TODO needs getter to routeplanner
@@ -47,14 +49,21 @@ public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, S
 	 * @param allowDelayedRouteChanging This boolean changes the behavior of the
 	 *                                  {@link #setRoute(java.util.Collection)} method.
 	 */
-	public ReAuctionTruck(VehicleDTO pDto, boolean allowDelayedRouteChanging) {
+	public Truck(VehicleDTO pDto, boolean allowDelayedRouteChanging) {
 		super(pDto, allowDelayedRouteChanging);
 		pdpModel = Optional.absent();
+
+		stateObservers = newLinkedList();
+		stateReEvaluators = newLinkedList();
 	}
 
 
 	public void addStateObserver(StateObserver l) {
 		stateObservers.add(l);
+	}
+
+	public void addStateEvaluator(StateEvaluator s) {
+		stateReEvaluators.add(s);
 	}
 
 	// Setup
@@ -86,7 +95,7 @@ public class ReAuctionTruck extends RouteFollowingVehicle implements Listener, S
 
 	private void stateChanged() {
 		for (StateObserver l : stateObservers) {
-			l.stateChanged(ImmutableSet.copyOf(state), getCurrentTime().getTime());
+			l.notifyStateChanged(ImmutableSet.copyOf(state), getCurrentTime().getTime());
 		}
 	}
 

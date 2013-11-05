@@ -1,6 +1,6 @@
 package ra;
 
-import common.SolverBidder;
+import common.baseline.SolverBidder;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.core.TickListener;
 import rinde.sim.core.TimeLapse;

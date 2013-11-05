@@ -12,7 +12,7 @@ import static com.google.common.base.Preconditions.checkState;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public abstract class Bidder {
-	protected ReAuctionTruck truck;
+	protected Truck truck;
 	protected Auctioneer auctioneer;
 
 	public void bindAuctioneer(Auctioneer auctioneer) {
@@ -20,7 +20,7 @@ public abstract class Bidder {
 		this.auctioneer = auctioneer;
 	}
 
-	public void bindTruck(ReAuctionTruck truck) {
+	public void bindTruck(Truck truck) {
 		this.truck = truck;
 	}
 

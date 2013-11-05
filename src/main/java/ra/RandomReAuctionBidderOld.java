@@ -20,6 +20,7 @@ import java.util.Queue;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
+@Deprecated
 public class RandomReAuctionBidderOld extends AbstractReAuctionBidder {
 
 	@Override

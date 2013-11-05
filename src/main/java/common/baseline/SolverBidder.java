@@ -1,7 +1,8 @@
-package common;
+package common.baseline;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import common.Bid;
 import common.truck.Bidder;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
