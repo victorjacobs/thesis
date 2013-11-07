@@ -1,11 +1,13 @@
 package common;
 
+import common.truck.Bidder;
 import org.junit.Test;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -30,8 +32,8 @@ public class BidTest {
 		List<DefaultParcel> bundle2 = new ArrayList<DefaultParcel>();
 		bundle2.add(p1);
 
-		Bid b1 = new Bid(mock(Bidder.class), bundle1, 20);
-		Bid b2 = new Bid(mock(Bidder.class), bundle2, 20);
+		Bid b1 = new Bid(mock(Bidder.class), newLinkedHashSet(bundle1), 20);
+		Bid b2 = new Bid(mock(Bidder.class), newLinkedHashSet(bundle2), 20);
 
 		assertTrue(b1.contains(b2));
 		assertFalse(b2.contains(b1));
@@ -41,7 +43,7 @@ public class BidTest {
 		bundle3.add(p2);
 		bundle3.add(p3);
 
-		Bid b3 = new Bid(mock(Bidder.class), bundle3, 20);
+		Bid b3 = new Bid(mock(Bidder.class), newLinkedHashSet(bundle3), 20);
 
 		assertFalse(b3.contains(b1));
 		assertFalse(b1.contains(b3));

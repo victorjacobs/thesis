@@ -24,7 +24,12 @@ import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Sets.newLinkedHashSet;
 
 /**
- *
+ * Extends {@link rinde.sim.pdptw.common.RouteFollowingVehicle}, controlled by a {@link RoutePlanner} and {@link
+ * Bidder}. The object itself contains all the state, namely all the parcels that will be handled by this Truck.
+ * Every time this state changes, the {@link RoutePlanner} is notified to update the route. State changes happen
+ * through the {@link Bidder} and a set of {@link StateEvaluator}s. The former makes decisions on what parcels to
+ * handle in negotiation with other Trucks through the {@link common.Auctioneer} while the latter can make
+ * independent decisions based on just the state.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
@@ -47,17 +52,20 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * Initializes the vehicle.
 	 *
 	 * @param pDto                      The {@link rinde.sim.pdptw.common.VehicleDTO} that defines this vehicle.
-	 * @param allowDelayedRouteChanging This boolean changes the behavior of the
-	 *                                  {@link #setRoute(java.util.Collection)} method.
+	 * @param rp
+	 * @param b
 	 */
-	public Truck(VehicleDTO pDto, boolean allowDelayedRouteChanging) {
-		super(pDto, allowDelayedRouteChanging);
+	public Truck(VehicleDTO pDto, RoutePlanner rp, Bidder b) {
+		super(pDto, false);		// TODO no idea what this flag does
 		pdpModel = Optional.absent();
 
 		state = newLinkedHashSet();
 		fixedParcels = newLinkedHashSet();
 		stateObservers = newLinkedList();
 		stateEvaluators = newLinkedList();
+
+		bindBidder(b);
+		bindRoutePlanner(rp);
 	}
 
 	// Setup
@@ -74,8 +82,8 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * Doubly binds a bidder to the current truck. Result is that Truck has a reference to the bidder and vice versa.
 	 * @param bidder Bidder to be bound to this Truck
 	 */
-	public void bindBidder(Bidder bidder) {
-		checkState(bidder == null, "Bidder already bound to Truck");
+	private void bindBidder(Bidder bidder) {
+		checkState(bidder != null, "Bidder already bound to Truck");
 
 		this.bidder = bidder;
 		bidder.bindTruck(this);
@@ -86,8 +94,8 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * that the route planner is subscribed to state change notifications from the Truck.
 	 * @param routePlanner
 	 */
-	public void bindRoutePlanner(RoutePlanner routePlanner) {
-		checkState(routePlanner == null, "Route planner already bound to Truck");
+	private void bindRoutePlanner(RoutePlanner routePlanner) {
+		checkState(routePlanner != null, "Route planner already bound to Truck");
 
 		routePlanner.bindTruck(this);
 		this.routePlanner = routePlanner;	// TODO is this needed?
@@ -123,6 +131,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		for (StateObserver o : stateObservers) {
 			if (o.reEvaluateState(ticksSinceLastReEvaluation, getCurrentTime().getTime())) {
 				ticksSinceLastReEvaluation = 0;	// Reset
+				return;
 			}
 		}
 

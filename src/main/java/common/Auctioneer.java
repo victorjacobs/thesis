@@ -10,6 +10,7 @@ import rinde.sim.core.model.pdp.PDPModelEvent;
 import rinde.sim.event.Event;
 import rinde.sim.event.Listener;
 import rinde.sim.pdptw.common.DefaultParcel;
+import rinde.sim.util.SupplierRng;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -38,11 +39,11 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 		checkState(!bidders.isEmpty(), "There are no bidders..");
 
 		final Iterator<Bidder> it = bidders.iterator();
-		Bid bestBid  = it.next().getBidFor(par, 0);
+		Bid bestBid  = it.next().getBidFor(par, time);
 		Bid curBid;
 		while (it.hasNext()) {
 			final Bidder cur = it.next();
-			curBid = cur.getBidFor(par, 0);
+			curBid = cur.getBidFor(par, time);
 			if (curBid.compareTo(bestBid) < 0) {
 				bestBid = curBid;
 			}
@@ -77,5 +78,15 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 				auction(dp, event.time);
 			}
 		}, PDPModel.PDPModelEventType.NEW_PARCEL);
+	}
+
+
+	public static SupplierRng<Auctioneer> supplier() {
+		return new SupplierRng.DefaultSupplierRng<Auctioneer>() {
+			@Override
+			public Auctioneer get(long seed) {
+				return new Auctioneer();
+			}
+		};
 	}
 }

@@ -1,13 +1,14 @@
 package ca.wdp;
 
 import common.Bid;
-import common.Bidder;
+import common.truck.Bidder;
 import org.junit.Test;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -73,12 +74,12 @@ public abstract class ParcelAllocatorTest {
 		// Create bids
 		List<Bid> bidSet1 = new LinkedList<Bid>();
 		for (List<DefaultParcel> b : bundleSet1) {
-			bidSet1.add(new Bid(b1, b, 20));
+			bidSet1.add(new Bid(b1, newLinkedHashSet(b), 20));
 		}
 
 		List<Bid> bidSet2 = new LinkedList<Bid>();
 		for (List<DefaultParcel> b : bundleSet2) {
-			bidSet2.add(new Bid(b2, b, 10));
+			bidSet2.add(new Bid(b2, newLinkedHashSet(b), 10));
 		}
 
 		// Finally add everything to the allocator

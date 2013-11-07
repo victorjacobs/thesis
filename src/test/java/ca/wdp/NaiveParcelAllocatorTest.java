@@ -1,7 +1,7 @@
 package ca.wdp;
 
 import common.Bid;
-import common.Bidder;
+import common.truck.Bidder;
 import org.junit.Before;
 import org.junit.Test;
 import rinde.sim.pdptw.common.DefaultParcel;
@@ -9,6 +9,7 @@ import rinde.sim.pdptw.common.DefaultParcel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
@@ -40,8 +41,8 @@ public class NaiveParcelAllocatorTest extends ParcelAllocatorTest {
 		Bidder bidder1 = mock(Bidder.class);
 		Bidder bidder2 = mock(Bidder.class);
 
-		Bid b1 = new Bid(bidder1, bundle1, 10);
-		Bid b2 = new Bid(bidder2, bundle1, 20);
+		Bid b1 = new Bid(bidder1, newLinkedHashSet(bundle1), 10);
+		Bid b2 = new Bid(bidder2, newLinkedHashSet(bundle1), 20);
 
 		alloc.addBid(b1);
 		alloc.addBid(b2);

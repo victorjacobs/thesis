@@ -1,7 +1,7 @@
 package ca.wdp;
 
 import common.Bid;
-import common.Bidder;
+import common.truck.Bidder;
 import org.junit.Before;
 import org.junit.Test;
 import rinde.sim.pdptw.common.DefaultParcel;
@@ -9,6 +9,7 @@ import rinde.sim.pdptw.common.DefaultParcel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -56,11 +57,11 @@ public class BruteForceParcelAllocatorTest extends ParcelAllocatorTest {
 		bundle5.add(p4);
 		bundle5.add(p5);
 
-		Bid b1 = new Bid(mock(Bidder.class), bundle1, 10);
-		Bid b2 = new Bid(mock(Bidder.class), bundle2, 20);
-		Bid b3 = new Bid(mock(Bidder.class), bundle3, 5);
-		Bid b4 = new Bid(mock(Bidder.class), bundle4, 5);
-		Bid b5 = new Bid(mock(Bidder.class), bundle5, 5);
+		Bid b1 = new Bid(mock(Bidder.class), newLinkedHashSet(bundle1), 10);
+		Bid b2 = new Bid(mock(Bidder.class), newLinkedHashSet(bundle2), 20);
+		Bid b3 = new Bid(mock(Bidder.class), newLinkedHashSet(bundle3), 5);
+		Bid b4 = new Bid(mock(Bidder.class), newLinkedHashSet(bundle4), 5);
+		Bid b5 = new Bid(mock(Bidder.class), newLinkedHashSet(bundle5), 5);
 
 		alloc.addBid(b1);
 		alloc.addBid(b2);
@@ -94,8 +95,8 @@ public class BruteForceParcelAllocatorTest extends ParcelAllocatorTest {
 		List<DefaultParcel> bundle2 = new ArrayList<DefaultParcel>();
 		bundle2.add(p2);
 
-		Bid b1 = new Bid(mock(Bidder.class), bundle1, 20);
-		Bid b2 = new Bid(mock(Bidder.class), bundle2, 10);
+		Bid b1 = new Bid(mock(Bidder.class), newLinkedHashSet(bundle1), 20);
+		Bid b2 = new Bid(mock(Bidder.class), newLinkedHashSet(bundle2), 10);
 
 		alloc.addBid(b1);
 		alloc.addBid(b2);
