@@ -173,7 +173,8 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 
 	@Override
 	public void setSimulator(SimulatorAPI api) {
-		// TODO What here?
+		api.register(bidder);
+		api.register(routePlanner);
 	}
 
 	// TODO these next two are private in PDPObjectImpl, is there any problem just exposing them?
@@ -182,6 +183,6 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	}
 
 	public RoadModel getRoadModel() {
-		return getRoadModel();
+		return super.getRoadModel();
 	}
 }
