@@ -66,6 +66,9 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 
 		bindBidder(b);
 		bindRoutePlanner(rp);
+
+		stateMachine.getEventAPI().addListener(this,
+				StateMachine.StateMachineEvent.STATE_TRANSITION);
 	}
 
 	// Setup
@@ -143,6 +146,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		super.initRoadPDP(pRoadModel, pPdpModel);
 		// Don't need to actually do anything here, the truck already has references to both the roadmodel as the
 		// pdpmodel through PDPObjectImpl
+		routePlanner.init(pRoadModel, pPdpModel, this);
 	}
 
 	@Override
@@ -157,14 +161,21 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 			if (event.event == StateEvent.GOTO) {
 				// Update state
 				if (pdpModel.get().getParcelState(cur) == PDPModel.ParcelState.IN_CARGO) {
-					// Don't do anything, TODO however need to update route?
+					// Remove cur from state, routeplanner will ensure proper delivery of stuff already in cargo
+					System.out.println(toString() + " Removing " + cur + " from state");
+					state.remove(cur);
 				} else {
 					// Not yet in cargo, but commited to going there
+					System.out.println(toString() + " Fixing " + cur);
 					fixedParcels.add(cur);
 				}
 			} else if (event.event == StateEvent.DONE) {
 				// TODO this is a lot of overhead since this will re-invoke the solver
-				removeParcel(cur);
+				//removeParcel(cur);
+				state.remove(cur);
+				fixedParcels.remove(cur);
+				routePlanner.update(ImmutableSet.copyOf(state), getCurrentTime().getTime());
+				routePlanner.next(getCurrentTime().getTime());
 			}
 		} catch (ClassCastException ex) {
 			// Just continue, this wasn't an event that concerns us

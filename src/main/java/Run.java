@@ -1,6 +1,6 @@
 import com.google.common.collect.ImmutableList;
 import common.Auctioneer;
-import common.baseline.SolverBidder;
+import common.baseline.RandomBidder;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
@@ -59,7 +59,7 @@ public class Run {
 				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 100)),
+								RandomBidder.supplier(),
 								ImmutableList.of(Auctioneer.supplier())))
 				//.showGui()
 				.perform();

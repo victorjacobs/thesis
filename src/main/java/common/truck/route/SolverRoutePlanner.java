@@ -33,7 +33,7 @@ import static com.google.common.collect.Lists.newLinkedList;
 public class SolverRoutePlanner extends RoutePlanner implements
 		SimulatorUser {
 
-	private final Solver solver;
+	private final SupplierRng<? extends Solver> solver;
 	private Queue<? extends DefaultParcel> route;
 	private Optional<SimulationSolver> solverHandle;
 	private Optional<SimulatorAPI> simulator;
@@ -41,10 +41,11 @@ public class SolverRoutePlanner extends RoutePlanner implements
 	/**
 	 * Create a route planner that uses the specified {@link Solver} to compute
 	 * the best route.
-	 * @param s {@link Solver} used for route planning.
+	 * @param s {@link rinde.sim.pdptw.central.Solver} used for route planning.
 	 */
-	public SolverRoutePlanner(Solver s) {
+	public SolverRoutePlanner(SupplierRng<? extends Solver> s) {
 		solver = s;
+
 		route = newLinkedList();
 		solverHandle = Optional.absent();
 		simulator = Optional.absent();
@@ -102,8 +103,8 @@ public class SolverRoutePlanner extends RoutePlanner implements
 	}
 
 	private void initSolver() {
-		if (!solverHandle.isPresent() && isInitialized() && simulator.isPresent()) {
-			solverHandle = Optional.of(Solvers.solverBuilder(solver)
+		if (isInitialized() && simulator.isPresent()) {
+			solverHandle = Optional.of(Solvers.solverBuilder(solver.get(42))
 					.with((PDPRoadModel) roadModel.get()).with(pdpModel.get())
 					.with(simulator.get()).with(vehicle.get()).buildSingle());
 		}
@@ -121,7 +122,7 @@ public class SolverRoutePlanner extends RoutePlanner implements
 
 	@Override
 	public Optional<DefaultParcel> current() {
-		return Optional.fromNullable((DefaultParcel) route.peek());
+		return Optional.fromNullable(route.peek());
 	}
 
 	@Override
@@ -149,7 +150,7 @@ public class SolverRoutePlanner extends RoutePlanner implements
 		return new SupplierRng.DefaultSupplierRng<SolverRoutePlanner>() {
 			@Override
 			public SolverRoutePlanner get(long seed) {
-				return new SolverRoutePlanner(solverSupplier.get(seed));
+				return new SolverRoutePlanner(solverSupplier);
 			}
 
 			@Override
