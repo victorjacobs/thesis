@@ -16,7 +16,12 @@ public class RandomStateEvaluator extends StateEvaluator {
 	}
 
 	@Override
-	public boolean evaluateState(int ticksSinceLastCall, long time) {
+	public void evaluateState(long time) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public boolean shouldReEvaluate(long ticks) {
 		return false;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 }

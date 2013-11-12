@@ -14,5 +14,8 @@ public abstract class StateEvaluator {
 		this.truck = truck;
 	}
 
-	public abstract boolean evaluateState(int ticksSinceLastCall, long time);
+	public abstract void evaluateState(long time);
+
+	public abstract boolean shouldReEvaluate(long ticks);
+
 }

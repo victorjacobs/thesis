@@ -59,7 +59,7 @@ public class SolverRoutePlanner extends RoutePlanner implements
 		route = newLinkedList();
 		initSolver();
 
-		doUpdate(newState, time);
+		update(newState, time);
 		truck.setRoute(new LinkedList<DefaultParcel>(route));
 	}
 

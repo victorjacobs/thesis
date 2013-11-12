@@ -15,9 +15,7 @@ import rinde.sim.pdptw.common.RouteFollowingVehicle;
 import rinde.sim.pdptw.common.VehicleDTO;
 import rinde.sim.util.fsm.StateMachine;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
@@ -37,28 +35,27 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
 public class Truck extends RouteFollowingVehicle implements Listener, SimulatorUser {
 
 	// State TODO rename variable to something less ambiguous
-	private Set<DefaultParcel> state;			// All parcels that will be/are(!) being handled by this truck
+	private Set<DefaultParcel> state;            // All parcels that will be/are(!) being handled by this truck
 	// TODO maybe revert fixedParcels to single (since parcels that are picked up are already removed from state)
-	private Set<DefaultParcel> fixedParcels;	// Parcels (plural!) that shouldn't be removed from the state
+	private Set<DefaultParcel> fixedParcels;    // Parcels (plural!) that shouldn't be removed from the state
 	// Components
 	private List<StateObserver> stateObservers;
 	private List<StateEvaluator> stateEvaluators;
 	private Bidder bidder;
-	private RoutePlanner routePlanner;	// TODO RP is both set here and in the stateObservers -> no longer needed?
-	// TODO actually need ticksSinceLastReEvaluation per evaluator, but for now assume only one
-	private int ticksSinceLastReEvaluation = 0;
+	private RoutePlanner routePlanner;    // TODO RP is both set here and in the stateObservers -> no longer needed?
+	private long ticks = 0;
 	// TODO needs getter to routeplanner
-	// TODO binding for TickListener?
+	// TODO add
 
 	/**
 	 * Initializes the vehicle.
 	 *
-	 * @param pDto                      The {@link rinde.sim.pdptw.common.VehicleDTO} that defines this vehicle.
+	 * @param pDto The {@link rinde.sim.pdptw.common.VehicleDTO} that defines this vehicle.
 	 * @param rp
 	 * @param b
 	 */
 	public Truck(VehicleDTO pDto, RoutePlanner rp, Bidder b) {
-		super(pDto, false);		// TODO no idea what this flag does
+		super(pDto, false);        // TODO no idea what this flag does
 		pdpModel = Optional.absent();
 
 		state = newLinkedHashSet();
@@ -85,6 +82,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 
 	/**
 	 * Doubly binds a bidder to the current truck. Result is that Truck has a reference to the bidder and vice versa.
+	 *
 	 * @param bidder Bidder to be bound to this Truck
 	 */
 	private void bindBidder(Bidder bidder) {
@@ -97,13 +95,14 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	/**
 	 * Doubly binds a route planner to this truck. Result is that the truck has a reference to the route planner and
 	 * that the route planner is subscribed to state change notifications from the Truck.
+	 *
 	 * @param routePlanner
 	 */
 	private void bindRoutePlanner(RoutePlanner routePlanner) {
 		checkState(routePlanner != null, "Route planner already bound to Truck");
 
 		routePlanner.bindTruck(this);
-		this.routePlanner = routePlanner;	// TODO is this needed?
+		this.routePlanner = routePlanner;    // TODO is this needed?
 		addStateObserver(routePlanner);
 	}
 
@@ -122,6 +121,9 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	}
 
 	private void stateChanged() {
+		// TODO give listeners reason why state changed?
+		// For now not *really* needed (only route planner is listener) but might increase powerfulness of listeners
+
 		// Since contents of this truck are added in the route planner, temporarily remove them here
 		Set<DefaultParcel> newState = new HashSet<DefaultParcel>(state);
 		newState.removeAll(pdpModel.get().getContents(this));
@@ -137,14 +139,13 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 
 	@Override
 	public void afterTick(TimeLapse time) {
-		for (StateObserver o : stateObservers) {
-			if (o.reEvaluateState(ticksSinceLastReEvaluation, getCurrentTime().getTime())) {
-				ticksSinceLastReEvaluation = 0;	// Reset
-				return;
+		for (StateEvaluator ev : stateEvaluators) {
+			if (ev.shouldReEvaluate(ticks)) {
+				ev.evaluateState(getCurrentTime().getTime());
 			}
 		}
 
-		ticksSinceLastReEvaluation++;
+		ticks++;
 	}
 
 	@Override
@@ -161,29 +162,29 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 			StateMachine.StateTransitionEvent<StateEvent, RouteFollowingVehicle> event =
 					(StateMachine.StateTransitionEvent<StateEvent, RouteFollowingVehicle>) e;
 
-			DefaultParcel cur = getRoute().iterator().next();
-
 			if (event.event == StateEvent.GOTO) {
+				DefaultParcel cur = getRoute().iterator().next();
+
 				// RouteFollowingVehicle decided to go to certain parcel
 
 				// If the next stop on route is not yet in cargo (i.e. not underway to delivery location),
 				// add it to list of parcels that are fixed in the state
 				if (pdpModel.get().getParcelState(cur) != PDPModel.ParcelState.IN_CARGO) {
-					System.out.println(toString() + " Picking up " + cur + " + fixing");
 					fixedParcels.add(cur);
 				}
 			} else if (event.event == StateEvent.DONE) {
-				// RouteFollowingVehicle is done servicing location, inform routeplanner to go to next goal
+				// RouteFollowingVehicle is done servicing location, this might be when parcel is delivered or picked
+				// up. In both cases, inform route planner
 
-				if (pdpModel.get().getParcelState(cur) != PDPModel.ParcelState.DELIVERED) {
-					System.out.println("DELIVERED");
-					state.remove(cur);
+				Iterator<DefaultParcel> it = state.iterator();
+
+				while (it.hasNext()) {
+					if (pdpModel.get().getParcelState(it.next()) == PDPModel.ParcelState.DELIVERED)
+						it.remove();
 				}
 
-				Set<DefaultParcel> newState = new HashSet<DefaultParcel>(state);
-				newState.removeAll(pdpModel.get().getContents(this));
-
-				routePlanner.update(newState, getCurrentTime().getTime());
+				// Inform routeplanner to go to next goal
+				stateChanged();
 				routePlanner.next(getCurrentTime().getTime());
 			}
 		} catch (ClassCastException ex) {
