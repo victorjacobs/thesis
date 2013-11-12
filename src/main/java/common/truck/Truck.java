@@ -15,6 +15,7 @@ import rinde.sim.pdptw.common.RouteFollowingVehicle;
 import rinde.sim.pdptw.common.VehicleDTO;
 import rinde.sim.util.fsm.StateMachine;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,6 +38,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 
 	// State TODO rename variable to something less ambiguous
 	private Set<DefaultParcel> state;			// All parcels that will be/are(!) being handled by this truck
+	// TODO maybe revert fixedParcels to single (since parcels that are picked up are already removed from state)
 	private Set<DefaultParcel> fixedParcels;	// Parcels (plural!) that shouldn't be removed from the state
 	// Components
 	private List<StateObserver> stateObservers;
@@ -120,8 +122,12 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	}
 
 	private void stateChanged() {
+		// Since contents of this truck are added in the route planner, temporarily remove them here
+		Set<DefaultParcel> newState = new HashSet<DefaultParcel>(state);
+		newState.removeAll(pdpModel.get().getContents(this));
+
 		for (StateObserver l : stateObservers) {
-			l.notifyStateChanged(ImmutableSet.copyOf(state), getCurrentTime().getTime());
+			l.notifyStateChanged(ImmutableSet.copyOf(newState), getCurrentTime().getTime());
 		}
 	}
 
@@ -155,26 +161,29 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 			StateMachine.StateTransitionEvent<StateEvent, RouteFollowingVehicle> event =
 					(StateMachine.StateTransitionEvent<StateEvent, RouteFollowingVehicle>) e;
 
-			// TODO is this safe? Normally it is.
 			DefaultParcel cur = getRoute().iterator().next();
 
 			if (event.event == StateEvent.GOTO) {
-				// Update state
-				if (pdpModel.get().getParcelState(cur) == PDPModel.ParcelState.IN_CARGO) {
-					// Remove cur from state, routeplanner will ensure proper delivery of stuff already in cargo
-					System.out.println(toString() + " Removing " + cur + " from state");
-					state.remove(cur);
-				} else {
-					// Not yet in cargo, but commited to going there
-					System.out.println(toString() + " Fixing " + cur);
+				// RouteFollowingVehicle decided to go to certain parcel
+
+				// If the next stop on route is not yet in cargo (i.e. not underway to delivery location),
+				// add it to list of parcels that are fixed in the state
+				if (pdpModel.get().getParcelState(cur) != PDPModel.ParcelState.IN_CARGO) {
+					System.out.println(toString() + " Picking up " + cur + " + fixing");
 					fixedParcels.add(cur);
 				}
 			} else if (event.event == StateEvent.DONE) {
-				// TODO this is a lot of overhead since this will re-invoke the solver
-				//removeParcel(cur);
-				state.remove(cur);
-				fixedParcels.remove(cur);
-				routePlanner.update(ImmutableSet.copyOf(state), getCurrentTime().getTime());
+				// RouteFollowingVehicle is done servicing location, inform routeplanner to go to next goal
+
+				if (pdpModel.get().getParcelState(cur) != PDPModel.ParcelState.DELIVERED) {
+					System.out.println("DELIVERED");
+					state.remove(cur);
+				}
+
+				Set<DefaultParcel> newState = new HashSet<DefaultParcel>(state);
+				newState.removeAll(pdpModel.get().getContents(this));
+
+				routePlanner.update(newState, getCurrentTime().getTime());
 				routePlanner.next(getCurrentTime().getTime());
 			}
 		} catch (ClassCastException ex) {
