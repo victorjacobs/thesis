@@ -1,7 +1,10 @@
 package ra;
 
+import com.google.common.collect.ImmutableSet;
 import common.truck.StateEvaluator;
-import common.truck.Truck;
+import rinde.sim.pdptw.common.DefaultParcel;
+
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,17 +14,33 @@ import common.truck.Truck;
  */
 public class RandomStateEvaluator extends StateEvaluator {
 
-	public RandomStateEvaluator(Truck truck) {
-		super(truck);
-	}
+	private long nextReEvaluation = 50;
 
 	@Override
-	public void evaluateState(long time) {
-		//To change body of implemented methods use File | Settings | File Templates.
+	public ImmutableSet<DefaultParcel> evaluateState(ImmutableSet<DefaultParcel> state, long time) {
+		if (state.isEmpty())
+			return null;
+
+		Random rng = new Random();
+		int nb;
+
+		if ((nb = rng.nextInt(10 * state.size())) < state.size()) {
+			return ImmutableSet.of(state.asList().get(nb));
+		}
+
+		return null;
 	}
 
 	@Override
 	public boolean shouldReEvaluate(long ticks) {
-		return false;  //To change body of implemented methods use File | Settings | File Templates.
+		if (ticks == nextReEvaluation) {
+			Random rng = new Random();
+
+			nextReEvaluation += rng.nextInt(50);
+
+			return true;
+		}
+
+		return false;
 	}
 }

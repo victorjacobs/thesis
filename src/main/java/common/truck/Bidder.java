@@ -34,6 +34,11 @@ public abstract class Bidder {
 		}
 	}
 
+	// TODO is this a good choice? Gives Bidder multiple responsibilities
+	public void auction(DefaultParcel par, long time) {
+		auctioneer.auction(par, time);
+	}
+
 	public abstract Bid getBidFor(DefaultParcel par, long time);
 
 	//public abstract TODO add way to CA

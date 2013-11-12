@@ -107,29 +107,30 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	}
 
 	// Manage state
-	public void removeParcel(DefaultParcel par) {
+	private void removeParcel(DefaultParcel par) {
+		if (fixedParcels.contains(par)) {
+			System.out.println("Trying to re-auction parcel that's fixed");
+			return;
+		}
+
 		checkArgument(state.contains(par));
 		state.remove(par);
 		fixedParcels.remove(par);
-		stateChanged();
+
+		for (StateObserver l : stateObservers) {
+			l.notifyParcelRemoved(par, getCurrentTime().getTime());
+		}
 	}
 
-	public void addParcel(DefaultParcel par) {
+	void addParcel(DefaultParcel par) {
 		checkArgument(!state.contains(par));
 		state.add(par);
-		stateChanged();
-	}
-
-	private void stateChanged() {
-		// TODO give listeners reason why state changed?
-		// For now not *really* needed (only route planner is listener) but might increase powerfulness of listeners
-
 		// Since contents of this truck are added in the route planner, temporarily remove them here
 		Set<DefaultParcel> newState = new HashSet<DefaultParcel>(state);
 		newState.removeAll(pdpModel.get().getContents(this));
 
 		for (StateObserver l : stateObservers) {
-			l.notifyStateChanged(ImmutableSet.copyOf(newState), getCurrentTime().getTime());
+			l.notifyParcelAdded(ImmutableSet.copyOf(newState), getCurrentTime().getTime());
 		}
 	}
 
@@ -141,7 +142,11 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	public void afterTick(TimeLapse time) {
 		for (StateEvaluator ev : stateEvaluators) {
 			if (ev.shouldReEvaluate(ticks)) {
-				ev.evaluateState(getCurrentTime().getTime());
+				ImmutableSet<DefaultParcel> auction = ev.evaluateState(ImmutableSet.copyOf(state), getCurrentTime().getTime());
+
+				for (DefaultParcel par : auction) {
+					removeParcel(par);
+				}
 			}
 		}
 
@@ -184,7 +189,12 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 				}
 
 				// Inform routeplanner to go to next goal
-				stateChanged();
+				// Since contents of this truck are added in the route planner, temporarily remove them here
+				// TODO only notify routePlanner -> this breaks the concept of observer pattern!!
+				Set<DefaultParcel> newState = new HashSet<DefaultParcel>(state);
+				newState.removeAll(pdpModel.get().getContents(this));
+
+				routePlanner.update(newState, getCurrentTime().getTime());
 				routePlanner.next(getCurrentTime().getTime());
 			}
 		} catch (ClassCastException ex) {

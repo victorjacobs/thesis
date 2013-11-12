@@ -14,7 +14,7 @@ public interface StateObserver {
 	//	-> + SolverRoutePlanner already has reference to truck -> because the methods it needs are actually from the
 	// RouteFollowingVehicle,
 	//	-> Is this reasonable?
-	public void notifyStateChanged(ImmutableSet<DefaultParcel> newState, long time);
+	public void notifyParcelAdded(ImmutableSet<DefaultParcel> newState, long time);
 
-	public boolean reEvaluateState(int ticksSinceLastCall, long time);
+	public void notifyParcelRemoved(DefaultParcel par, long time);
 }

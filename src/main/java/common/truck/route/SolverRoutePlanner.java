@@ -52,7 +52,7 @@ public class SolverRoutePlanner extends RoutePlanner implements
 	}
 
 	@Override
-	public void notifyStateChanged(ImmutableSet<DefaultParcel> newState, long time) {
+	public void notifyParcelAdded(ImmutableSet<DefaultParcel> newState, long time) {
 		// For now just re-initialize the entire Route Planner to make sure no state is left over in the solver
 		// TODO this is a LOT of computation that's done every state change.
 		solverHandle = Optional.absent();
@@ -64,8 +64,7 @@ public class SolverRoutePlanner extends RoutePlanner implements
 	}
 
 	@Override
-	public boolean reEvaluateState(int ticksSinceLastCall, long time) {
-		return false;
+	public void notifyParcelRemoved(DefaultParcel par, long time) {
 	}
 
 	/**
