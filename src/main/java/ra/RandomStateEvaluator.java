@@ -7,10 +7,9 @@ import rinde.sim.pdptw.common.DefaultParcel;
 import java.util.Random;
 
 /**
- * Created with IntelliJ IDEA.
- * User: victor
- * Date: 05/11/13
- * Time: 17:01
+ * Randomly removes a parcel from the truck, every 50+/-25 ticks with a chance of 10% every time it's called.
+ *
+ * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class RandomStateEvaluator extends StateEvaluator {
 

@@ -7,6 +7,8 @@ import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
 
 /**
+ * Handles parcel removal from the truck by sending it over to the auctioneer and re-auctioning it.
+ *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class ReAuctioneer implements StateObserver {
