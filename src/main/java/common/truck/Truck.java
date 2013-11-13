@@ -45,7 +45,6 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	private RoutePlanner routePlanner;    // TODO RP is both set here and in the stateObservers -> no longer needed?
 	private long ticks = 0;
 	// TODO needs getter to routeplanner
-	// TODO add
 
 	/**
 	 * Initializes the vehicle.
@@ -108,12 +107,10 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 
 	// Manage state
 	private void removeParcel(DefaultParcel par) {
-		if (fixedParcels.contains(par)) {
-			System.out.println("Trying to re-auction parcel that's fixed");
-			return;
-		}
+		checkState(state.contains(par), "Parcel not assigned to truck");
+		checkState(!fixedParcels.contains(par), "Trying to re-auction parcel that's fixed");
+		// TODO need to make sure that an observer can handle the removal of a parcel!
 
-		checkArgument(state.contains(par));
 		state.remove(par);
 		fixedParcels.remove(par);
 
