@@ -15,7 +15,8 @@ import rinde.sim.util.SupplierRng;
 /**
  * A {@link rinde.sim.pdptw.experiment.MASConfiguration} that configures a
  * simulation to use a {@link Truck} instance as vehicle.
- * @author Rinde van Lon <rinde.vanlon@cs.kuleuven.be>, Victor Jacobs <victor.jacobs@me.com>
+ * @author Rinde van Lon <rinde.vanlon@cs.kuleuven.be>
+ * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class TruckConfiguration extends DefaultMASConfiguration {
 	/**
@@ -35,6 +36,8 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 	 * each simulation.
 	 */
 	protected final ImmutableList<? extends SupplierRng<? extends Model<?>>> mSuppliers;
+	private /*final*/ ImmutableList<? extends SupplierRng<? extends StateEvaluator>> seSuppliers;
+	private /*final*/ ImmutableList<? extends SupplierRng<? extends StateObserver>> soSuppliers;
 
 	/**
 	 * Instantiate a new configuration.
@@ -45,10 +48,14 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 	public TruckConfiguration(
 			SupplierRng<? extends RoutePlanner> routePlannerSupplier,
 			SupplierRng<? extends Bidder> bidderSupplier,
-			ImmutableList<? extends SupplierRng<? extends Model<?>>> modelSuppliers) {
+			ImmutableList<? extends SupplierRng<? extends Model<?>>> modelSuppliers/*,
+			ImmutableList<? extends SupplierRng<? extends StateObserver>> stateObserverSuppliers,
+			ImmutableList<? extends SupplierRng<? extends StateEvaluator>> stateEvaluatorSuppliers*/) {
 		rpSupplier = routePlannerSupplier;
 		bSupplier = bidderSupplier;
 		mSuppliers = modelSuppliers;
+		/*soSuppliers = stateObserverSuppliers;
+		seSuppliers = stateEvaluatorSuppliers;*/
 	}
 
 	@Override
@@ -60,7 +67,7 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 						.nextLong());
 				final Bidder b = bSupplier.get(sim.getRandomGenerator()
 						.nextLong());
-				return sim.register(createTruck(event.vehicleDTO, rp, b));
+				return sim.register(createTruck(event.vehicleDTO, rp, b, sim));
 			}
 		};
 	}
@@ -68,13 +75,27 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 	/**
 	 * Factory method that can be overridden by subclasses that want to use their
 	 * own {@link Truck} implementation.
-	 * @param dto The {@link VehicleDTO} containing the vehicle information.
-	 * @param rp The {@link RoutePlanner} to use in the truck.
-	 * @param b The {@link Communicator} to use in the truck.
+	 *
+	 * @param dto The {@link rinde.sim.pdptw.common.VehicleDTO} containing the vehicle information.
+	 * @param rp The {@link common.truck.route.RoutePlanner} to use in the truck.
+	 * @param b The {@link rinde.logistics.pdptw.mas.comm.Communicator} to use in the truck.
+	 * @param sim
 	 * @return The newly created truck.
 	 */
-	protected Truck createTruck(VehicleDTO dto, RoutePlanner rp, Bidder b) {
-		return new Truck(dto, rp, b);
+	protected Truck createTruck(VehicleDTO dto, RoutePlanner rp, Bidder b, Simulator sim) {
+		Truck ret = new Truck(dto, rp, b);
+
+//		// Bind observers
+//		for (SupplierRng<? extends StateObserver> so : soSuppliers) {
+//			ret.addStateObserver(so.get(sim.getRandomGenerator().nextLong()));
+//		}
+//
+//		// Bind evaluators
+//		for (SupplierRng<? extends StateEvaluator> so : seSuppliers) {
+//			ret.addStateEvaluator(so.get(sim.getRandomGenerator().nextLong()));
+//		}
+
+		return ret;
 	}
 
 	@Override

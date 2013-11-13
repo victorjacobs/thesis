@@ -35,16 +35,14 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
 public class Truck extends RouteFollowingVehicle implements Listener, SimulatorUser {
 
 	// State TODO rename variable to something less ambiguous
-	private Set<DefaultParcel> state;            // All parcels that will be/are(!) being handled by this truck
-	// TODO maybe revert fixedParcels to single (since parcels that are picked up are already removed from state)
-	private Set<DefaultParcel> fixedParcels;    // Parcels (plural!) that shouldn't be removed from the state
+	private Set<DefaultParcel> state;			// All parcels that will be/are(!) being handled by this truck
+	private Set<DefaultParcel> fixedParcels;	// Parcels (plural!) that shouldn't be removed from the state
 	// Components
 	private List<StateObserver> stateObservers;
 	private List<StateEvaluator> stateEvaluators;
-	private Bidder bidder;
+	private Bidder bidder;					// Only needed to register in simulator when it starts
 	private RoutePlanner routePlanner;    // TODO RP is both set here and in the stateObservers -> no longer needed?
 	private long ticks = 0;
-	// TODO needs getter to routeplanner
 
 	/**
 	 * Initializes the vehicle.
@@ -166,7 +164,6 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 
 			if (event.event == StateEvent.GOTO) {
 				DefaultParcel cur = getRoute().iterator().next();
-
 				// RouteFollowingVehicle decided to go to certain parcel
 
 				// If the next stop on route is not yet in cargo (i.e. not underway to delivery location),

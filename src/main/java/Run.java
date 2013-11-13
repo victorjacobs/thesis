@@ -61,7 +61,7 @@ public class Run {
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								RandomBidder.supplier(),
 								ImmutableList.of(Auctioneer.supplier())))
-				.showGui()
+				//.showGui()
 				.perform();
 	}
 
