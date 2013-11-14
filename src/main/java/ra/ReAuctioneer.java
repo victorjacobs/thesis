@@ -1,8 +1,7 @@
 package ra;
 
-import com.google.common.collect.ImmutableSet;
-import common.Auctioneer;
-import common.truck.StateObserver;
+import common.truck.Bidder;
+import common.truck.ParcelRemoveHandler;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
 
@@ -11,22 +10,17 @@ import rinde.sim.util.SupplierRng;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ReAuctioneer implements StateObserver {
+public class ReAuctioneer implements ParcelRemoveHandler {
 
-	private Auctioneer auctioneer;
+	private Bidder bidder;
 
-	public ReAuctioneer(Auctioneer auctioneer) {
-		this.auctioneer = auctioneer;
+	public ReAuctioneer(Bidder bidder) {
+		this.bidder = bidder;
 	}
 
 	@Override
-	public void notifyParcelAdded(ImmutableSet<DefaultParcel> newState, long time) {
-		// Doesn't do anything on parcel added
-	}
-
-	@Override
-	public void notifyParcelRemoved(DefaultParcel par, long time) {
-		auctioneer.auction(par, time);
+	public void handleParcelRemove(DefaultParcel par, long time) {
+		bidder.auction(par, time);
 	}
 
 	// TODO

@@ -43,8 +43,10 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	// Components
 	private List<StateObserver> stateObservers;
 	private List<StateEvaluator> stateEvaluators;
+	private ParcelRemoveHandler parcelRemoveHandler;
 	private Bidder bidder;					// Only needed to register in simulator when it starts
 	private RoutePlanner routePlanner;    // TODO RP is both set here and in the stateObservers -> no longer needed?
+
 	private long ticks = 0;
 
 	/**
@@ -128,18 +130,14 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * make sure that the parcel doesn't just disappear but will get re-assigned to another truck.
 	 * @param par Parcel that was removed
 	 */
-	// TODO notifyParcelRemoved should really get its own class -> only one should be executed!
 	private void removeParcel(DefaultParcel par) {
+		checkState(parcelRemoveHandler != null, "Can only remove parcel when handler is attached");
 		checkState(state.contains(par), "Parcel not assigned to truck");
 		checkState(!fixedParcels.contains(par), "Trying to re-auction parcel that's fixed");
-		// TODO need to make sure that an observer can handle the removal of a parcel!
 
 		state.remove(par);
 		fixedParcels.remove(par);
-
-		for (StateObserver l : stateObservers) {
-			l.notifyParcelRemoved(par, getCurrentTime().getTime());
-		}
+		parcelRemoveHandler.handleParcelRemove(par, getCurrentTime().getTime());
 	}
 
 	/**

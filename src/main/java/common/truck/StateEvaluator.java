@@ -17,13 +17,18 @@ public abstract class StateEvaluator {
 
 	/**
 	 * Re-evaluates given state and returns a set of parcels that should be removed and re-auctioned
-	 *
-	 * @param state
-	 * @param time
-	 * @return
+	 * @param state Copy of the truck's state
+	 * @param time Simulator time
+	 * @return Set of parcels that the StateEvaluator wants removed from the truck's state.
 	 */
 	public abstract ImmutableSet<DefaultParcel> evaluateState(ImmutableSet<DefaultParcel> state, long time);
 
+	/**
+	 * Returns whether or not the StateEvaluator should be run. This is evaluated every
+	 * {@link Truck#afterTick(rinde.sim.core.TimeLapse)}.
+	 * @param ticks Number of ticks since start of simulation
+	 * @return True if the StateEvaluator should be executed
+	 */
 	public abstract boolean shouldReEvaluate(long ticks);
 
 }

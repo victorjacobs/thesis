@@ -63,10 +63,6 @@ public class SolverRoutePlanner extends RoutePlanner implements
 		truck.setRoute(new LinkedList<DefaultParcel>(route));
 	}
 
-	@Override
-	public void notifyParcelRemoved(DefaultParcel par, long time) {
-	}
-
 	/**
 	 * Calling this method overrides the route of this planner. This method has
 	 * similar effect as {@link #update(Collection, long)} except that no
