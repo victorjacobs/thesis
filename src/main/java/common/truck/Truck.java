@@ -43,7 +43,6 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	// Components
 	private List<StateObserver> stateObservers;
 	private List<StateEvaluator> stateEvaluators;
-	private ParcelRemoveHandler parcelRemoveHandler;
 	private Bidder bidder;					// Only needed to register in simulator when it starts
 	private RoutePlanner routePlanner;    // TODO RP is both set here and in the stateObservers -> no longer needed?
 
@@ -131,13 +130,14 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * @param par Parcel that was removed
 	 */
 	private void removeParcel(DefaultParcel par) {
-		checkState(parcelRemoveHandler != null, "Can only remove parcel when handler is attached");
+//		checkState(par instanceof ReAuctionableParcel, "Parcel needs to be re-auctionable in order to remove it from " +
+//				"truck");
 		checkState(state.contains(par), "Parcel not assigned to truck");
 		checkState(!fixedParcels.contains(par), "Trying to re-auction parcel that's fixed");
 
 		state.remove(par);
 		fixedParcels.remove(par);
-		parcelRemoveHandler.handleParcelRemove(par, getCurrentTime().getTime());
+//		((ReAuctionableParcel) par).changeOwner(getCurrentTime().getTime());
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 			StateMachine.StateTransitionEvent<StateEvent, RouteFollowingVehicle> event =
 					(StateMachine.StateTransitionEvent<StateEvent, RouteFollowingVehicle>) e;
 
-			if (event.event == StateEvent.GOTO) {
+			if (event.event == DefaultEvent.GOTO) {
 				DefaultParcel cur = getRoute().iterator().next();
 				// RouteFollowingVehicle decided to go to certain parcel
 
@@ -194,7 +194,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 				if (pdpModel.get().getParcelState(cur) != PDPModel.ParcelState.IN_CARGO) {
 					fixedParcels.add(cur);
 				}
-			} else if (event.event == StateEvent.DONE) {
+			} else if (event.event == DefaultEvent.DONE) {
 				// RouteFollowingVehicle is done servicing location, this might be when parcel is delivered or picked
 				// up. In both cases, inform route planner
 

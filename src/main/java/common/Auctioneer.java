@@ -38,6 +38,9 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 	public void auction(DefaultParcel par, double reservationPrice, long time) {
 		checkState(!bidders.isEmpty(), "There are no bidders..");
 
+		// Wrap the DefaultParcel in a ReAuctionableParcel
+		ReAuctionableParcel reAuctionableParcel = new ReAuctionableParcel(this, par);
+
 		final Iterator<Bidder> it = bidders.iterator();
 		Bid bestBid  = it.next().getBidFor(par, time);
 		Bid curBid;
