@@ -1,11 +1,14 @@
 package common.truck;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import common.ReAuctionableParcel;
 import common.truck.route.RoutePlanner;
 import rinde.logistics.pdptw.mas.comm.Communicator;
 import rinde.sim.core.Simulator;
 import rinde.sim.core.model.Model;
+import rinde.sim.pdptw.common.AddParcelEvent;
 import rinde.sim.pdptw.common.AddVehicleEvent;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem.Creator;
 import rinde.sim.pdptw.common.VehicleDTO;
@@ -70,6 +73,11 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 				return sim.register(createTruck(event.vehicleDTO, rp, b, sim));
 			}
 		};
+	}
+
+	@Override
+	public Optional<? extends Creator<AddParcelEvent>> getParcelCreator() {
+		return Optional.of(ReAuctionableParcel.getCreator());
 	}
 
 	/**

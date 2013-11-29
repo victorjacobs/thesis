@@ -2,6 +2,7 @@ package common.truck;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
+import common.ReAuctionableParcel;
 import common.truck.route.RoutePlanner;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
@@ -66,6 +67,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		bindBidder(b);
 		bindRoutePlanner(rp);
 
+		// Register self as listener to stateMachine events
 		stateMachine.getEventAPI().addListener(this,
 				StateMachine.StateMachineEvent.STATE_TRANSITION);
 	}
@@ -130,14 +132,14 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * @param par Parcel that was removed
 	 */
 	private void removeParcel(DefaultParcel par) {
-//		checkState(par instanceof ReAuctionableParcel, "Parcel needs to be re-auctionable in order to remove it from " +
-//				"truck");
+		checkState(par instanceof ReAuctionableParcel, "Parcel needs to be re-auctionable in order to remove it from " +
+				"truck");
 		checkState(state.contains(par), "Parcel not assigned to truck");
 		checkState(!fixedParcels.contains(par), "Trying to re-auction parcel that's fixed");
 
 		state.remove(par);
 		fixedParcels.remove(par);
-//		((ReAuctionableParcel) par).changeOwner(getCurrentTime().getTime());
+		((ReAuctionableParcel) par).changeOwner(getCurrentTime().getTime());
 	}
 
 	/**

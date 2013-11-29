@@ -9,7 +9,6 @@ import rinde.sim.core.model.pdp.PDPModel;
 import rinde.sim.core.model.pdp.PDPModelEvent;
 import rinde.sim.event.Event;
 import rinde.sim.event.Listener;
-import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
 
 import java.util.Iterator;
@@ -31,15 +30,16 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 		bidders = newLinkedHashSet();
 	}
 
-	public void auction(DefaultParcel par, long time) {
+	public void auction(ReAuctionableParcel par, long time) {
 		auction(par, 0, time);
 	}
 
-	public void auction(DefaultParcel par, double reservationPrice, long time) {
+	public void auction(ReAuctionableParcel par, double reservationPrice, long time) {
 		checkState(!bidders.isEmpty(), "There are no bidders..");
 
-		// Wrap the DefaultParcel in a ReAuctionableParcel
-		ReAuctionableParcel reAuctionableParcel = new ReAuctionableParcel(this, par);
+		// Bind Auctioneer to the parcel
+		if (!par.hasAuctioneer())
+			par.setAuctioneer(this);
 
 		final Iterator<Bidder> it = bidders.iterator();
 		Bid bestBid  = it.next().getBidFor(par, time);
@@ -75,9 +75,9 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 			@Override
 			public void handleEvent(Event e) {
 				final PDPModelEvent event = (PDPModelEvent) e;
-				checkArgument(event.parcel instanceof DefaultParcel,
-						"This class is only compatible with DefaultParcel and subclasses.");
-				final DefaultParcel dp = (DefaultParcel) event.parcel;
+				checkArgument(event.parcel instanceof ReAuctionableParcel,
+						"This class is only compatible with ReAuctionableParcel and subclasses.");
+				final ReAuctionableParcel dp = (ReAuctionableParcel) event.parcel;
 				auction(dp, event.time);
 			}
 		}, PDPModel.PDPModelEventType.NEW_PARCEL);
