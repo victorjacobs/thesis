@@ -52,13 +52,13 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 			SupplierRng<? extends RoutePlanner> routePlannerSupplier,
 			SupplierRng<? extends Bidder> bidderSupplier,
 			ImmutableList<? extends SupplierRng<? extends Model<?>>> modelSuppliers/*,
-			ImmutableList<? extends SupplierRng<? extends StateObserver>> stateObserverSuppliers,
-			ImmutableList<? extends SupplierRng<? extends StateEvaluator>> stateEvaluatorSuppliers*/) {
+			ImmutableList<? extends SupplierRng<? extends StateObserver>> stateObserverSuppliers*/,
+			ImmutableList<? extends SupplierRng<? extends StateEvaluator>> stateEvaluatorSuppliers) {
 		rpSupplier = routePlannerSupplier;
 		bSupplier = bidderSupplier;
 		mSuppliers = modelSuppliers;
-		/*soSuppliers = stateObserverSuppliers;
-		seSuppliers = stateEvaluatorSuppliers;*/
+		/*soSuppliers = stateObserverSuppliers;*/
+		seSuppliers = stateEvaluatorSuppliers;
 	}
 
 	@Override
@@ -75,6 +75,10 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 		};
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public Optional<? extends Creator<AddParcelEvent>> getParcelCreator() {
 		return Optional.of(ReAuctionableParcel.getCreator());
@@ -98,10 +102,10 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 //			ret.addStateObserver(so.get(sim.getRandomGenerator().nextLong()));
 //		}
 //
-//		// Bind evaluators
-//		for (SupplierRng<? extends StateEvaluator> so : seSuppliers) {
-//			ret.addStateEvaluator(so.get(sim.getRandomGenerator().nextLong()));
-//		}
+		// Bind evaluators
+		for (SupplierRng<? extends StateEvaluator> so : seSuppliers) {
+			ret.addStateEvaluator(so.get(sim.getRandomGenerator().nextLong()));
+		}
 
 		return ret;
 	}

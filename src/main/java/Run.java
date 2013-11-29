@@ -3,6 +3,7 @@ import common.Auctioneer;
 import common.baseline.RandomBidder;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
+import ra.RandomStateEvaluator;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -50,7 +51,7 @@ public class Run {
 				.withRandomSeed(SEED)
 				.repeat(REPETITIONS)
 				.withThreads(THREADS)
-				.addScenario(Gendreau06Parser.parse(SCENARIOS_PATH + "req_rapide_1_240_24", 10))
+				.addScenario(Gendreau06Parser.parse(SCENARIOS_PATH + "req_rapide_1_240_24", 2))
 //				.addConfiguration(
 //						new TruckConfiguration(SolverRoutePlanner
 //								.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -60,8 +61,9 @@ public class Run {
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								RandomBidder.supplier(),
-								ImmutableList.of(Auctioneer.supplier())))
-				//.showGui()
+								ImmutableList.of(Auctioneer.supplier()),
+								ImmutableList.of(RandomStateEvaluator.supplier())))
+				.showGui()
 				.perform();
 	}
 

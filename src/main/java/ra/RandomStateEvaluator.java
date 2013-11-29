@@ -3,6 +3,7 @@ package ra;
 import com.google.common.collect.ImmutableSet;
 import common.truck.StateEvaluator;
 import rinde.sim.pdptw.common.DefaultParcel;
+import rinde.sim.util.SupplierRng;
 
 import java.util.Random;
 
@@ -12,22 +13,26 @@ import java.util.Random;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class RandomStateEvaluator extends StateEvaluator {
-
 	private long nextReEvaluation = 50;
+	private Random rng;
+
+	public RandomStateEvaluator(long seed) {
+		rng = new Random(seed);
+	}
 
 	@Override
 	public ImmutableSet<DefaultParcel> evaluateState(ImmutableSet<DefaultParcel> state, long time) {
 		if (state.isEmpty())
-			return null;
+			return ImmutableSet.of();
 
-		Random rng = new Random();
 		int nb;
 
 		if ((nb = rng.nextInt(10 * state.size())) < state.size()) {
+			System.out.println(toString() + " removing " + state.asList().get(nb).toString());
 			return ImmutableSet.of(state.asList().get(nb));
 		}
 
-		return null;
+		return ImmutableSet.of();
 	}
 
 	@Override
@@ -41,5 +46,15 @@ public class RandomStateEvaluator extends StateEvaluator {
 		}
 
 		return false;
+	}
+
+	public static SupplierRng<? extends StateEvaluator> supplier() {
+		return new SupplierRng<RandomStateEvaluator>() {
+
+			@Override
+			public RandomStateEvaluator get(long seed) {
+				return new RandomStateEvaluator(seed);
+			}
+		};
 	}
 }
