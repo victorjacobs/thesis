@@ -117,13 +117,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	void addParcel(DefaultParcel par) {
 		checkArgument(!state.contains(par));
 		state.add(par);
-		// Since contents of this truck are added in the route planner, temporarily remove them here
-		Set<DefaultParcel> newState = new HashSet<DefaultParcel>(state);
-		newState.removeAll(pdpModel.get().getContents(this));
-
-		for (StateObserver l : stateObservers) {
-			l.notify(ImmutableSet.copyOf(newState), getCurrentTime().getTime());
-		}
+		notifyChange();
 	}
 
 	/**
@@ -132,28 +126,30 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * @param par Parcel that was removed
 	 */
 	private void removeParcel(DefaultParcel par) {
-		System.out.println("Removing " + par + " state: " + pdpModel.get().getParcelState(par));
 		checkState(par instanceof ReAuctionableParcel, "Parcel needs to be re-auctionable in order to remove it from " +
 				"truck");
 		checkState(state.contains(par), "Parcel not assigned to truck");
 		//checkState(!fixedParcels.contains(par), "Trying to re-auction parcel that's fixed");
 		// TODO
 		if (fixedParcels.contains(par)) {
-			System.out.println("Warning: trying to remove fixed parcel");
+			//System.out.println("Warning: trying to remove fixed parcel");
 			return;
 		}
 
 		state.remove(par);
 		fixedParcels.remove(par);
-		// Since contents of this truck are added in the route planner, temporarily remove them here
-		Set<DefaultParcel> newState = new HashSet<DefaultParcel>(state);
-		newState.removeAll(pdpModel.get().getContents(this));
-		// TODO
-		for (StateObserver l : stateObservers) {
-			l.notify(ImmutableSet.copyOf(newState), getCurrentTime().getTime());
-		}
+		notifyChange();
 
 		((ReAuctionableParcel) par).changeOwner(getCurrentTime().getTime());
+	}
+
+	/**
+	 * Notifies listeners that state has changed.
+	 */
+	private void notifyChange() {
+		for (StateObserver l : stateObservers) {
+			l.notify(ImmutableSet.copyOf(state), getCurrentTime().getTime());
+		}
 	}
 
 	/**

@@ -18,9 +18,7 @@ import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.PDPRoadModel;
 import rinde.sim.util.SupplierRng;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 import static com.google.common.collect.Lists.newLinkedList;
 
@@ -53,13 +51,17 @@ public class SolverRoutePlanner extends RoutePlanner implements
 
 	@Override
 	public void notify(ImmutableSet<DefaultParcel> newState, long time) {
+		// Since contents of this truck are added in the route planner, temporarily remove them here
+		Set<DefaultParcel> rpState = new HashSet<DefaultParcel>(newState);
+		rpState.removeAll(pdpModel.get().getContents(this.truck));
+
 		// For now just re-initialize the entire Route Planner to make sure no state is left over in the solver
 		// TODO this is a LOT of computation that's done every state change.
 		solverHandle = Optional.absent();
 		route = newLinkedList();
 		initSolver();
 
-		update(newState, time);
+		update(rpState, time);
 		truck.setRoute(new LinkedList<DefaultParcel>(route));
 	}
 

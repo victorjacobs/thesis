@@ -21,7 +21,7 @@ public class Run {
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 
 	private static final int THREADS = 1;
-	private static final int REPETITIONS = 1;
+	private static final int REPETITIONS = 10;
 	private static final long SEED = 123L;
 
 	private Run() {
@@ -57,6 +57,14 @@ public class Run {
 								.supplier(MultiVehicleHeuristicSolver.supplier(200, 50000)),
 								InsertionCostBidder.supplier(objFunc), ImmutableList
 								.of(AuctionCommModel.supplier())))*/
+				/*.addConfiguration(
+						new TruckConfiguration(
+								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+								RandomBidder.supplier(),
+								ImmutableList.of(Auctioneer.supplier()),
+								ImmutableList.of(StubStateEvaluator.supplier())
+						)
+				)*/
 				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
