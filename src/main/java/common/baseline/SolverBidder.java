@@ -57,10 +57,12 @@ public class SolverBidder extends Bidder implements SimulatorUser {
 	@Override
 	public Bid getBidFor(DefaultParcel p, long time) {
 		// TODO re-init solver every time. Time consuming!
+		solverHandle = Optional.absent();
 		initSolver();
 
 		final Set<DefaultParcel> parcels = newLinkedHashSet(truck.getParcels());
 		parcels.add(p);
+		parcels.removeAll(truck.getPdpModel().getContents(truck));	// Same hack as used in the SolverRoutePlanner
 		final ImmutableList<DefaultParcel> currentRoute = ImmutableList
 				.copyOf(truck.getRoute());
 		final ImmutableList<ParcelDTO> dtoRoute = Solvers.toDtoList(currentRoute);

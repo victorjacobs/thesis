@@ -21,7 +21,7 @@ public class StubStateEvaluator extends StateEvaluator {
 	}
 
 	public static SupplierRng<? extends StateEvaluator> supplier() {
-		return new SupplierRng<StubStateEvaluator>() {
+		return new SupplierRng.DefaultSupplierRng<StubStateEvaluator>() {
 
 			@Override
 			public StubStateEvaluator get(long seed) {

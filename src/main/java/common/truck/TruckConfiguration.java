@@ -117,6 +117,6 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 
 	@Override
 	public String toString() {
-		return Joiner.on("-").join(rpSupplier, bSupplier, mSuppliers.toArray());
+		return Joiner.on("-").join(rpSupplier, bSupplier, seSuppliers.toArray());
 	}
 }

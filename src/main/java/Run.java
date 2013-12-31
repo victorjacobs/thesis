@@ -1,6 +1,6 @@
 import com.google.common.collect.ImmutableList;
 import common.Auctioneer;
-import common.baseline.RandomBidder;
+import common.baseline.SolverBidder;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import ra.RandomStateEvaluator;
@@ -20,8 +20,8 @@ public class Run {
 
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 
-	private static final int THREADS = 1;
-	private static final int REPETITIONS = 10;
+	private static final int THREADS = 2;
+	private static final int REPETITIONS = 1;
 	private static final long SEED = 123L;
 
 	private Run() {
@@ -60,7 +60,7 @@ public class Run {
 				/*.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								RandomBidder.supplier(),
+								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								ImmutableList.of(Auctioneer.supplier()),
 								ImmutableList.of(StubStateEvaluator.supplier())
 						)
@@ -68,7 +68,7 @@ public class Run {
 				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								RandomBidder.supplier(),
+								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								ImmutableList.of(Auctioneer.supplier()),
 								ImmutableList.of(RandomStateEvaluator.supplier())))
 				//.showGui()

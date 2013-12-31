@@ -48,7 +48,7 @@ public class RandomStateEvaluator extends StateEvaluator {
 	}
 
 	public static SupplierRng<? extends StateEvaluator> supplier() {
-		return new SupplierRng<RandomStateEvaluator>() {
+		return new SupplierRng.DefaultSupplierRng<RandomStateEvaluator>() {
 
 			@Override
 			public RandomStateEvaluator get(long seed) {
