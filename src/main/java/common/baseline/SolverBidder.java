@@ -62,7 +62,7 @@ public class SolverBidder extends Bidder implements SimulatorUser {
 
 		final Set<DefaultParcel> parcels = newLinkedHashSet(truck.getParcels());
 		parcels.add(p);
-		parcels.removeAll(truck.getPdpModel().getContents(truck));	// Same hack as used in the SolverRoutePlanner
+		parcels.removeAll(truck.getContents());	// Same hack as used in the SolverRoutePlanner
 		final ImmutableList<DefaultParcel> currentRoute = ImmutableList
 				.copyOf(truck.getRoute());
 		final ImmutableList<ParcelDTO> dtoRoute = Solvers.toDtoList(currentRoute);

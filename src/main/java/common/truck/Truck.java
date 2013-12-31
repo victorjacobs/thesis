@@ -7,7 +7,9 @@ import common.truck.route.RoutePlanner;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
 import rinde.sim.core.TimeLapse;
+import rinde.sim.core.graph.Point;
 import rinde.sim.core.model.pdp.PDPModel;
+import rinde.sim.core.model.pdp.Parcel;
 import rinde.sim.core.model.road.RoadModel;
 import rinde.sim.event.Event;
 import rinde.sim.event.Listener;
@@ -241,11 +243,21 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 
 	// TODO these next two are private in PDPObjectImpl, is there any problem just exposing them?
 	// These are only used for checking truck's contents, maybe better proxy them
+	@Deprecated
 	public PDPModel getPdpModel() {
 		return this.pdpModel.get();
 	}
 
+	@Deprecated
 	public RoadModel getRoadModel() {
 		return super.getRoadModel();
+	}
+
+	public ImmutableSet<Parcel> getContents() {
+		return this.pdpModel.get().getContents(this);
+	}
+
+	public Point getPosition() {
+		return super.getRoadModel().getPosition(this);
 	}
 }

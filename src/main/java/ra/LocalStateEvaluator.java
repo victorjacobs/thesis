@@ -23,35 +23,41 @@ public class LocalStateEvaluator extends StateEvaluator {
 		ImmutableSet.Builder<DefaultParcel> ret = ImmutableSet.builder();
 		Map<Parcel, Double> slacks = calculateSlackForState();
 
+		System.out.println(slacks);
+
 		for (DefaultParcel par : getTruck().getParcels()) {
-			if (slacks.get(par) > 10) {
+			/*if (slacks.get(par) > 10) {
 				ret.add(par);
-			}
+			}*/
 		}
 
 		return ret.build();
 	}
 
-	private Map<Parcel, Double> calculateSlackForState() {
+	Map<Parcel, Double> calculateSlackForState() {
 		double curTime = 0;
 
 		Map<Parcel, Double> slacks = new HashMap<>();
-		Set<Parcel> simulatedCargo = newLinkedHashSet(getTruck().getPdpModel().getContents(getTruck()));
+		Set<Parcel> simulatedCargo = newLinkedHashSet(getTruck().getContents());
+		Point simulatedPosition = getTruck().getPosition();
 
 		for (DefaultParcel par : getTruck().getRoute()) {
 			if (simulatedCargo.contains(par)) {
 				// Delivering
-				curTime += getTravelTimeTo(par.getDestination());
+				curTime += getTravelTimeBetween(simulatedPosition, par.getDestination());
+
+				slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
 
 				curTime += par.getDeliveryDuration();
-				slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
 				simulatedCargo.remove(par);
+				simulatedPosition = par.getDestination();
 			} else {
 				// Picking up
-				curTime += getTravelTimeTo(par.getPickupLocation());
+				curTime += getTravelTimeBetween(simulatedPosition, par.getPickupLocation());
 
 				curTime += par.getPickupDuration();
 				simulatedCargo.add(par);
+				simulatedPosition = par.getPickupLocation();
 			}
 		}
 
@@ -59,11 +65,9 @@ public class LocalStateEvaluator extends StateEvaluator {
 		return slacks;
 	}
 
-	private double getTravelTimeTo(Point dest) {
+	private double getTravelTimeBetween(Point orig, Point dest) {
 		// TODO assume straight paths
-		Point thisPos = getTruck().getRoadModel().getPosition(getTruck());
-
-		double dist = Math.sqrt(Math.pow(thisPos.x - dest.x, 2) + Math.pow(thisPos.y - dest.y, 2));
+		double dist = Math.sqrt(Math.pow(orig.x - dest.x, 2) + Math.pow(orig.y - dest.y, 2));
 
 		return dist / getTruck().getSpeed();
 	}
