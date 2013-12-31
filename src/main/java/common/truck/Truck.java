@@ -87,7 +87,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * @param bidder Bidder to be bound to this Truck
 	 */
 	private void bindBidder(Bidder bidder) {
-		checkState(bidder != null, "Bidder already bound to Truck");
+		checkState(this.bidder == null, "Bidder already bound to Truck");
 
 		this.bidder = bidder;
 		bidder.bindTruck(this);
@@ -99,7 +99,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * @param routePlanner
 	 */
 	private void bindRoutePlanner(RoutePlanner routePlanner) {
-		checkState(routePlanner != null, "Route planner already bound to Truck");
+		checkState(this.routePlanner == null, "Route planner already bound to Truck");
 
 		routePlanner.bindTruck(this);
 		this.routePlanner = routePlanner;    // TODO is this needed?
@@ -153,7 +153,8 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	}
 
 	/**
-	 * Gets immutable copy of the internal state of this truck.
+	 * Gets immutable copy of the internal state of this truck. This contains *all* parcels which are not yet
+	 * completely handled. This means both stuff in cargo as stuff not yet picked up.
 	 * @return Immutable copy of internal state of this truck
 	 */
 	public ImmutableSet<DefaultParcel> getParcels() {
@@ -168,9 +169,9 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	public void afterTick(TimeLapse time) {
 		for (StateEvaluator ev : stateEvaluators) {
 			if (ev.shouldReEvaluate(ticks)) {
-				ImmutableSet<DefaultParcel> auction = ev.evaluateState(ImmutableSet.copyOf(state), getCurrentTime().getTime());
+				ImmutableSet<DefaultParcel> parcelsToRemove = ev.evaluateState(getCurrentTime().getTime());
 
-				for (DefaultParcel par : auction) {
+				for (DefaultParcel par : parcelsToRemove) {
 					removeParcel(par);
 				}
 			}
@@ -239,6 +240,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	}
 
 	// TODO these next two are private in PDPObjectImpl, is there any problem just exposing them?
+	// These are only used for checking truck's contents, maybe better proxy them
 	public PDPModel getPdpModel() {
 		return this.pdpModel.get();
 	}

@@ -15,13 +15,15 @@ import rinde.sim.pdptw.common.DefaultParcel;
  */
 public abstract class StateEvaluator {
 
+	private Truck truck;
+
 	/**
 	 * Re-evaluates given state and returns a set of parcels that should be removed and re-auctioned
 	 * @param state Copy of the truck's state
 	 * @param time Simulator time
 	 * @return Set of parcels that the StateEvaluator wants removed from the truck's state.
 	 */
-	public abstract ImmutableSet<DefaultParcel> evaluateState(ImmutableSet<DefaultParcel> state, long time);
+	public abstract ImmutableSet<DefaultParcel> evaluateState(long time);
 
 	/**
 	 * Returns whether or not the StateEvaluator should be run. This is evaluated every
@@ -31,4 +33,11 @@ public abstract class StateEvaluator {
 	 */
 	public abstract boolean shouldReEvaluate(long ticks);
 
+	public void setTruck(Truck truck) {
+		this.truck = truck;
+	}
+
+	protected Truck getTruck() {
+		return truck;
+	}
 }

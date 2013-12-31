@@ -11,7 +11,7 @@ import rinde.sim.util.SupplierRng;
 public class StubStateEvaluator extends StateEvaluator {
 
 	@Override
-	public ImmutableSet<DefaultParcel> evaluateState(ImmutableSet<DefaultParcel> state, long time) {
+	public ImmutableSet<DefaultParcel> evaluateState(long time) {
 		return null;
 	}
 

@@ -103,8 +103,10 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 //		}
 //
 		// Bind evaluators
-		for (SupplierRng<? extends StateEvaluator> so : seSuppliers) {
-			ret.addStateEvaluator(so.get(sim.getRandomGenerator().nextLong()));
+		for (SupplierRng<? extends StateEvaluator> se : seSuppliers) {
+			StateEvaluator s = se.get(sim.getRandomGenerator().nextLong());
+			s.setTruck(ret);
+			ret.addStateEvaluator(s);
 		}
 
 		return ret;

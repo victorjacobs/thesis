@@ -21,14 +21,14 @@ public class RandomStateEvaluator extends StateEvaluator {
 	}
 
 	@Override
-	public ImmutableSet<DefaultParcel> evaluateState(ImmutableSet<DefaultParcel> state, long time) {
-		if (state.isEmpty())
+	public ImmutableSet<DefaultParcel> evaluateState(long time) {
+		if (getTruck().getParcels().isEmpty())
 			return ImmutableSet.of();
 
 		int nb;
 
-		if ((nb = rng.nextInt(10 * state.size())) < state.size()) {
-			return ImmutableSet.of(state.asList().get(nb));
+		if ((nb = rng.nextInt(10 * getTruck().getParcels().size())) < getTruck().getParcels().size()) {
+			return ImmutableSet.of(getTruck().getParcels().asList().get(nb));
 		}
 
 		return ImmutableSet.of();
