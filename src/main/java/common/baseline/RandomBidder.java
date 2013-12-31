@@ -14,10 +14,14 @@ import java.util.Random;
  */
 public class RandomBidder extends Bidder {
 
+	private Random rng;
+
+	public RandomBidder(long seed) {
+		this.rng = new Random(seed);
+	}
+
 	@Override
 	public Bid getBidFor(DefaultParcel par, long time) {
-		Random rng = new Random();
-
 		int bid = rng.nextInt(100);
 
 		return new Bid(this, par, bid);
@@ -27,7 +31,7 @@ public class RandomBidder extends Bidder {
 		return new SupplierRng.DefaultSupplierRng<RandomBidder>() {
 			@Override
 			public RandomBidder get(long seed) {
-				return new RandomBidder();
+				return new RandomBidder(seed);
 			}
 
 			@Override

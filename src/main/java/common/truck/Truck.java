@@ -122,7 +122,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		newState.removeAll(pdpModel.get().getContents(this));
 
 		for (StateObserver l : stateObservers) {
-			l.notifyParcelAdded(ImmutableSet.copyOf(newState), getCurrentTime().getTime());
+			l.notify(ImmutableSet.copyOf(newState), getCurrentTime().getTime());
 		}
 	}
 
@@ -132,13 +132,27 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * @param par Parcel that was removed
 	 */
 	private void removeParcel(DefaultParcel par) {
+		System.out.println("Removing " + par + " state: " + pdpModel.get().getParcelState(par));
 		checkState(par instanceof ReAuctionableParcel, "Parcel needs to be re-auctionable in order to remove it from " +
 				"truck");
 		checkState(state.contains(par), "Parcel not assigned to truck");
-		checkState(!fixedParcels.contains(par), "Trying to re-auction parcel that's fixed");
+		//checkState(!fixedParcels.contains(par), "Trying to re-auction parcel that's fixed");
+		// TODO
+		if (fixedParcels.contains(par)) {
+			System.out.println("Warning: trying to remove fixed parcel");
+			return;
+		}
 
 		state.remove(par);
 		fixedParcels.remove(par);
+		// Since contents of this truck are added in the route planner, temporarily remove them here
+		Set<DefaultParcel> newState = new HashSet<DefaultParcel>(state);
+		newState.removeAll(pdpModel.get().getContents(this));
+		// TODO
+		for (StateObserver l : stateObservers) {
+			l.notify(ImmutableSet.copyOf(newState), getCurrentTime().getTime());
+		}
+
 		((ReAuctionableParcel) par).changeOwner(getCurrentTime().getTime());
 	}
 
@@ -184,10 +198,11 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	@Override
 	public void handleEvent(Event e) {
 		try {
+			@SuppressWarnings("unchecked")
 			StateMachine.StateTransitionEvent<StateEvent, RouteFollowingVehicle> event =
 					(StateMachine.StateTransitionEvent<StateEvent, RouteFollowingVehicle>) e;
 
-			if (event.event == DefaultEvent.GOTO) {
+			if (event.event == DefaultEvent.GOTO || event.event == DefaultEvent.ARRIVED) {
 				DefaultParcel cur = getRoute().iterator().next();
 				// RouteFollowingVehicle decided to go to certain parcel
 

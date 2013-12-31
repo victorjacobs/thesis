@@ -37,4 +37,10 @@ public abstract class Bidder {
 	public abstract Bid getBidFor(DefaultParcel par, long time);
 
 	//public abstract TODO add way to CA
+
+
+	@Override
+	public String toString() {
+		return truck.toString() + " bidder";
+	}
 }

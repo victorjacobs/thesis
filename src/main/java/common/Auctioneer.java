@@ -53,6 +53,7 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 		}
 
 		bestBid.receiveParcels();
+		System.out.println(bestBid.getBidder() + " wins for " + par);
 	}
 
 	@Override

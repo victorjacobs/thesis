@@ -51,19 +51,19 @@ public class Run {
 				.withRandomSeed(SEED)
 				.repeat(REPETITIONS)
 				.withThreads(THREADS)
-				.addScenario(Gendreau06Parser.parse(SCENARIOS_PATH + "req_rapide_1_240_24", 2))
-//				.addConfiguration(
-//						new TruckConfiguration(SolverRoutePlanner
-//								.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
-//								RandomReAuctionBidderOld.supplier(objFunc),
-//								ImmutableList.of(ReAuctionCommModel.supplier())))
+				.addScenario(Gendreau06Parser.parse(SCENARIOS_PATH + "req_rapide_1_240_24", 10))
+				/*.addConfiguration(
+						new rinde.logistics.pdptw.mas.TruckConfiguration(rinde.logistics.pdptw.mas.route.SolverRoutePlanner
+								.supplier(MultiVehicleHeuristicSolver.supplier(200, 50000)),
+								InsertionCostBidder.supplier(objFunc), ImmutableList
+								.of(AuctionCommModel.supplier())))*/
 				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								RandomBidder.supplier(),
 								ImmutableList.of(Auctioneer.supplier()),
 								ImmutableList.of(RandomStateEvaluator.supplier())))
-				.showGui()
+				//.showGui()
 				.perform();
 	}
 

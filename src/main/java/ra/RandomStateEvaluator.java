@@ -28,7 +28,6 @@ public class RandomStateEvaluator extends StateEvaluator {
 		int nb;
 
 		if ((nb = rng.nextInt(10 * state.size())) < state.size()) {
-			System.out.println(toString() + " removing " + state.asList().get(nb).toString());
 			return ImmutableSet.of(state.asList().get(nb));
 		}
 
@@ -37,7 +36,7 @@ public class RandomStateEvaluator extends StateEvaluator {
 
 	@Override
 	public boolean shouldReEvaluate(long ticks) {
-		if (ticks == nextReEvaluation) {
+		if (ticks >= nextReEvaluation) {
 			Random rng = new Random();
 
 			nextReEvaluation += rng.nextInt(50);
