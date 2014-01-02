@@ -5,9 +5,11 @@ import common.truck.StateEvaluator;
 import rinde.sim.core.graph.Point;
 import rinde.sim.core.model.pdp.Parcel;
 import rinde.sim.pdptw.common.DefaultParcel;
+import rinde.sim.util.SupplierRng;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newLinkedHashSet;
@@ -18,17 +20,23 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
  */
 public class LocalStateEvaluator extends StateEvaluator {
 
+	private long nextReEvaluation = 50;
+	private Random rng;
+
+	public LocalStateEvaluator(long seed) {
+		this.rng = new Random(seed);
+	}
+
 	@Override
 	public ImmutableSet<DefaultParcel> evaluateState(long time) {
 		ImmutableSet.Builder<DefaultParcel> ret = ImmutableSet.builder();
 		Map<Parcel, Double> slacks = calculateSlackForState();
 
-		System.out.println(slacks);
-
 		for (DefaultParcel par : getTruck().getParcels()) {
-			/*if (slacks.get(par) > 10) {
+			if (slacks.get(par) <= 1000) {
+				//System.out.println("Removing " + par + " with slack " + slacks.get(par));
 				ret.add(par);
-			}*/
+			}
 		}
 
 		return ret.build();
@@ -79,6 +87,24 @@ public class LocalStateEvaluator extends StateEvaluator {
 
 	@Override
 	public boolean shouldReEvaluate(long ticks) {
+		// TODO placeholder
+		if (ticks >= nextReEvaluation) {
+			Random rng = new Random();
+
+			nextReEvaluation += rng.nextInt(50);
+
+			return true;
+		}
+
 		return false;
+	}
+
+	public static SupplierRng<? extends LocalStateEvaluator> supplier() {
+		return new SupplierRng.DefaultSupplierRng<LocalStateEvaluator>() {
+			@Override
+			public LocalStateEvaluator get(long seed) {
+				return new LocalStateEvaluator(seed);
+			}
+		};
 	}
 }
