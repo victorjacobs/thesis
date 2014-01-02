@@ -46,6 +46,9 @@ public class LocalStateEvaluator extends StateEvaluator {
 				// Delivering
 				curTime += getTravelTimeBetween(simulatedPosition, par.getDestination());
 
+				// If arrive before timewindow, truck has to wait
+				curTime = (curTime < par.getDeliveryTimeWindow().begin) ? par.getDeliveryTimeWindow().begin : curTime;
+
 				slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
 
 				curTime += par.getDeliveryDuration();
@@ -54,6 +57,8 @@ public class LocalStateEvaluator extends StateEvaluator {
 			} else {
 				// Picking up
 				curTime += getTravelTimeBetween(simulatedPosition, par.getPickupLocation());
+
+				curTime = (curTime < par.getPickupTimeWindow().begin) ? par.getPickupTimeWindow().begin : curTime;
 
 				curTime += par.getPickupDuration();
 				simulatedCargo.add(par);

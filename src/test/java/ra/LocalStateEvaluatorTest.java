@@ -53,24 +53,86 @@ public class LocalStateEvaluatorTest {
 	 * 	-> travel 2 time units + 1 time unit pickup + 1 time unit travel == 4
 	 */
 	public void testSlackSimple() throws Exception {
-		DefaultParcel par = mockedParcel(new Point(1, 3), new Point(2, 3), 1l, 1l, new TimeWindow(0, 5));
+		DefaultParcel par = mockedParcel(new Point(1, 3), new Point(2, 3), 1l, 1l, new TimeWindow(0, 10),
+				new TimeWindow(0, 5));
+
 		addParcel(par);
 		addParcel(par);
 
-		when(tr.getRoute()).thenReturn(pars.build());
+		buildRoute();
 
 		assertEquals(1.0, ev.calculateSlackForState().get(par));
 	}
 
-	public void addParcel(DefaultParcel par) {
+	@Test
+	/**
+	 * Same test as above, but with waiting at pickup location (arrival before time window starts).
+	 */
+	public void testSlackSimpleWithWaiting() throws Exception {
+		DefaultParcel par = mockedParcel(new Point(1, 3), new Point(2, 3), 1l, 1l, new TimeWindow(3, 6),
+				new TimeWindow(0, 6));
+
+		addParcel(par);
+		addParcel(par);
+
+		buildRoute();
+
+		assertEquals(1.0, ev.calculateSlackForState().get(par));
+	}
+
+	@Test
+	/**
+	 * Test pick-up and delivery of two parcels, interleaved, with waiting at delivery location
+	 */
+	public void testSlackTwoParcels() throws Exception {
+		DefaultParcel par1 = mockedParcel(new Point(1, 3), new Point(2, 5), 1l, 1l, new TimeWindow(3, 6),
+				new TimeWindow(9, 10));
+		DefaultParcel par2 = mockedParcel(new Point(2, 3), new Point(3, 5), 1l, 1l, new TimeWindow(0, 10),
+				new TimeWindow(0, 12));
+
+		addParcel(par1);
+		addParcel(par2);
+		addParcel(par1);
+		addParcel(par2);
+
+		buildRoute();
+
+		assertEquals(1.0, ev.calculateSlackForState().get(par1));
+		assertEquals(1.0, ev.calculateSlackForState().get(par2));
+	}
+
+	/**
+	 * Builds route and assigns it to the truck
+	 */
+	private void buildRoute() {
+		when(tr.getRoute()).thenReturn(pars.build());
+	}
+
+	/**
+	 * Adds parcel to route
+	 * @param par Parcel to be added
+	 */
+	private void addParcel(DefaultParcel par) {
 		pars.add(par);
 	}
 
-	public DefaultParcel mockedParcel(Point pickup, Point delivery, long pDur, long dDur, TimeWindow deliveryWindow) {
+	/**
+	 * Mocks a DefaultParcel with given parameters
+	 * @param pickup The pick-up location
+	 * @param delivery The delivery location
+	 * @param pDur Duration of pick-up
+	 * @param dDur Duration of delivery
+	 * @param pickupWindow Pickup timewindow
+	 * @param deliveryWindow Delivery timewindow
+	 * @return
+	 */
+	private DefaultParcel mockedParcel(Point pickup, Point delivery, long pDur, long dDur, TimeWindow pickupWindow,
+									  TimeWindow deliveryWindow) {
 		DefaultParcel par = mock(DefaultParcel.class);
 		when(par.getPickupDuration()).thenReturn(pDur);
 		when(par.getDeliveryDuration()).thenReturn(dDur);
 		when(par.getDeliveryTimeWindow()).thenReturn(deliveryWindow);
+		when(par.getPickupTimeWindow()).thenReturn(pickupWindow);
 		when(par.getPickupLocation()).thenReturn(pickup);
 		when(par.getDestination()).thenReturn(delivery);
 
