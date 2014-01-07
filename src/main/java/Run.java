@@ -1,11 +1,10 @@
 import com.google.common.collect.ImmutableList;
 import common.Auctioneer;
 import common.baseline.SolverBidder;
-import common.baseline.StubStateEvaluator;
+import common.truck.Stats;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
-import ra.LocalStateEvaluator;
-import ra.RandomStateEvaluator;
+import ra.AdaptiveLocalStateEvaluator;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -50,6 +49,8 @@ public class Run {
 			System.out.println(temp[temp.length - 1] + " Total overtime: " + res.stats.overTime);
 			System.out.println(temp[temp.length - 1] + " Total distance: " + res.stats.totalDistance);
 		}
+
+		Stats.print();
 	}
 
 	private static Experiment.ExperimentResults performRAExperiment() throws Exception {
@@ -61,7 +62,7 @@ public class Run {
 				.repeat(REPETITIONS)
 				.withThreads(THREADS)
 				.addScenario(Gendreau06Parser.parse(SCENARIOS_PATH + "req_rapide_1_240_24", 10))
-				.addConfiguration(
+				/*.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -82,7 +83,13 @@ public class Run {
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								ImmutableList.of(Auctioneer.supplier()),
-								ImmutableList.of(LocalStateEvaluator.supplier())))
+								ImmutableList.of(LocalStateEvaluator.supplier())))*/
+				.addConfiguration(
+						new TruckConfiguration(
+								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+								ImmutableList.of(Auctioneer.supplier()),
+								ImmutableList.of(AdaptiveLocalStateEvaluator.supplier())))
 				//.showGui()
 				.perform();
 	}

@@ -30,10 +30,10 @@ public class LocalStateEvaluator extends StateEvaluator {
 	@Override
 	public ImmutableSet<DefaultParcel> evaluateState(long time) {
 		ImmutableSet.Builder<DefaultParcel> ret = ImmutableSet.builder();
-		Map<Parcel, Double> slacks = calculateSlackForState();
+		Map<DefaultParcel, Double> slacks = calculateSlackForState();
 
-		for (DefaultParcel par : getTruck().getParcels()) {
-			if (slacks.get(par) <= 1000) {
+		for (DefaultParcel par : slacks.keySet()) {
+			if (slacks.get(par) <= 10000) {
 				//System.out.println("Removing " + par + " with slack " + slacks.get(par));
 				ret.add(par);
 			}
@@ -42,10 +42,10 @@ public class LocalStateEvaluator extends StateEvaluator {
 		return ret.build();
 	}
 
-	Map<Parcel, Double> calculateSlackForState() {
+	Map<DefaultParcel, Double> calculateSlackForState() {
 		double curTime = 0;
 
-		Map<Parcel, Double> slacks = new HashMap<Parcel, Double>();
+		Map<DefaultParcel, Double> slacks = new HashMap<DefaultParcel, Double>();
 		Set<Parcel> simulatedCargo = newLinkedHashSet(getTruck().getContents());
 		Point simulatedPosition = getTruck().getPosition();
 
@@ -57,7 +57,9 @@ public class LocalStateEvaluator extends StateEvaluator {
 				// If arrive before timewindow, truck has to wait
 				curTime = (curTime < par.getDeliveryTimeWindow().begin) ? par.getDeliveryTimeWindow().begin : curTime;
 
-				slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
+				// Don't bother adding slacks for parcels that are already in cargo
+				if (!getTruck().getContents().contains(par))
+					slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
 
 				curTime += par.getDeliveryDuration();
 				simulatedCargo.remove(par);
@@ -89,8 +91,6 @@ public class LocalStateEvaluator extends StateEvaluator {
 	public boolean shouldReEvaluate(long ticks) {
 		// TODO placeholder
 		if (ticks >= nextReEvaluation) {
-			Random rng = new Random();
-
 			nextReEvaluation += rng.nextInt(50);
 
 			return true;

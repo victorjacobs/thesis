@@ -127,7 +127,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * make sure that the parcel doesn't just disappear but will get re-assigned to another truck.
 	 * @param par Parcel that was removed
 	 */
-	private void removeParcel(DefaultParcel par) {
+	private boolean removeParcel(DefaultParcel par) {
 		checkState(par instanceof ReAuctionableParcel, "Parcel needs to be re-auctionable in order to remove it from " +
 				"truck");
 		checkState(state.contains(par), "Parcel not assigned to truck");
@@ -135,7 +135,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		// TODO
 		if (fixedParcels.contains(par)) {
 			//System.out.println("Warning: trying to remove fixed parcel");
-			return;
+			return false;
 		}
 
 		state.remove(par);
@@ -143,6 +143,8 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		notifyChange();
 
 		((ReAuctionableParcel) par).changeOwner(getCurrentTime().getTime());
+
+		return true;
 	}
 
 	/**
@@ -174,7 +176,8 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 				ImmutableSet<DefaultParcel> parcelsToRemove = ev.evaluateState(getCurrentTime().getTime());
 
 				for (DefaultParcel par : parcelsToRemove) {
-					removeParcel(par);
+					if (removeParcel(par))
+						Stats.increaseNbReAuctions(ev.toString());
 				}
 			}
 		}

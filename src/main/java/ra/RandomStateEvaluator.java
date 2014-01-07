@@ -37,8 +37,6 @@ public class RandomStateEvaluator extends StateEvaluator {
 	@Override
 	public boolean shouldReEvaluate(long ticks) {
 		if (ticks >= nextReEvaluation) {
-			Random rng = new Random();
-
 			nextReEvaluation += rng.nextInt(50);
 
 			return true;
