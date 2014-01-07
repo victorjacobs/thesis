@@ -45,7 +45,7 @@ public class LocalStateEvaluator extends StateEvaluator {
 	Map<Parcel, Double> calculateSlackForState() {
 		double curTime = 0;
 
-		Map<Parcel, Double> slacks = new HashMap<>();
+		Map<Parcel, Double> slacks = new HashMap<Parcel, Double>();
 		Set<Parcel> simulatedCargo = newLinkedHashSet(getTruck().getContents());
 		Point simulatedPosition = getTruck().getPosition();
 
