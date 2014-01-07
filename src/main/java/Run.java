@@ -40,8 +40,15 @@ public class Run {
 
 		Experiment.ExperimentResults result = performRAExperiment();
 
+		System.out.println();
+
+		String[] temp;
+
 		for (Experiment.SimulationResult res : result.results) {
-			System.out.println(res.masConfiguration + " " + res.stats.overTime);
+			temp = res.masConfiguration.toString().split("-");
+
+			System.out.println(temp[temp.length - 1] + " Total overtime: " + res.stats.overTime);
+			System.out.println(temp[temp.length - 1] + " Total distance: " + res.stats.totalDistance);
 		}
 	}
 
