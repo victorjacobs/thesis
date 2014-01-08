@@ -18,8 +18,8 @@ public class AdaptiveLocalStateEvaluator extends LocalStateEvaluator {
 
 	private double mean;
 	private int n;
-	private int M2;
-	private int variance;
+	private double M2;
+	private double variance;
 
 	public AdaptiveLocalStateEvaluator(long seed) {
 		super(seed);
@@ -42,7 +42,7 @@ public class AdaptiveLocalStateEvaluator extends LocalStateEvaluator {
 			// Always add parcels with negative slacks
 			if ((curSlack = slacks.get(par)) < 0) {
 				ret.add(par);
-			} else if (curSlack < mean - getStandardDeviation()) {
+			} else if (curSlack < mean - 2 * getStandardDeviation()) {
 				ret.add(par);
 			}
 		}
@@ -50,8 +50,9 @@ public class AdaptiveLocalStateEvaluator extends LocalStateEvaluator {
 		return ret.build();
 	}
 
-	// On line standard variance calculation after Knuth
-	private void update(Collection<Double> slacks) {
+	// On line standard variance calculation after Knuth, use this in favor of apache commons math library since this
+	// uses less memory (only needs to keep 3 variables)
+	void update(Collection<Double> slacks) {
 		double delta;
 
 		for (Double el : slacks) {
@@ -65,7 +66,7 @@ public class AdaptiveLocalStateEvaluator extends LocalStateEvaluator {
 			variance = M2 / (n - 1);
 	}
 
-	private Double getStandardDeviation() {
+	double getStandardDeviation() {
 		return Math.sqrt(variance);
 	}
 
