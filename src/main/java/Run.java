@@ -5,6 +5,8 @@ import common.truck.Stats;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import ra.AdaptiveLocalStateEvaluator;
+import ra.LocalStateEvaluator;
+import ra.RandomStateEvaluator;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -21,7 +23,7 @@ public class Run {
 
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 
-	private static final int THREADS = 2;
+	private static final int THREADS = 4;
 	private static final int REPETITIONS = 1;
 	private static final long SEED = 123L;
 
@@ -69,7 +71,7 @@ public class Run {
 								ImmutableList.of(Auctioneer.supplier()),
 								ImmutableList.of(StubStateEvaluator.supplier())
 						)
-				)
+				)*/
 				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -83,7 +85,7 @@ public class Run {
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								ImmutableList.of(Auctioneer.supplier()),
-								ImmutableList.of(LocalStateEvaluator.supplier())))*/
+								ImmutableList.of(LocalStateEvaluator.supplier())))
 				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),

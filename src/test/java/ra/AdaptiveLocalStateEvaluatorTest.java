@@ -52,8 +52,8 @@ public class AdaptiveLocalStateEvaluatorTest {
 	private List<Double> fromPrimitiveToList(double[] in) {
 		LinkedList<Double> ret = newLinkedList();
 
-		for (int i = 0; i < in.length; i++) {
-			ret.add(in[i]);
+		for (double anIn : in) {
+			ret.add(anIn);
 		}
 
 		return ret;

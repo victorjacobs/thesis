@@ -74,7 +74,7 @@ public class Bid implements Comparable<Bid> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Bid value " + getBidValue() + " for parcel [");
+		sb.append("Bid value ").append(getBidValue()).append(" for parcel [");
 
 		for (DefaultParcel p : parcels) {
 			sb.append(p.toString());
