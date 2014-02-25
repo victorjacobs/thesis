@@ -1,6 +1,6 @@
 package ca.wdp;
 
-import common.Bid;
+import common.truck.Bid;
 
 import java.util.HashSet;
 import java.util.Set;

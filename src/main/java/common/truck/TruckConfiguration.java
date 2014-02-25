@@ -3,7 +3,7 @@ package common.truck;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import common.ReAuctionableParcel;
+import common.auctioning.ReAuctionableParcel;
 import common.truck.route.RoutePlanner;
 import rinde.logistics.pdptw.mas.comm.Communicator;
 import rinde.sim.core.Simulator;

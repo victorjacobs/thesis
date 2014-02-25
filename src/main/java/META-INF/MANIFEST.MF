@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
-Class-Path: commons-lang3-3.1.jar jscience-4.3.1.jar gson-2.2.4.jar ri
- nsim-ui-2.3.0-20140217.100134-178.jar junit.jar guava-15.0.jar junit-
- 4.10.jar slf4j-api-1.7.5.jar joda-time-2.1.jar rinsim-problem-2.3.0-2
- 0140217.100325-178.jar org.eclipse.swt.cocoa.macosx.x86_64-4.3.jar js
- r305-2.0.1.jar rinsim-example-2.3.0-20140217.100423-177.jar commons-m
- ath3-3.2.jar rinsim-core-2.3.0-20140217.100102-179.jar javolution-5.2
- .3.jar rinlog-0.0.1-20140217.124424-159.jar
+Class-Path: rinsim-problem-2.3.2-20140224.085321-4.jar rinsim-example-
+ 2.3.0-SNAPSHOT.jar javolution-5.2.3.jar rinsim-ui-2.3.0-SNAPSHOT.jar 
+ jscience-4.3.1.jar commons-math3-3.2.jar gson-2.2.4.jar guava-15.0.ja
+ r rinlog-0.0.1-20140224.085901-175.jar opencsv-2.0.jar joda-time-2.1.
+ jar org.eclipse.swt.cocoa.macosx.x86_64-4.3.jar commons-lang3-3.1.jar
+  rinsim-core-2.3.0-SNAPSHOT.jar slf4j-api-1.7.5.jar junit.jar junit-4
+ .10.jar jsr305-2.0.1.jar
 Main-Class: Run
 

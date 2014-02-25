@@ -1,6 +1,6 @@
 package ca.wdp;
 
-import common.Bid;
+import common.truck.Bid;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 /**

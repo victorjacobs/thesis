@@ -2,7 +2,7 @@ package common.truck;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import common.ReAuctionableParcel;
+import common.auctioning.ReAuctionableParcel;
 import common.truck.route.RoutePlanner;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
@@ -33,7 +33,7 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
  * Bidder}. The object itself contains all the state, namely all the parcels that will be handled by this Truck.
  * Every time this state changes, the {@link RoutePlanner} is notified to update the route. State changes happen
  * through the {@link Bidder} and a set of {@link StateEvaluator}s. The former makes decisions on what parcels to
- * handle in negotiation with other Trucks through the {@link common.Auctioneer} while the latter can make
+ * handle in negotiation with other Trucks through the {@link common.auctioning.Auctioneer} while the latter can make
  * independent decisions based on just the state.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>

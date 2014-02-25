@@ -1,6 +1,6 @@
 package common.baseline;
 
-import common.Bid;
+import common.truck.Bid;
 import common.truck.Bidder;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;

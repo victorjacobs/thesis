@@ -1,6 +1,7 @@
-package common;
+package common.auctioning;
 
 import com.google.common.base.Optional;
+import common.truck.Bid;
 import common.truck.Bidder;
 import rinde.sim.core.model.AbstractModel;
 import rinde.sim.core.model.ModelProvider;

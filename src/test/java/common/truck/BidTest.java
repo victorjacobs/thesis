@@ -1,6 +1,5 @@
-package common;
+package common.truck;
 
-import common.truck.Bidder;
 import org.junit.Test;
 import rinde.sim.pdptw.common.DefaultParcel;
 

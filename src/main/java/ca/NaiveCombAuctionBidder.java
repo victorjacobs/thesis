@@ -1,7 +1,7 @@
 //package ca;
 //
 //import common.AbstractBidder;
-//import common.Bid;
+//import common.truck.Bid;
 //import rinde.sim.core.graph.Point;
 //import rinde.sim.pdptw.common.DefaultParcel;
 //import rinde.sim.pdptw.common.ObjectiveFunction;

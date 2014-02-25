@@ -1,4 +1,4 @@
-package common;
+package common.auctioning;
 
 import com.google.common.base.Optional;
 import rinde.sim.core.Simulator;

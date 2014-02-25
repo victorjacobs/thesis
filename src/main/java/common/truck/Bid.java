@@ -1,9 +1,8 @@
-package common;
+package common.truck;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableSet;
-import common.truck.Bidder;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 import java.util.Collections;

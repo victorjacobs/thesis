@@ -1,6 +1,6 @@
 package ca.wdp;
 
-import common.Bid;
+import common.truck.Bid;
 import common.truck.Bidder;
 import org.junit.Before;
 import org.junit.Test;

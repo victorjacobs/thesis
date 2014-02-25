@@ -1,8 +1,7 @@
 package common.truck;
 
 import com.google.common.collect.ImmutableSet;
-import common.Auctioneer;
-import common.Bid;
+import common.auctioning.Auctioneer;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 import static com.google.common.base.Preconditions.checkState;

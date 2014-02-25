@@ -1,13 +1,12 @@
 import com.google.common.collect.ImmutableList;
-import common.Auctioneer;
+import common.auctioning.Auctioneer;
+import common.ResultWriter;
 import common.baseline.SolverBidder;
+import common.baseline.StubStateEvaluator;
 import common.truck.Stats;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
-import ra.AdaptiveLocalStateEvaluator;
-import ra.LocalStateEvaluator;
 import ra.RandomStateEvaluator;
-import rinde.logistics.pdptw.solver.CheapestInsertionHeuristic;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -37,7 +36,16 @@ public class Run {
 	public static void main(String[] args) throws Exception {
 		final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
 
+		/*System.out.println("Writing to " + args[0]);
+		final CSVWriter csv = new CSVWriter(new FileWriter(args[0]), ',');
+
+		csv.writeNext("foo bar".split(" "));
+
+		csv.close();*/
+
 		Experiment.ExperimentResults result = performRAExperiment();
+
+		ResultWriter.write("results/test/", result);
 
 		System.out.println();
 
@@ -67,15 +75,15 @@ public class Run {
 				.repeat(REPETITIONS)
 				.withThreads(THREADS)
 				.addScenarios(onlineScenarios)
-				/*.addScenario(Gendreau06Parser.parse(SCENARIOS_PATH + "req_rapide_1_240_24", 10))*/
-				/*.addConfiguration(
+				//.addScenario(Gendreau06Parser.parse(SCENARIOS_PATH + "req_rapide_1_240_24"))
+				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								ImmutableList.of(Auctioneer.supplier()),
 								ImmutableList.of(StubStateEvaluator.supplier())
 						)
-				)*/
+				)
 				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -84,7 +92,7 @@ public class Run {
 								ImmutableList.of(RandomStateEvaluator.supplier())
 						)
 				)
-				.addConfiguration(
+				/*.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -99,7 +107,7 @@ public class Run {
 				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(CheapestInsertionHeuristic.supplier(objFunc)),
-								SolverBidder.supplier(objFunc, CheapestInsertionHeuristic.supplier(objFunc)),
+								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								ImmutableList.of(Auctioneer.supplier()),
 								ImmutableList.of(RandomStateEvaluator.supplier())
 						)
@@ -115,8 +123,14 @@ public class Run {
 								SolverRoutePlanner.supplier(CheapestInsertionHeuristic.supplier(objFunc)),
 								SolverBidder.supplier(objFunc, CheapestInsertionHeuristic.supplier(objFunc)),
 								ImmutableList.of(Auctioneer.supplier()),
-								ImmutableList.of(AdaptiveLocalStateEvaluator.supplier())))
+								ImmutableList.of(AdaptiveLocalStateEvaluator.supplier())))*/
 				//.showGui()
+				/*.addConfiguration(
+						new TruckConfiguration(
+								SolverRoutePlanner.supplier(CheapestInsertionHeuristic.supplier(objFunc)),
+								SolverBidder.supplier(objFunc, CheapestInsertionHeuristic.supplier(objFunc)),
+								ImmutableList.of(Auctioneer.supplier()),
+								ImmutableList.<SupplierRng<? extends StateEvaluator>>of()))*/
 				.perform();
 	}
 
