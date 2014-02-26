@@ -1,13 +1,17 @@
 package common.auctioning;
 
 import com.google.common.base.Optional;
+import common.truck.Bidder;
 import rinde.sim.core.Simulator;
 import rinde.sim.pdptw.common.AddParcelEvent;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem;
 import rinde.sim.pdptw.common.ParcelDTO;
 
+import java.util.List;
+
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Lists.newLinkedList;
 
 /**
  * Extends {@link DefaultParcel} with a reference to an {@link Auctioneer}. This allows the parcel to change owners.
@@ -17,10 +21,12 @@ import static com.google.common.base.Preconditions.checkState;
 public class ReAuctionableParcel extends DefaultParcel {
 
 	private Optional<Auctioneer> auctioneer;
+	private List<Bidder> ownerHistory;
 
 	public ReAuctionableParcel(ParcelDTO pDto) {
 		super(pDto);
 		auctioneer = Optional.absent();
+		ownerHistory = newLinkedList();
 	}
 
 	public void setAuctioneer(Auctioneer auct) {
@@ -36,7 +42,7 @@ public class ReAuctionableParcel extends DefaultParcel {
 	public void changeOwner(long time) {
 		checkState(auctioneer.isPresent(), "Auctioneer needed to change owner");
 
-		auctioneer.get().auction(this, time);
+		ownerHistory.add(auctioneer.get().auction(this, time));
 	}
 
 	public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {

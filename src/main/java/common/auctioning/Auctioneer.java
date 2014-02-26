@@ -23,19 +23,20 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-// TODO binding with model
 public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 	private Set<Bidder> bidders;
+	private Set<ReAuctionableParcel> parcels;	// TODO this might not be the best idea
 
 	public Auctioneer() {
 		bidders = newLinkedHashSet();
+		parcels = newLinkedHashSet();
 	}
 
-	public void auction(ReAuctionableParcel par, long time) {
-		auction(par, 0, time);
+	public Bidder auction(ReAuctionableParcel par, long time) {
+		return auction(par, 0, time);
 	}
 
-	public void auction(ReAuctionableParcel par, double reservationPrice, long time) {
+	public Bidder auction(ReAuctionableParcel par, double reservationPrice, long time) {
 		checkState(!bidders.isEmpty(), "There are no bidders..");
 
 		// Bind Auctioneer to the parcel
@@ -54,6 +55,8 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 		}
 
 		bestBid.receiveParcels();
+
+		return bestBid.getBidder();
 	}
 
 	@Override
@@ -70,16 +73,16 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 
 	@Override
 	public void registerModelProvider(ModelProvider mp) {
-		final PDPModel pm = Optional.fromNullable(mp.getModel(PDPModel.class))
-				.get();
+		final PDPModel pm = Optional.fromNullable(mp.getModel(PDPModel.class)).get();
 		pm.getEventAPI().addListener(new Listener() {
 			@Override
 			public void handleEvent(Event e) {
 				final PDPModelEvent event = (PDPModelEvent) e;
 				checkArgument(event.parcel instanceof ReAuctionableParcel,
 						"This class is only compatible with ReAuctionableParcel and subclasses.");
-				final ReAuctionableParcel dp = (ReAuctionableParcel) event.parcel;
-				auction(dp, event.time);
+				final ReAuctionableParcel rp = (ReAuctionableParcel) event.parcel;
+				auction(rp, event.time);
+				parcels.add(rp);
 			}
 		}, PDPModel.PDPModelEventType.NEW_PARCEL);
 	}

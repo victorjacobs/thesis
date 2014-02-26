@@ -1,12 +1,11 @@
 import com.google.common.collect.ImmutableList;
+import common.ResultsWriter;
 import common.auctioning.Auctioneer;
-import common.ResultWriter;
 import common.baseline.SolverBidder;
 import common.baseline.StubStateEvaluator;
 import common.truck.Stats;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
-import ra.RandomStateEvaluator;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -18,10 +17,8 @@ import rinde.sim.pdptw.gendreau06.GendreauProblemClass;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: victor
- * Date: 14/10/13
- * Time: 15:56
+ *
+ * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class Run {
 
@@ -34,18 +31,14 @@ public class Run {
 	private Run() {}
 
 	public static void main(String[] args) throws Exception {
+		String outputDirectory = (args.length < 1) ? "results/test" + System.currentTimeMillis() + "/" : args[0];
+		System.out.println("Writing to " + outputDirectory);
+
 		final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-
-		/*System.out.println("Writing to " + args[0]);
-		final CSVWriter csv = new CSVWriter(new FileWriter(args[0]), ',');
-
-		csv.writeNext("foo bar".split(" "));
-
-		csv.close();*/
 
 		Experiment.ExperimentResults result = performRAExperiment();
 
-		ResultWriter.write("results/test/", result);
+		ResultsWriter.write(outputDirectory, result);
 
 		System.out.println();
 
@@ -84,7 +77,7 @@ public class Run {
 								ImmutableList.of(StubStateEvaluator.supplier())
 						)
 				)
-				.addConfiguration(
+				/*.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -92,7 +85,7 @@ public class Run {
 								ImmutableList.of(RandomStateEvaluator.supplier())
 						)
 				)
-				/*.addConfiguration(
+				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
