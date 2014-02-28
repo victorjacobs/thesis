@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
 
 /**
@@ -18,17 +19,33 @@ import static com.google.common.collect.Lists.newLinkedList;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ResultsWriter {
+public class ResultsProcessor {
+	private Map<String, String> processedData;
+	private List<Measure> measures;
 
-	public static void write(String directory, Experiment.ExperimentResults data) throws Exception {
-		final ObjectiveFunction obj = data.objectiveFunction;
+	/**
+	 * Creates empty ResultsProcessor. Add own Measures and then call load()
+	 */
+	public ResultsProcessor() {
+		processedData = new LinkedHashMap<String, String>();
+		measures = newLinkedList();
+	}
+
+	/**
+	 * Constructs default ResultsProcessor with standard result measures (objective value and computation time)
+	 * @param data
+	 */
+	public ResultsProcessor(Experiment.ExperimentResults data) {
+		this();
+
+		// TODO this isn't very clean
+		final ObjectiveFunction objFunction = data.objectiveFunction;
 
 		// What data to extract (eww Java)
-		List<Measure> measures = newLinkedList();
-		measures.add(new Measure() {
+		addMeasure(new Measure() {
 			@Override
 			public double getValue(StatisticsDTO stats) {
-				return obj.computeCost(stats);
+				return objFunction.computeCost(stats);
 			}
 
 			@Override
@@ -36,7 +53,7 @@ public class ResultsWriter {
 				return "fitness";
 			}
 		});
-		measures.add(new Measure() {
+		addMeasure(new Measure() {
 			@Override
 			public double getValue(StatisticsDTO stats) {
 				return stats.computationTime;
@@ -48,14 +65,31 @@ public class ResultsWriter {
 			}
 		});
 
+		load(data);
+	}
+
+	public void write(String directory) throws Exception {
 		// Create result directory if it doesn't exist
 		File dir = new File(directory);
 		if (!dir.exists()) dir.mkdir();
 
-		// Create some stuff
 		PrintWriter writer;
-		StringBuilder sb;
 
+		for (String file : processedData.keySet()) {
+			writer = new PrintWriter(directory + file + ".csv");
+		}
+	}
+
+	public void addMeasure(Measure m) {
+		measures.add(m);
+	}
+
+	public void load(Experiment.ExperimentResults data) {
+		checkState(processedData.isEmpty(), "Data already loaded");
+		checkState(!measures.isEmpty(), "I need some measures to evaluate");
+
+		// Create some stuff
+		StringBuilder sb;
 		Map<String, List<StatisticsDTO>> bins = new LinkedHashMap<String, List<StatisticsDTO>>();
 
 		// Bin statistics DTO's
@@ -68,7 +102,7 @@ public class ResultsWriter {
 
 		// Go over result measures
 		for (Measure m : measures) {
-			writer = new PrintWriter(directory + m.getName() + ".csv");
+			//writer = new PrintWriter(directory + m.getName() + ".csv");
 			sb = new StringBuilder();
 
 			// Write headers
@@ -77,25 +111,35 @@ public class ResultsWriter {
 				sb.append(",");
 			}
 
-			writer.println(sb.deleteCharAt(sb.length() - 1));
+			sb = sb.deleteCharAt(sb.length() - 1).append('\n');
 
 			// Write data
 			for (int i = 0; i < data.repetitions * data.scenarios.size(); i++) {
-				sb = new StringBuilder();
-
 				for (String binName : bins.keySet()) {
 					sb.append(m.getValue(bins.get(binName).get(i)));
 					sb.append(",");
 				}
 
-				writer.println(sb.deleteCharAt(sb.length() - 1));
+				sb = sb.deleteCharAt(sb.length() - 1).append('\n');
 			}
 
-			writer.close();
+			processedData.put(m.getName(), sb.toString());
 		}
 	}
 
-	private interface Measure {
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		for (String file : processedData.keySet()) {
+			sb.append('\n').append(file).append(".csv\n");
+			sb.append(processedData.get(file));
+		}
+
+		return sb.toString();
+	}
+
+	public interface Measure {
 		public double getValue(StatisticsDTO stats);
 		public String getName();
 	}

@@ -1,6 +1,7 @@
 package common.auctioning;
 
 import com.google.common.base.Optional;
+import common.ParcelTracker;
 import common.truck.Bidder;
 import rinde.sim.core.Simulator;
 import rinde.sim.pdptw.common.AddParcelEvent;
@@ -27,6 +28,9 @@ public class ReAuctionableParcel extends DefaultParcel {
 		super(pDto);
 		auctioneer = Optional.absent();
 		ownerHistory = newLinkedList();
+
+		// Register self
+		ParcelTracker.addParcel(this);
 	}
 
 	public void setAuctioneer(Auctioneer auct) {

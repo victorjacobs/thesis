@@ -1,5 +1,5 @@
 import com.google.common.collect.ImmutableList;
-import common.ResultsWriter;
+import common.ResultsProcessor;
 import common.auctioning.Auctioneer;
 import common.baseline.SolverBidder;
 import common.baseline.StubStateEvaluator;
@@ -32,26 +32,16 @@ public class Run {
 
 	public static void main(String[] args) throws Exception {
 		String outputDirectory = (args.length < 1) ? "results/test" + System.currentTimeMillis() + "/" : args[0];
-		System.out.println("Writing to " + outputDirectory);
-
-		final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
 
 		Experiment.ExperimentResults result = performRAExperiment();
 
-		ResultsWriter.write(outputDirectory, result);
+		ResultsProcessor w = new ResultsProcessor(result);
+
+		System.out.println(w.toString());
+
+		//w.write(outputDirectory);
 
 		System.out.println();
-
-		String[] temp;
-
-		for (Experiment.SimulationResult res : result.results) {
-			temp = res.masConfiguration.toString().split("-");
-
-			System.out.println(temp[temp.length - 1] + " Total overtime: " + res.stats.overTime);
-			System.out.println(temp[temp.length - 1] + " Total distance: " + res.stats.totalDistance);
-			System.out.println(temp[temp.length - 1] + " Objfunc: " + objFunc.computeCost(res.stats));
-			System.out.println(temp[temp.length - 1] + " Computation time: " + res.stats.computationTime);
-		}
 
 		Stats.print();
 	}
@@ -97,7 +87,7 @@ public class Run {
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								ImmutableList.of(Auctioneer.supplier()),
 								ImmutableList.of(AdaptiveLocalStateEvaluator.supplier())))
-				.addConfiguration(
+				/*.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(CheapestInsertionHeuristic.supplier(objFunc)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
