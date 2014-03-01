@@ -29,15 +29,15 @@ public class ReAuctionableParcel extends DefaultParcel {
 		super(pDto);
 		auctioneer = Optional.absent();
 		ownerHistory = newLinkedList();
-
-		// Register self
-		ParcelTracker.addParcel(this);
 	}
 
 	public void setAuctioneer(Auctioneer auct) {
 		checkState(!auctioneer.isPresent(), "Auctioneer already set");
 
 		auctioneer = Optional.of(auct);
+
+		// Register self
+		ParcelTracker.addParcel(auct, this);
 	}
 
 	public boolean hasAuctioneer() {

@@ -27,6 +27,7 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 	private Set<Bidder> bidders;
 
 	public Auctioneer() {
+
 		bidders = newLinkedHashSet();
 	}
 
