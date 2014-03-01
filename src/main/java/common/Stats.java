@@ -1,4 +1,4 @@
-package common.truck;
+package common;
 
 import java.util.HashMap;
 import java.util.Map;

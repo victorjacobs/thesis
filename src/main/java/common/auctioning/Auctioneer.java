@@ -25,11 +25,9 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
  */
 public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 	private Set<Bidder> bidders;
-	private Set<ReAuctionableParcel> parcels;	// TODO this might not be the best idea
 
 	public Auctioneer() {
 		bidders = newLinkedHashSet();
-		parcels = newLinkedHashSet();
 	}
 
 	public Bidder auction(ReAuctionableParcel par, long time) {
@@ -44,7 +42,7 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 			par.setAuctioneer(this);
 
 		final Iterator<Bidder> it = bidders.iterator();
-		Bid bestBid  = it.next().getBidFor(par, time);
+		Bid bestBid = it.next().getBidFor(par, time);
 		Bid curBid;
 		while (it.hasNext()) {
 			final Bidder cur = it.next();
@@ -82,7 +80,6 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 						"This class is only compatible with ReAuctionableParcel and subclasses.");
 				final ReAuctionableParcel rp = (ReAuctionableParcel) event.parcel;
 				auction(rp, event.time);
-				parcels.add(rp);
 			}
 		}, PDPModel.PDPModelEventType.NEW_PARCEL);
 	}

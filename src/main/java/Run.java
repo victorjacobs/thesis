@@ -1,11 +1,13 @@
 import com.google.common.collect.ImmutableList;
+import common.ParcelTracker;
 import common.ResultsProcessor;
+import common.Stats;
 import common.auctioning.Auctioneer;
+import common.auctioning.ReAuctionableParcel;
 import common.baseline.SolverBidder;
-import common.baseline.StubStateEvaluator;
-import common.truck.Stats;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
+import ra.RandomStateEvaluator;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -24,7 +26,7 @@ public class Run {
 
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 
-	private static final int THREADS = 2;
+	private static final int THREADS = 1;
 	private static final int REPETITIONS = 1;
 	private static final long SEED = 123L;
 
@@ -44,6 +46,17 @@ public class Run {
 		System.out.println();
 
 		Stats.print();
+
+		System.out.println();
+
+		// Temp
+		int max = 0;
+		for (ReAuctionableParcel p : ParcelTracker.getParcels()) {
+			if (p.getOwnerHistory().size() > max)
+				max = p.getOwnerHistory().size();
+		}
+
+		System.out.println("Max num of reauctions/parcel: " + max);
 	}
 
 	private static Experiment.ExperimentResults performRAExperiment() throws Exception {
@@ -59,15 +72,15 @@ public class Run {
 				.withThreads(THREADS)
 				.addScenarios(onlineScenarios)
 				//.addScenario(Gendreau06Parser.parse(SCENARIOS_PATH + "req_rapide_1_240_24"))
-				.addConfiguration(
+				/*.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								ImmutableList.of(Auctioneer.supplier()),
 								ImmutableList.of(StubStateEvaluator.supplier())
 						)
-				)
-				/*.addConfiguration(
+				)*/
+				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -75,7 +88,7 @@ public class Run {
 								ImmutableList.of(RandomStateEvaluator.supplier())
 						)
 				)
-				.addConfiguration(
+				/*.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),

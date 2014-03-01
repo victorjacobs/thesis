@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="HelloWorld" basedir="." default="remote">
+
+    <target name="remote">
+        <exec dir="." executable="files/remote.sh">
+            <arg value="ant" />
+        </exec>
+    </target>
+
+</project>

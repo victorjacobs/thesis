@@ -1,6 +1,7 @@
 package common.auctioning;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import common.ParcelTracker;
 import common.truck.Bidder;
 import rinde.sim.core.Simulator;
@@ -47,6 +48,10 @@ public class ReAuctionableParcel extends DefaultParcel {
 		checkState(auctioneer.isPresent(), "Auctioneer needed to change owner");
 
 		ownerHistory.add(auctioneer.get().auction(this, time));
+	}
+
+	public ImmutableList<Bidder> getOwnerHistory() {
+		return ImmutableList.copyOf(ownerHistory);
 	}
 
 	public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {
