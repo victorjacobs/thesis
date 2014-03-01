@@ -1,13 +1,13 @@
-package common;
+package common.results;
 
-import common.auctioning.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.common.StatisticsDTO;
 import rinde.sim.pdptw.experiment.Experiment;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
@@ -15,20 +15,20 @@ import static com.google.common.collect.Lists.newLinkedList;
 /**
  * Class that writes out ExperimentResults from an experiment run to csv files. On one hand,
  * it interpretes data from ExperimentResults and on the other hand data from static fields in stats objects. (e.g.
- * {@link common.ParcelTracker}.
+ * {@link ParcelTracker}.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 // TODO some stuff in here depends heavily on order of runs
 public class ResultsProcessor {
-	private Map<String, String> processedData;	// Measure.name -> file contents
+	private List<CSVWriter<String>> processedData;	// CSV writers containing measures
 	private List<Measure> measures;
 
 	/**
 	 * Creates empty ResultsProcessor. Add own Measures and then call load(). For now, don't let anyone use it
 	 */
 	private ResultsProcessor() {
-		processedData = new LinkedHashMap<String, String>();
+		processedData = new LinkedList<CSVWriter<String>>();
 		measures = newLinkedList();
 	}
 
@@ -78,8 +78,8 @@ public class ResultsProcessor {
 		checkState(!measures.isEmpty(), "I need some measures to evaluate");
 
 		// Create some stuff
-		StringBuilder sb;
 		Map<String, List<StatisticsDTO>> dtoBins = new LinkedHashMap<String, List<StatisticsDTO>>();
+		CSVWriter<String> csv;
 
 		// Bin statistics DTO's
 		for (Experiment.SimulationResult res : data.results) {
@@ -89,8 +89,21 @@ public class ResultsProcessor {
 			dtoBins.get(res.masConfiguration.toString()).add(res.stats);
 		}
 
-		// Go over result measures
+		// Calculate measures
 		for (Measure m : measures) {
+			csv = new CSVWriter<String>(m.getName());
+
+			for (String runName : dtoBins.keySet()) {
+				for (int i = 0; i < data.repetitions * data.scenarios.size(); i++) {
+					csv.addToColumn(runName, Double.toString(m.getValue(dtoBins.get(runName).get(i))));
+				}
+			}
+
+			processedData.add(csv);
+		}
+
+
+		/*for (Measure m : measures) {
 			sb = new StringBuilder();
 
 			// Write headers
@@ -125,8 +138,8 @@ public class ResultsProcessor {
 		Map<String, List<List<ReAuctionableParcel>>> parcelBins = new LinkedHashMap<String, List<List<ReAuctionableParcel>>>();
 
 		while (runIterator.hasNext()) {
-			if (count % data.repetitions == 0) {
-				// Move key
+			if (count % (data.repetitions * data.scenarios.size()) == 0) {
+				// Get next key (scenario)
 				key = binIterator.next();
 				parcelBins.put(key, new LinkedList<List<ReAuctionableParcel>>());
 			}
@@ -136,7 +149,26 @@ public class ResultsProcessor {
 			count++;
 		}
 
-		System.out.println();
+		// Do something with it
+		float avg;
+		sb = new StringBuilder();
+		// Configurations
+		for (String conf : parcelBins.keySet()) {
+			System.out.println();
+			System.out.println(conf);
+			// Runs
+			for (int i = 0; i < parcelBins.get(key).size(); i++) {
+				avg = 0;
+
+				// Parcels
+				for (ReAuctionableParcel p : parcelBins.get(conf).get(i))
+					avg += p.getOwnerHistory().size();
+
+				avg /= parcelBins.get(key).get(i).size();
+
+				System.out.println(avg);
+			}
+		}*/
 	}
 
 	/**
@@ -145,17 +177,8 @@ public class ResultsProcessor {
 	 * @throws Exception
 	 */
 	public void write(String directory) throws Exception {
-		// Create result directory if it doesn't exist
-		File dir = new File(directory);
-		if (!dir.exists()) dir.mkdir();
-
-		PrintWriter writer;
-
-		for (String file : processedData.keySet()) {
-			writer = new PrintWriter(directory + file + ".csv");
-
-			writer.write(processedData.get(file));
-			writer.close();
+		for (CSVWriter<String> w : processedData) {
+			w.write(directory);
 		}
 	}
 
@@ -163,9 +186,9 @@ public class ResultsProcessor {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
-		for (String file : processedData.keySet()) {
-			sb.append('\n').append(file).append(".csv\n");
-			sb.append(processedData.get(file));
+		for (CSVWriter<String> w : processedData) {
+			sb.append('\n').append(w.getName()).append(".csv\n");
+			sb.append(w.toString());
 		}
 
 		return sb.toString();

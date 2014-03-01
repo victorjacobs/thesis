@@ -1,4 +1,4 @@
-package common;
+package common.results;
 
 import common.auctioning.Auctioneer;
 import common.auctioning.ReAuctionableParcel;

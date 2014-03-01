@@ -2,7 +2,7 @@ package common.auctioning;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import common.ParcelTracker;
+import common.results.ParcelTracker;
 import common.truck.Bidder;
 import rinde.sim.core.Simulator;
 import rinde.sim.pdptw.common.AddParcelEvent;

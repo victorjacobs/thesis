@@ -42,7 +42,7 @@ public class AdaptiveLocalStateEvaluator extends LocalStateEvaluator {
 			// Always add parcels with negative slacks
 			if ((curSlack = slacks.get(par)) < 0) {
 				ret.add(par);
-			} else if (curSlack < mean - 2 * getStandardDeviation()) {
+			} else if (curSlack < mean - getStandardDeviation()) {
 				ret.add(par);
 			}
 		}
