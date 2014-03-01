@@ -1,13 +1,13 @@
 package common.results;
 
+import common.auctioning.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.common.StatisticsDTO;
 import rinde.sim.pdptw.experiment.Experiment;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
@@ -34,7 +34,8 @@ public class ResultsProcessor {
 
 	/**
 	 * Constructs default ResultsProcessor with standard result measures (objective value and computation time)
-	 * @param data
+	 *
+	 * @param data ExperimentResults to be processed
 	 */
 	public ResultsProcessor(Experiment.ExperimentResults data) {
 		this();
@@ -69,10 +70,20 @@ public class ResultsProcessor {
 		load(data);
 	}
 
+	/**
+	 * Add measure to be evaluated on experiment results.
+	 *
+	 * @param m Measure to be evaluated
+	 */
 	public void addMeasure(Measure m) {
 		measures.add(m);
 	}
 
+	/**
+	 * Load list of experimental results
+	 *
+	 * @param data List to be loaded
+	 */
 	public void load(Experiment.ExperimentResults data) {
 		checkState(processedData.isEmpty(), "Data already loaded");
 		checkState(!measures.isEmpty(), "I need some measures to evaluate");
@@ -102,31 +113,6 @@ public class ResultsProcessor {
 			processedData.add(csv);
 		}
 
-
-		/*for (Measure m : measures) {
-			sb = new StringBuilder();
-
-			// Write headers
-			for (String binName : dtoBins.keySet()) {
-				sb.append(binName);
-				sb.append(",");
-			}
-
-			sb = sb.deleteCharAt(sb.length() - 1).append('\n');
-
-			// Store data
-			for (int i = 0; i < data.repetitions * data.scenarios.size(); i++) {
-				for (String binName : dtoBins.keySet()) {
-					sb.append(m.getValue(dtoBins.get(binName).get(i)));
-					sb.append(",");
-				}
-
-				sb = sb.deleteCharAt(sb.length() - 1).append('\n');
-			}
-
-			processedData.put(m.getName(), sb.toString());
-		}
-
 		// Now process remaining data, stored in random static objects
 		// ParcelTracker
 		int count = 0;
@@ -151,11 +137,10 @@ public class ResultsProcessor {
 
 		// Do something with it
 		float avg;
-		sb = new StringBuilder();
+		csv = new CSVWriter<String>("avgReauctions");
+
 		// Configurations
 		for (String conf : parcelBins.keySet()) {
-			System.out.println();
-			System.out.println(conf);
 			// Runs
 			for (int i = 0; i < parcelBins.get(key).size(); i++) {
 				avg = 0;
@@ -166,17 +151,24 @@ public class ResultsProcessor {
 
 				avg /= parcelBins.get(key).get(i).size();
 
-				System.out.println(avg);
+				csv.addToColumn(conf, Float.toString(avg));
 			}
-		}*/
+		}
+
+		processedData.add(csv);
 	}
 
 	/**
-	 * Write resulting csv files to given directory
-	 * @param directory
-	 * @throws Exception
+	 * Write processed data to a set of CSV files in given directory.
+	 *
+	 * @param directory Directory where to write processed data
+	 * @throws IOException IO broke
 	 */
-	public void write(String directory) throws Exception {
+	public void write(String directory) throws IOException {
+		// Create result directory if it doesn't exist
+		File dir = new File(directory);
+		if (!dir.exists()) dir.mkdir();
+
 		for (CSVWriter<String> w : processedData) {
 			w.write(directory);
 		}

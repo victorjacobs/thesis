@@ -50,9 +50,8 @@ public class CSVWriter<E> {
 	 * @throws IOException Thrown when IO fails
 	 */
 	public void write(String directory) throws IOException {
-		Writer w = new PrintWriter(directory);
+		Writer w = new PrintWriter(directory + "/" + getName() + ".csv");
 		w.write(toString());
-
 		w.close();
 	}
 

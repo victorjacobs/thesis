@@ -40,7 +40,7 @@ public class Run {
 
 		System.out.println(processor.toString());
 
-		//w.write(outputDirectory);
+		processor.write(outputDirectory);
 
 		System.out.println();
 
