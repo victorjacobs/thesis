@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
 /**
@@ -15,7 +16,6 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class CSVWriter<E> {
-
 	private Map<String, List<E>> data;
 	private String name;
 
@@ -23,11 +23,11 @@ public class CSVWriter<E> {
 	 * Creates CSVWriter with given name. This name is used to identify it. When doing {@link CSVWriter#write(String)}
 	 * , the data will be written at directory/name.csv.
 	 *
-	 * @param n Name of the writer
+	 * @param name Name of the writer
 	 */
-	public CSVWriter(String n) {
+	public CSVWriter(String name) {
 		data = newLinkedHashMap();
-		name = n;
+		this.name = name;
 	}
 
 	/**
@@ -41,6 +41,30 @@ public class CSVWriter<E> {
 			data.put(header, new LinkedList<E>());
 
 		data.get(header).add(d);
+	}
+
+	/**
+	 * Adds column to the CSV file. Doesn't overwrite columns. If you want to overwrite a column,
+	 * first explicitly remove it using {@link #deleteColumn(String)}.
+	 *
+	 * @param header Column name
+	 * @param d Column data
+	 */
+	public void addColumn(String header, List<E> d) {
+		checkState(!data.containsKey(header), "Column " + header + " already exists");
+
+		data.put(header, new LinkedList<E>(d));
+	}
+
+	/**
+	 * Deletes column from the CSV file.
+	 *
+	 * @param header Column name
+	 */
+	public void deleteColumn(String header) {
+		checkState(data.containsKey(header), "Trying to remove non-existing column");
+
+		data.remove(header);
 	}
 
 	/**

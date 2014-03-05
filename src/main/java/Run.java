@@ -4,7 +4,6 @@ import common.baseline.SolverBidder;
 import common.results.ParcelTrackerModel;
 import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
-import common.results.Stats;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import ra.RandomStateEvaluator;
@@ -43,11 +42,7 @@ public class Run {
 
 		System.out.println(processor.toString());
 
-		//processor.write(outputDirectory);
-
-		System.out.println();
-
-		Stats.print();
+		processor.write(outputDirectory);
 
 		System.out.println();
 

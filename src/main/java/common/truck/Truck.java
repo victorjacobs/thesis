@@ -2,7 +2,6 @@ package common.truck;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import common.results.Stats;
 import common.auctioning.ReAuctionableParcel;
 import common.truck.route.RoutePlanner;
 import rinde.sim.core.SimulatorAPI;
@@ -177,8 +176,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 				ImmutableSet<DefaultParcel> parcelsToRemove = ev.evaluateState(getCurrentTime().getTime());
 
 				for (DefaultParcel par : parcelsToRemove) {
-					if (removeParcel(par))
-						Stats.increaseNbReAuctions(ev.toString());
+					removeParcel(par);
 				}
 			}
 		}
