@@ -1,21 +1,22 @@
 package common.results;
 
-import common.auctioning.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.common.StatisticsDTO;
 import rinde.sim.pdptw.experiment.Experiment;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
 
 /**
  * Class that writes out ExperimentResults from an experiment run to csv files. On one hand,
- * it interpretes data from ExperimentResults and on the other hand data from static fields in stats objects. (e.g.
- * {@link ParcelTracker}.
+ * it interpretes data from ExperimentResults and on the other hand data from static fields in stats objects.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
@@ -115,7 +116,7 @@ public class ResultsProcessor {
 
 		// Now process remaining data, stored in random static objects
 		// ParcelTracker
-		int count = 0;
+		/*int count = 0;
 		String key = "";
 		// These orderings should be preserved since backed by LinkedHashMap
 		Iterator<String> binIterator = dtoBins.keySet().iterator();
@@ -137,25 +138,26 @@ public class ResultsProcessor {
 
 		// Do something with it
 		float avg;
-		csv = new CSVWriter<String>("avgReauctions");
+		csv = new CSVWriter<String>("tally");
+		int[] tally;
 
 		// Configurations
 		for (String conf : parcelBins.keySet()) {
 			// Runs
+			tally = new int[1000];
 			for (int i = 0; i < parcelBins.get(key).size(); i++) {
-				avg = 0;
-
 				// Parcels
-				for (ReAuctionableParcel p : parcelBins.get(conf).get(i))
-					avg += p.getOwnerHistory().size();
+				for (ReAuctionableParcel p : parcelBins.get(conf).get(i)) {
+					tally[p.getOwnerHistory().size()] ++;
+				}
+			}
 
-				avg /= parcelBins.get(key).get(i).size();
-
-				csv.addToColumn(conf, Float.toString(avg));
+			for (int i = 0; i < tally.length; i++) {
+				csv.addToColumn(conf, Integer.toString(tally[i]));
 			}
 		}
 
-		processedData.add(csv);
+		processedData.add(csv);*/
 	}
 
 	/**

@@ -1,11 +1,12 @@
 import com.google.common.collect.ImmutableList;
-import common.results.ResultsProcessor;
-import common.results.Stats;
 import common.auctioning.Auctioneer;
 import common.baseline.SolverBidder;
+import common.results.ParcelTrackerModel;
+import common.results.ResultsPostProcessor;
+import common.results.ResultsProcessor;
+import common.results.Stats;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
-import ra.LocalStateEvaluator;
 import ra.RandomStateEvaluator;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
@@ -25,8 +26,8 @@ public class Run {
 
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 
-	private static final int THREADS = 4;
-	private static final int REPETITIONS = 2;
+	private static final int THREADS = 2;
+	private static final int REPETITIONS = 1;
 	private static final long SEED = 123L;
 
 	private Run() {}
@@ -36,11 +37,13 @@ public class Run {
 
 		Experiment.ExperimentResults result = performRAExperiment();
 
+		System.out.println();
+
 		ResultsProcessor processor = new ResultsProcessor(result);
 
 		System.out.println(processor.toString());
 
-		processor.write(outputDirectory);
+		//processor.write(outputDirectory);
 
 		System.out.println();
 
@@ -75,17 +78,17 @@ public class Run {
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								ImmutableList.of(Auctioneer.supplier()),
+								ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
 								ImmutableList.of(RandomStateEvaluator.supplier())
 						)
 				)
-				.addConfiguration(
+				/*.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								ImmutableList.of(Auctioneer.supplier()),
 								ImmutableList.of(LocalStateEvaluator.supplier())))
-				/*.addConfiguration(
+				.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -118,6 +121,7 @@ public class Run {
 								SolverBidder.supplier(objFunc, CheapestInsertionHeuristic.supplier(objFunc)),
 								ImmutableList.of(Auctioneer.supplier()),
 								ImmutableList.<SupplierRng<? extends StateEvaluator>>of()))*/
+				.usePostProcessor(new ResultsPostProcessor())
 				.perform();
 	}
 

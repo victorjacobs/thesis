@@ -2,7 +2,6 @@ package common.auctioning;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import common.results.ParcelTracker;
 import common.truck.Bidder;
 import rinde.sim.core.Simulator;
 import rinde.sim.pdptw.common.AddParcelEvent;
@@ -35,9 +34,6 @@ public class ReAuctionableParcel extends DefaultParcel {
 		checkState(!auctioneer.isPresent(), "Auctioneer already set");
 
 		auctioneer = Optional.of(auct);
-
-		// Register self
-		ParcelTracker.addParcel(auct, this);
 	}
 
 	public boolean hasAuctioneer() {
