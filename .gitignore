@@ -1,9 +1,7 @@
 /.idea/
-/untitled.iml
+*.iml
 /files/
 /target/
 .DS_Store
-
 /out/
-
 /results/

@@ -1,5 +1,6 @@
 package common.results;
 
+import common.auctioning.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.common.StatisticsDTO;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -20,7 +21,6 @@ import static com.google.common.collect.Lists.newLinkedList;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-// TODO some stuff in here depends heavily on order of runs
 public class ResultsProcessor {
 	private List<CSVWriter<String>> processedData;	// CSV writers containing measures
 	private List<Measure> measures;
@@ -38,6 +38,7 @@ public class ResultsProcessor {
 	 *
 	 * @param data ExperimentResults to be processed
 	 */
+    @SuppressWarnings("all")
 	public ResultsProcessor(Experiment.ExperimentResults data) {
 		this();
 
@@ -45,28 +46,31 @@ public class ResultsProcessor {
 		final ObjectiveFunction objFunction = data.objectiveFunction;
 
 		// What data to extract (eww Java)
-		addMeasure(new Measure() {
+		addMeasure(new Measure("fitness") {
 			@Override
-			public double getValue(StatisticsDTO stats) {
-				return objFunction.computeCost(stats);
-			}
-
-			@Override
-			public String getName() {
-				return "fitness";
+			public double getValue(Experiment.SimulationResult result) {
+				return objFunction.computeCost(result.stats);
 			}
 		});
-		addMeasure(new Measure() {
+		addMeasure(new Measure("computationtime") {
 			@Override
-			public double getValue(StatisticsDTO stats) {
-				return stats.computationTime;
-			}
-
-			@Override
-			public String getName() {
-				return "computationtime";
+			public double getValue(Experiment.SimulationResult result) {
+				return result.stats.computationTime;
 			}
 		});
+        addMeasure(new Measure("totalReauctions") {
+            @Override
+            public double getValue(Experiment.SimulationResult result) {
+                List<ReAuctionableParcel> pars = (List<ReAuctionableParcel>) result.simulationData;
+
+                int total = 0;
+                for (ReAuctionableParcel par : pars) {
+                    total += par.getOwnerHistory().size();
+                }
+
+                return total;
+            }
+        });
 
 		load(data);
 	}
@@ -90,15 +94,15 @@ public class ResultsProcessor {
 		checkState(!measures.isEmpty(), "I need some measures to evaluate");
 
 		// Create some stuff
-		Map<String, List<StatisticsDTO>> dtoBins = new LinkedHashMap<String, List<StatisticsDTO>>();
+		Map<String, List<Experiment.SimulationResult>> dtoBins = new LinkedHashMap<String, List<Experiment.SimulationResult>>();
 		CSVWriter<String> csv;
 
 		// Bin statistics DTO's
 		for (Experiment.SimulationResult res : data.results) {
 			if (!dtoBins.containsKey(res.masConfiguration.toString()))
-				dtoBins.put(res.masConfiguration.toString(), new LinkedList<StatisticsDTO>());
+				dtoBins.put(res.masConfiguration.toString(), new LinkedList<Experiment.SimulationResult>());
 
-			dtoBins.get(res.masConfiguration.toString()).add(res.stats);
+			dtoBins.get(res.masConfiguration.toString()).add(res);
 		}
 
 		// Calculate measures
@@ -191,9 +195,17 @@ public class ResultsProcessor {
 	/**
 	 * Defines a measure to be evaluated on a StatisticsDTO
 	 */
-	public interface Measure {
-		public double getValue(StatisticsDTO stats);
-		public String getName();
+	abstract class Measure {
+        private String name;
+
+        public Measure(String n) {
+            this.name = n;
+        }
+
+		public abstract double getValue(Experiment.SimulationResult result);
+		public String getName() {
+            return name;
+        }
 	}
 
 }
