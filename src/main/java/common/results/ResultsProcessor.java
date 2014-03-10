@@ -1,16 +1,13 @@
 package common.results;
 
+import com.google.common.collect.ImmutableList;
 import common.auctioning.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
-import rinde.sim.pdptw.common.StatisticsDTO;
 import rinde.sim.pdptw.experiment.Experiment;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
@@ -21,6 +18,7 @@ import static com.google.common.collect.Lists.newLinkedList;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
+// TODO maybe change how Measures that return multiple values work
 public class ResultsProcessor {
 	private List<CSVWriter<String>> processedData;	// CSV writers containing measures
 	private List<Measure> measures;
@@ -46,21 +44,22 @@ public class ResultsProcessor {
 		final ObjectiveFunction objFunction = data.objectiveFunction;
 
 		// What data to extract (eww Java)
-		addMeasure(new Measure("fitness") {
+        // TODO should move this out of this class
+		addMeasure(new Measure<String>("fitness") {
 			@Override
-			public double getValue(Experiment.SimulationResult result) {
-				return objFunction.computeCost(result.stats);
+			public void calculate(Experiment.SimulationResult result) {
+				addToMeasure(Double.toString(objFunction.computeCost(result.stats)));
 			}
 		});
-		addMeasure(new Measure("computationtime") {
+		addMeasure(new Measure<String>("computationtime") {
 			@Override
-			public double getValue(Experiment.SimulationResult result) {
-				return result.stats.computationTime;
+			public void calculate(Experiment.SimulationResult result) {
+                addToMeasure(Long.toString(result.stats.computationTime));
 			}
 		});
-        addMeasure(new Measure("totalReauctions") {
+        addMeasure(new Measure<String>("totalReauctions") {
             @Override
-            public double getValue(Experiment.SimulationResult result) {
+            public void calculate(Experiment.SimulationResult result) {
                 List<ReAuctionableParcel> pars = (List<ReAuctionableParcel>) result.simulationData;
 
                 int total = 0;
@@ -68,7 +67,16 @@ public class ResultsProcessor {
                     total += par.getOwnerHistory().size();
                 }
 
-                return total;
+                addToMeasure(Integer.toString(total));
+            }
+        });
+        addMeasure(new Measure<String>("nbReauctions") {
+            @Override
+            public void calculate(Experiment.SimulationResult result) {
+                List<ReAuctionableParcel> pars = (List<ReAuctionableParcel>) result.simulationData;
+
+                for (ReAuctionableParcel par : pars)
+                    addToMeasure(Integer.toString(par.getOwnerHistory().size()));
             }
         });
 
@@ -111,57 +119,13 @@ public class ResultsProcessor {
 
 			for (String runName : dtoBins.keySet()) {
 				for (int i = 0; i < data.repetitions * data.scenarios.size(); i++) {
-					csv.addToColumn(runName, Double.toString(m.getValue(dtoBins.get(runName).get(i))));
+					//csv.addToColumn(runName, Double.toString(m.getValue(dtoBins.get(runName).get(i))));
+                    csv.addColumn(runName, m.evaluate(dtoBins.get(runName).get(i)));
 				}
 			}
 
 			processedData.add(csv);
 		}
-
-		// Now process remaining data, stored in random static objects
-		// ParcelTracker
-		/*int count = 0;
-		String key = "";
-		// These orderings should be preserved since backed by LinkedHashMap
-		Iterator<String> binIterator = dtoBins.keySet().iterator();
-		Iterator<List<ReAuctionableParcel>> runIterator = ParcelTracker.getParcels().values().iterator();
-
-		Map<String, List<List<ReAuctionableParcel>>> parcelBins = new LinkedHashMap<String, List<List<ReAuctionableParcel>>>();
-
-		while (runIterator.hasNext()) {
-			if (count % (data.repetitions * data.scenarios.size()) == 0) {
-				// Get next key (scenario)
-				key = binIterator.next();
-				parcelBins.put(key, new LinkedList<List<ReAuctionableParcel>>());
-			}
-
-			parcelBins.get(key).add(runIterator.next());
-
-			count++;
-		}
-
-		// Do something with it
-		float avg;
-		csv = new CSVWriter<String>("tally");
-		int[] tally;
-
-		// Configurations
-		for (String conf : parcelBins.keySet()) {
-			// Runs
-			tally = new int[1000];
-			for (int i = 0; i < parcelBins.get(key).size(); i++) {
-				// Parcels
-				for (ReAuctionableParcel p : parcelBins.get(conf).get(i)) {
-					tally[p.getOwnerHistory().size()] ++;
-				}
-			}
-
-			for (int i = 0; i < tally.length; i++) {
-				csv.addToColumn(conf, Integer.toString(tally[i]));
-			}
-		}
-
-		processedData.add(csv);*/
 	}
 
 	/**
@@ -195,15 +159,27 @@ public class ResultsProcessor {
 	/**
 	 * Defines a measure to be evaluated on a StatisticsDTO
 	 */
-	abstract class Measure {
+	abstract class Measure<E> {
         private String name;
+        private List<E> values;
 
         public Measure(String n) {
             this.name = n;
+            this.values = newLinkedList();
         }
 
-		public abstract double getValue(Experiment.SimulationResult result);
-		public String getName() {
+		protected abstract void calculate(Experiment.SimulationResult result);
+
+        protected final void addToMeasure(E val) {
+            values.add(val);
+        }
+
+        public final ImmutableList<E> evaluate(Experiment.SimulationResult result) {
+            calculate(result);
+            return ImmutableList.copyOf(values);
+        }
+
+		public final String getName() {
             return name;
         }
 	}

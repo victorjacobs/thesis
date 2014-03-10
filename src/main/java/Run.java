@@ -28,7 +28,7 @@ public class Run {
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 
 	private static final int THREADS = 4;
-	private static final int REPETITIONS = 1;
+	private static final int REPETITIONS = 10;
 	private static final long SEED = 123L;
 
 	private Run() {}

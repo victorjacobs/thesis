@@ -1,5 +1,7 @@
 package common.results;
 
+import com.google.common.collect.ImmutableList;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
 /**
@@ -42,6 +45,11 @@ public class CSVWriter<E> {
 
 		data.get(header).add(d);
 	}
+
+    public void addToColumn(String header, List<E> d) {
+        for (E el : d)
+            addToColumn(header, el);
+    }
 
 	/**
 	 * Adds column to the CSV file. Doesn't overwrite columns. If you want to overwrite a column,
