@@ -1,12 +1,15 @@
 import com.google.common.collect.ImmutableList;
 import common.auctioning.Auctioneer;
+import common.auctioning.ReAuctionableParcel;
 import common.baseline.SolverBidder;
+import common.baseline.StubStateEvaluator;
 import common.results.ParcelTrackerModel;
 import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import ra.AdaptiveLocalStateEvaluator;
+import ra.FixedThresholdReAuctionableParcel;
 import ra.LocalStateEvaluator;
 import ra.RandomStateEvaluator;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
@@ -17,6 +20,7 @@ import rinde.sim.pdptw.gendreau06.Gendreau06Parser;
 import rinde.sim.pdptw.gendreau06.Gendreau06Scenario;
 import rinde.sim.pdptw.gendreau06.GendreauProblemClass;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -42,8 +46,6 @@ public class Run {
 
 		ResultsProcessor processor = new ResultsProcessor(result);
 
-		System.out.println(processor.toString());
-
 		processor.write(outputDirectory);
 
 		System.out.println();
@@ -67,16 +69,18 @@ public class Run {
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								ImmutableList.of(Auctioneer.supplier()),
-								ImmutableList.of(StubStateEvaluator.supplier())
+								ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+								ImmutableList.of(StubStateEvaluator.supplier()),
+                                ReAuctionableParcel.getCreator()
 						)
-				)*/
-				.addConfiguration(
+				)
+				/*.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-								ImmutableList.of(RandomStateEvaluator.supplier())
+								ImmutableList.of(RandomStateEvaluator.supplier()),
+                                ReAuctionableParcel.getCreator()
 						)
 				)
 				.addConfiguration(
@@ -84,13 +88,28 @@ public class Run {
 								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
 								ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-								ImmutableList.of(LocalStateEvaluator.supplier())))
+								ImmutableList.of(LocalStateEvaluator.supplier()),
+                                ReAuctionableParcel.getCreator()
+                        )
+                )*/
 				.addConfiguration(
-						new TruckConfiguration(
-								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-								ImmutableList.of(AdaptiveLocalStateEvaluator.supplier())))
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(AdaptiveLocalStateEvaluator.supplier()),
+                                ReAuctionableParcel.getCreator()
+                        )
+                )
+                .addConfiguration(
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(AdaptiveLocalStateEvaluator.supplier()),
+                                FixedThresholdReAuctionableParcel.getCreator()
+                        )
+                )
 				/*.addConfiguration(
 						new TruckConfiguration(
 								SolverRoutePlanner.supplier(CheapestInsertionHeuristic.supplier(objFunc)),

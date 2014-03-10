@@ -120,7 +120,7 @@ public class ResultsProcessor {
 			for (String runName : dtoBins.keySet()) {
 				for (int i = 0; i < data.repetitions * data.scenarios.size(); i++) {
 					//csv.addToColumn(runName, Double.toString(m.getValue(dtoBins.get(runName).get(i))));
-                    csv.addColumn(runName, m.evaluate(dtoBins.get(runName).get(i)));
+                    csv.addToColumn(runName, m.evaluate(dtoBins.get(runName).get(i)));
 				}
 			}
 
@@ -161,11 +161,11 @@ public class ResultsProcessor {
 	 */
 	abstract class Measure<E> {
         private String name;
+        // TODO Eigenlijk zou dit stateless moeten zijn
         private List<E> values;
 
         public Measure(String n) {
             this.name = n;
-            this.values = newLinkedList();
         }
 
 		protected abstract void calculate(Experiment.SimulationResult result);
@@ -175,6 +175,7 @@ public class ResultsProcessor {
         }
 
         public final ImmutableList<E> evaluate(Experiment.SimulationResult result) {
+            this.values = newLinkedList();
             calculate(result);
             return ImmutableList.copyOf(values);
         }

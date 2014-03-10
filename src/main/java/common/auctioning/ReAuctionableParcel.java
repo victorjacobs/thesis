@@ -22,7 +22,8 @@ import static com.google.common.collect.Lists.newLinkedList;
 public class ReAuctionableParcel extends DefaultParcel {
 
 	private Optional<Auctioneer> auctioneer;
-	private List<Bidder> ownerHistory;
+    private boolean reAuctionPrevented = false;
+    protected List<Bidder> ownerHistory;
 
 	public ReAuctionableParcel(ParcelDTO pDto) {
 		super(pDto);
@@ -30,33 +31,76 @@ public class ReAuctionableParcel extends DefaultParcel {
 		ownerHistory = newLinkedList();
 	}
 
-	public void setAuctioneer(Auctioneer auct) {
+    /**
+     * Set Auctioneer that will be used in reauctioning.
+     *
+     * @param auct Auctioneer that owns the parcel
+     */
+	public final void setAuctioneer(Auctioneer auct) {
 		checkState(!auctioneer.isPresent(), "Auctioneer already set");
 
 		auctioneer = Optional.of(auct);
 	}
 
-	public boolean hasAuctioneer() {
+    /**
+     * Is the parcel owned by an auctioneer?
+     *
+     * @return The parcel is owned by an auctioneer
+     */
+	public final boolean hasAuctioneer() {
 		return auctioneer.isPresent();
 	}
 
-	public void changeOwner(long time) {
+    public boolean shouldChangeOwner() {
+        return true;
+    }
+
+    /**
+     * Attempt to change owner of the parcel.
+     * NOTE: FIRST update local state BEFORE calling this.
+     *
+     * @param time Simulation time
+     * @return Whether re-auction is allowed or not (decided by the parcel itself)
+     */
+	public final boolean changeOwner(long time) {
+        if (this.reAuctionPrevented || !shouldChangeOwner()) {
+            this.reAuctionPrevented = true;
+            return false;
+        }
+
 		checkState(auctioneer.isPresent(), "Auctioneer needed to change owner");
 
 		ownerHistory.add(auctioneer.get().auction(this, time));
+
+        return true;
 	}
 
-	public ImmutableList<Bidder> getOwnerHistory() {
-		return ImmutableList.copyOf(ownerHistory);
-	}
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 
-	public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {
+    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {
 		return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
 			@Override
 			public boolean create(Simulator sim, AddParcelEvent event) {
 				sim.register(new ReAuctionableParcel(event.parcelDTO));
 				return true;
 			}
-		};
+
+            @Override
+            public String toString() {
+                return "ReAuctionableParcel";
+            }
+        };
 	}
+
+    // Stats
+    public final ImmutableList<Bidder> getOwnerHistory() {
+        return ImmutableList.copyOf(ownerHistory);
+    }
+
+    public final boolean reAuctionPrevented() {
+        return reAuctionPrevented;
+    }
 }

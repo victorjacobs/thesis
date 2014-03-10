@@ -110,8 +110,11 @@ public class CSVWriter<E> {
 		// Write data
 		for (int i = 0; i < nbRows; i++) {
 			for (String head : data.keySet()) {
-				if (i < nbRows)
-					sb.append(data.get(head).get(i));
+                try {
+                    sb.append(data.get(head).get(i));
+                } catch (IndexOutOfBoundsException ignored) {
+                    // Don't do anything
+                }
 
 				sb = sb.append(',');
 			}

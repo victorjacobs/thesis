@@ -10,6 +10,7 @@ import rinde.sim.core.Simulator;
 import rinde.sim.core.model.Model;
 import rinde.sim.pdptw.common.AddParcelEvent;
 import rinde.sim.pdptw.common.AddVehicleEvent;
+import rinde.sim.pdptw.common.DynamicPDPTWProblem;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem.Creator;
 import rinde.sim.pdptw.common.VehicleDTO;
 import rinde.sim.pdptw.experiment.DefaultMASConfiguration;
@@ -40,7 +41,8 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 	 */
 	protected final ImmutableList<? extends SupplierRng<? extends Model<?>>> mSuppliers;
 	private /*final*/ ImmutableList<? extends SupplierRng<? extends StateEvaluator>> seSuppliers;
-	private /*final*/ ImmutableList<? extends SupplierRng<? extends StateObserver>> soSuppliers;
+    private final Creator<AddParcelEvent> parcelCreator;
+    private /*final*/ ImmutableList<? extends SupplierRng<? extends StateObserver>> soSuppliers;
 
 	/**
 	 * Instantiate a new configuration.
@@ -53,13 +55,15 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 			SupplierRng<? extends Bidder> bidderSupplier,
 			ImmutableList<? extends SupplierRng<? extends Model<?>>> modelSuppliers/*,
 			ImmutableList<? extends SupplierRng<? extends StateObserver>> stateObserverSuppliers*/,
-			ImmutableList<? extends SupplierRng<? extends StateEvaluator>> stateEvaluatorSuppliers) {
+			ImmutableList<? extends SupplierRng<? extends StateEvaluator>> stateEvaluatorSuppliers,
+            DynamicPDPTWProblem.Creator<AddParcelEvent> parcelCreator) {
 		rpSupplier = routePlannerSupplier;
 		bSupplier = bidderSupplier;
 		mSuppliers = modelSuppliers;
 		/*soSuppliers = stateObserverSuppliers;*/
 		seSuppliers = stateEvaluatorSuppliers;
-	}
+        this.parcelCreator = parcelCreator;
+    }
 
 	@Override
 	public Creator<AddVehicleEvent> getVehicleCreator() {
@@ -81,7 +85,7 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 	 */
 	@Override
 	public Optional<? extends Creator<AddParcelEvent>> getParcelCreator() {
-		return Optional.of(ReAuctionableParcel.getCreator());
+		return Optional.of(parcelCreator);
 	}
 
 	/**
@@ -119,6 +123,7 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 
 	@Override
 	public String toString() {
-		return Joiner.on("-").join(rpSupplier, bSupplier, seSuppliers.toArray());
+        // TODO
+        return Joiner.on("-").join(seSuppliers.get(0), parcelCreator);
 	}
 }

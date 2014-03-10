@@ -125,8 +125,11 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	/**
 	 * Removes a parcel from this truck. This will notify connected observers that a parcel was removed. This will
 	 * make sure that the parcel doesn't just disappear but will get re-assigned to another truck.
+     *
 	 * @param par Parcel that was removed
+     * @return Whether or not parcel was successfully removed
 	 */
+    // TODO do something with return value -> to reduce keep trying re-auction
 	private boolean removeParcel(DefaultParcel par) {
 		checkState(par instanceof ReAuctionableParcel, "Parcel needs to be re-auctionable in order to remove it from " +
 				"truck");
@@ -138,13 +141,21 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 			return false;
 		}
 
-		state.remove(par);
-		fixedParcels.remove(par);
-		notifyChange();
+        ReAuctionableParcel rParcel = ((ReAuctionableParcel) par);
 
-		((ReAuctionableParcel) par).changeOwner(getCurrentTime().getTime());
+        if (rParcel.shouldChangeOwner()) {
+            state.remove(par);
+            fixedParcels.remove(par);
+            notifyChange();
 
-		return true;
+            rParcel.changeOwner(getCurrentTime().getTime());
+
+            return true;
+        } else {
+            return false;
+        }
+
+
 	}
 
 	/**
