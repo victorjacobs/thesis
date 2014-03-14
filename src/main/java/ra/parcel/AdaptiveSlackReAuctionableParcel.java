@@ -17,6 +17,8 @@ public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
     private double M2;
     private double variance;
 
+    private double lastSlack;
+
     public AdaptiveSlackReAuctionableParcel(ParcelDTO pDto) {
         super(pDto);
 
@@ -28,20 +30,24 @@ public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
 
     @Override
     public boolean shouldChangeOwner() {
-        return super.shouldChangeOwner();
+        return (lastSlack < mean - getStandardDeviation());
     }
 
     @Override
     public void update(double slack) {
-        double delta;
-
         n++;
-        delta = slack - mean;
+        double delta = lastSlack - mean;
         mean += delta / n;
-        M2 += delta * (slack - mean);
+        M2 += delta * (lastSlack - mean);
 
         if (n > 1)
             variance = M2 / (n - 1);
+
+        lastSlack = slack;
+    }
+
+    double getMean() {
+        return mean;
     }
 
     double getStandardDeviation() {
@@ -53,13 +59,13 @@ public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new FixedSlackReAuctionableParcel(event.parcelDTO));
+                sim.register(new AdaptiveSlackReAuctionableParcel(event.parcelDTO));
                 return true;
             }
 
             @Override
             public String toString() {
-                return "AdaptiveSlackReAuctionableParcel";
+                return "AdaptiveSlack1STD";
             }
         };
     }

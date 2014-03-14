@@ -1,17 +1,18 @@
 import com.google.common.collect.ImmutableList;
 import common.auctioning.Auctioneer;
-import common.baseline.StubStateEvaluator;
-import ra.evaluator.FixedSlackEvaluator;
-import ra.evaluator.RandomStateEvaluator;
-import ra.parcel.ReAuctionableParcel;
 import common.baseline.SolverBidder;
+import common.baseline.StubStateEvaluator;
 import common.results.ParcelTrackerModel;
 import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import ra.evaluator.AdaptiveSlackEvaluator;
+import ra.evaluator.ParcelLocalStateEvaluator;
+import ra.evaluator.RandomStateEvaluator;
+import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import ra.parcel.FixedSlackReAuctionableParcel;
+import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -31,7 +32,7 @@ public class Run {
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 
 	private static final int THREADS = 4;
-	private static final int REPETITIONS = 1;
+	private static final int REPETITIONS = 10;
 	private static final long SEED = 123L;
 
 	private Run() {}
@@ -82,7 +83,7 @@ public class Run {
                                 ReAuctionableParcel.getCreator()
                         )
                 )
-				.addConfiguration(
+				/*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -90,7 +91,7 @@ public class Run {
                                 ImmutableList.of(FixedSlackEvaluator.supplier()),
                                 ReAuctionableParcel.getCreator()
                         )
-                )
+                )*/
 				.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -107,6 +108,15 @@ public class Run {
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
                                 ImmutableList.of(AdaptiveSlackEvaluator.supplier()),
                                 FixedSlackReAuctionableParcel.getCreator()
+                        )
+                )
+                .addConfiguration(
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(ParcelLocalStateEvaluator.supplier()),
+                                AdaptiveSlackReAuctionableParcel.getCreator()
                         )
                 )
 				/*.addConfiguration(

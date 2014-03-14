@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.checkState;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ParcelLocalStateEvaluator extends FixedSlackEvaluator {
+public class ParcelLocalStateEvaluator extends SlackEvaluator {
     public ParcelLocalStateEvaluator(long seed) {
         super(seed);
     }

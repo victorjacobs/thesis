@@ -35,7 +35,7 @@ public class FixedSlackReAuctionableParcel extends AgentParcel {
 
             @Override
             public String toString() {
-                return "FixedSlackReAuctionableParcel";
+                return "Max20ReAuctions";
             }
         };
     }

@@ -155,8 +155,6 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
         } else {
             return false;
         }
-
-
 	}
 
 	/**
