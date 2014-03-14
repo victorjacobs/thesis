@@ -18,12 +18,12 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
  * This state evaluator goes over all the parcels in the state and computes the slack for every one.
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class LocalStateEvaluator extends StateEvaluator {
+public class FixedSlackEvaluator extends StateEvaluator {
 
 	private long nextReEvaluation = 50;
 	private Random rng;
 
-	public LocalStateEvaluator(long seed) {
+	public FixedSlackEvaluator(long seed) {
 		this.rng = new Random(seed);
 	}
 
@@ -105,11 +105,11 @@ public class LocalStateEvaluator extends StateEvaluator {
 		return false;
 	}
 
-	public static SupplierRng<? extends LocalStateEvaluator> supplier() {
-		return new SupplierRng.DefaultSupplierRng<LocalStateEvaluator>() {
+	public static SupplierRng<? extends FixedSlackEvaluator> supplier() {
+		return new SupplierRng.DefaultSupplierRng<FixedSlackEvaluator>() {
 			@Override
-			public LocalStateEvaluator get(long seed) {
-				return new LocalStateEvaluator(seed);
+			public FixedSlackEvaluator get(long seed) {
+				return new FixedSlackEvaluator(seed);
 			}
 		};
 	}

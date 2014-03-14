@@ -1,7 +1,6 @@
 package common.truck;
 
 import com.google.common.collect.ImmutableSet;
-import common.auctioning.ReAuctionableParcel;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 /**

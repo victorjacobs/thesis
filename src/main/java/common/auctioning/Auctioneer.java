@@ -3,6 +3,7 @@ package common.auctioning;
 import com.google.common.base.Optional;
 import common.truck.Bid;
 import common.truck.Bidder;
+import ra.parcel.ReAuctionableParcel;
 import rinde.sim.core.model.AbstractModel;
 import rinde.sim.core.model.ModelProvider;
 import rinde.sim.core.model.ModelReceiver;

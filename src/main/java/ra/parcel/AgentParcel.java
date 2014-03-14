@@ -1,6 +1,5 @@
 package ra.parcel;
 
-import common.auctioning.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ParcelDTO;
 
 /**

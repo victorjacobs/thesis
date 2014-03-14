@@ -1,7 +1,6 @@
 package ra.evaluator;
 
 import com.google.common.collect.ImmutableSet;
-import ra.parcel.AdaptiveThresholdReAuctionableParcel;
 import ra.parcel.AgentParcel;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
@@ -13,11 +12,11 @@ import static com.google.common.base.Preconditions.checkState;
 /**
  * This is a *dumb* state evaluator. It moves the responsability of deciding on a re-auction to the parcel itself.
  * Therefore the implementation of {@link #evaluateState(long)} simply returns all parcels. It therefore should be
- * paired with a parcel that can handle this responsability (see {@link ra.parcel.AdaptiveThresholdReAuctionableParcel}
+ * paired with a parcel that can handle this responsability (see {@link ra.parcel.AdaptiveSlackReAuctionableParcel}
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ParcelLocalStateEvaluator extends LocalStateEvaluator {
+public class ParcelLocalStateEvaluator extends FixedSlackEvaluator {
     public ParcelLocalStateEvaluator(long seed) {
         super(seed);
     }
@@ -29,7 +28,7 @@ public class ParcelLocalStateEvaluator extends LocalStateEvaluator {
         AgentParcel rp;
 
         for (DefaultParcel par : slacks.keySet()) {
-            checkState(par instanceof AdaptiveThresholdReAuctionableParcel);
+            checkState(par instanceof AgentParcel);
 
             rp = (AgentParcel) par;
 

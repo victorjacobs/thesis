@@ -22,9 +22,9 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Truck.class, DefaultParcel.class})
-public class LocalStateEvaluatorTest {
+public class FixedSlackEvaluatorTest {
 
-	private LocalStateEvaluator ev;
+	private FixedSlackEvaluator ev;
 	private Truck tr;
 	private ImmutableList.Builder<DefaultParcel> pars;
 
@@ -33,7 +33,7 @@ public class LocalStateEvaluatorTest {
 		tr = mock(Truck.class);
 		pars = ImmutableList.builder();
 
-		ev = new LocalStateEvaluator(0);
+		ev = new FixedSlackEvaluator(0);
 		ev.setTruck(tr);
 
 		// Set up truck: location (1, 1), speed 1

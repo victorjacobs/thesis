@@ -1,26 +1,23 @@
 package ra.parcel;
 
-import common.auctioning.ReAuctionableParcel;
 import rinde.sim.core.Simulator;
 import rinde.sim.pdptw.common.AddParcelEvent;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem;
 import rinde.sim.pdptw.common.ParcelDTO;
 
-import java.util.Collection;
-
 /**
- * ReAuctionableParcel that mimics {@link ra.evaluator.AdaptiveLocalStateEvaluator}. Meaning that instead of the Truck keeping
+ * ReAuctionableParcel that mimics {@link ra.evaluator.AdaptiveSlackEvaluator}. Meaning that instead of the Truck keeping
  * track of the slack, the parcel will.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class AdaptiveThresholdReAuctionableParcel extends AgentParcel {
+public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
     private double mean;
     private int n;
     private double M2;
     private double variance;
 
-    public AdaptiveThresholdReAuctionableParcel(ParcelDTO pDto) {
+    public AdaptiveSlackReAuctionableParcel(ParcelDTO pDto) {
         super(pDto);
 
         n = 0;
@@ -56,13 +53,13 @@ public class AdaptiveThresholdReAuctionableParcel extends AgentParcel {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new FixedThresholdReAuctionableParcel(event.parcelDTO));
+                sim.register(new FixedSlackReAuctionableParcel(event.parcelDTO));
                 return true;
             }
 
             @Override
             public String toString() {
-                return "AdaptiveThresholdReAuctionableParcel";
+                return "AdaptiveSlackReAuctionableParcel";
             }
         };
     }

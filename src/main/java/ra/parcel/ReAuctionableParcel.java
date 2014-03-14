@@ -1,7 +1,8 @@
-package common.auctioning;
+package ra.parcel;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import common.auctioning.Auctioneer;
 import common.truck.Bidder;
 import rinde.sim.core.Simulator;
 import rinde.sim.pdptw.common.AddParcelEvent;
@@ -15,7 +16,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
 
 /**
- * Extends {@link DefaultParcel} with a reference to an {@link Auctioneer}. This allows the parcel to change owners.
+ * Extends {@link DefaultParcel} with a reference to an {@link common.auctioning.Auctioneer}. This allows the parcel to change owners.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */

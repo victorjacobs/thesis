@@ -1,14 +1,14 @@
 import com.google.common.collect.ImmutableList;
 import common.auctioning.Auctioneer;
-import common.auctioning.ReAuctionableParcel;
+import ra.parcel.ReAuctionableParcel;
 import common.baseline.SolverBidder;
 import common.results.ParcelTrackerModel;
 import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
-import ra.evaluator.AdaptiveLocalStateEvaluator;
-import ra.parcel.FixedThresholdReAuctionableParcel;
+import ra.evaluator.AdaptiveSlackEvaluator;
+import ra.parcel.FixedSlackReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -93,7 +93,7 @@ public class Run {
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                                ImmutableList.of(AdaptiveLocalStateEvaluator.supplier()),
+                                ImmutableList.of(AdaptiveSlackEvaluator.supplier()),
                                 ReAuctionableParcel.getCreator()
                         )
                 )
@@ -102,8 +102,8 @@ public class Run {
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                                ImmutableList.of(AdaptiveLocalStateEvaluator.supplier()),
-                                FixedThresholdReAuctionableParcel.getCreator()
+                                ImmutableList.of(AdaptiveSlackEvaluator.supplier()),
+                                FixedSlackReAuctionableParcel.getCreator()
                         )
                 )
 				/*.addConfiguration(

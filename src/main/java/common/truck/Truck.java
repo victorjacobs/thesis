@@ -2,7 +2,7 @@ package common.truck;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import common.auctioning.ReAuctionableParcel;
+import ra.parcel.ReAuctionableParcel;
 import common.truck.route.RoutePlanner;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;

@@ -1,6 +1,5 @@
 package ra.parcel;
 
-import common.auctioning.ReAuctionableParcel;
 import rinde.sim.core.Simulator;
 import rinde.sim.pdptw.common.AddParcelEvent;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem;
@@ -11,9 +10,14 @@ import rinde.sim.pdptw.common.ParcelDTO;
  *
  * Created by victor on 10/03/14.
  */
-public class FixedThresholdReAuctionableParcel extends ReAuctionableParcel {
-    public FixedThresholdReAuctionableParcel(ParcelDTO pDto) {
+public class FixedSlackReAuctionableParcel extends AgentParcel {
+    public FixedSlackReAuctionableParcel(ParcelDTO pDto) {
         super(pDto);
+    }
+
+    @Override
+    public void update(double slack) {
+
     }
 
     @Override
@@ -25,13 +29,13 @@ public class FixedThresholdReAuctionableParcel extends ReAuctionableParcel {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new FixedThresholdReAuctionableParcel(event.parcelDTO));
+                sim.register(new FixedSlackReAuctionableParcel(event.parcelDTO));
                 return true;
             }
 
             @Override
             public String toString() {
-                return "FixedThresholdReAuctionableParcel";
+                return "FixedSlackReAuctionableParcel";
             }
         };
     }

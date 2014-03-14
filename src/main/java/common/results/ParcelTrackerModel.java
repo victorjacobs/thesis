@@ -1,7 +1,7 @@
 package common.results;
 
 import com.google.common.collect.ImmutableList;
-import common.auctioning.ReAuctionableParcel;
+import ra.parcel.ReAuctionableParcel;
 import rinde.sim.core.model.AbstractModel;
 import rinde.sim.util.SupplierRng;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -11,7 +11,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.newLinkedList;
 
 /**
- * Model that tracks all {@link common.auctioning.ReAuctionableParcel}s created by the simulation. This is needed to
+ * Model that tracks all {@link ra.parcel.ReAuctionableParcel}s created by the simulation. This is needed to
  * later get statistics from them.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>

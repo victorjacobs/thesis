@@ -1,7 +1,7 @@
 package common.results;
 
 import com.google.common.collect.ImmutableList;
-import common.auctioning.ReAuctionableParcel;
+import ra.parcel.ReAuctionableParcel;
 import rinde.sim.core.Simulator;
 import rinde.sim.pdptw.experiment.PostProcessor;
 

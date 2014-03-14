@@ -8,12 +8,12 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * This variant of {@link LocalStateEvaluator} adapts the threshold for re-auctioning. It keeps a running mean and
+ * This variant of {@link FixedSlackEvaluator} adapts the threshold for re-auctioning. It keeps a running mean and
  * variance to determine whether a certain value is too high or too low.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class AdaptiveLocalStateEvaluator extends LocalStateEvaluator {
+public class AdaptiveSlackEvaluator extends FixedSlackEvaluator {
 	private double threshold;
 
 	private double mean;
@@ -21,7 +21,7 @@ public class AdaptiveLocalStateEvaluator extends LocalStateEvaluator {
 	private double M2;
 	private double variance;
 
-	public AdaptiveLocalStateEvaluator(long seed) {
+	public AdaptiveSlackEvaluator(long seed) {
 		super(seed);
 
 		n = 0;
@@ -70,11 +70,11 @@ public class AdaptiveLocalStateEvaluator extends LocalStateEvaluator {
 		return Math.sqrt(variance);
 	}
 
-	public static SupplierRng<? extends AdaptiveLocalStateEvaluator> supplier() {
-		return new SupplierRng.DefaultSupplierRng<AdaptiveLocalStateEvaluator>() {
+	public static SupplierRng<? extends AdaptiveSlackEvaluator> supplier() {
+		return new SupplierRng.DefaultSupplierRng<AdaptiveSlackEvaluator>() {
 			@Override
-			public AdaptiveLocalStateEvaluator get(long seed) {
-				return new AdaptiveLocalStateEvaluator(seed);
+			public AdaptiveSlackEvaluator get(long seed) {
+				return new AdaptiveSlackEvaluator(seed);
 			}
 		};
 	}
