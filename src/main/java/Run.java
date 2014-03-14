@@ -2,16 +2,13 @@ import com.google.common.collect.ImmutableList;
 import common.auctioning.Auctioneer;
 import common.auctioning.ReAuctionableParcel;
 import common.baseline.SolverBidder;
-import common.baseline.StubStateEvaluator;
 import common.results.ParcelTrackerModel;
 import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
-import ra.AdaptiveLocalStateEvaluator;
-import ra.FixedThresholdReAuctionableParcel;
-import ra.LocalStateEvaluator;
-import ra.RandomStateEvaluator;
+import ra.evaluator.AdaptiveLocalStateEvaluator;
+import ra.parcel.FixedThresholdReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -20,7 +17,6 @@ import rinde.sim.pdptw.gendreau06.Gendreau06Parser;
 import rinde.sim.pdptw.gendreau06.Gendreau06Scenario;
 import rinde.sim.pdptw.gendreau06.GendreauProblemClass;
 
-import java.io.File;
 import java.util.List;
 
 /**

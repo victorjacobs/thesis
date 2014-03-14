@@ -51,6 +51,11 @@ public class ReAuctionableParcel extends DefaultParcel {
 		return auctioneer.isPresent();
 	}
 
+    /**
+     * This method allows the parcel to have a say in re-auctioning.
+     *
+     * @return
+     */
     public boolean shouldChangeOwner() {
         return true;
     }

@@ -1,4 +1,4 @@
-package ra;
+package ra.evaluator;
 
 import com.google.common.collect.ImmutableSet;
 import common.truck.StateEvaluator;

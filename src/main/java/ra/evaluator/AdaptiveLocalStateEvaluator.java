@@ -1,4 +1,4 @@
-package ra;
+package ra.evaluator;
 
 import com.google.common.collect.ImmutableSet;
 import rinde.sim.pdptw.common.DefaultParcel;
@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * This variant of {@link ra.LocalStateEvaluator} adapts the threshold for re-auctioning. It keeps a running mean and
+ * This variant of {@link LocalStateEvaluator} adapts the threshold for re-auctioning. It keeps a running mean and
  * variance to determine whether a certain value is too high or too low.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>

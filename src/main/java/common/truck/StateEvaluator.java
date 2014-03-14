@@ -1,6 +1,7 @@
 package common.truck;
 
 import com.google.common.collect.ImmutableSet;
+import common.auctioning.ReAuctionableParcel;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 /**
@@ -14,12 +15,10 @@ import rinde.sim.pdptw.common.DefaultParcel;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public abstract class StateEvaluator {
-
 	private Truck truck;
 
 	/**
 	 * Re-evaluates given state and returns a set of parcels that should be removed and re-auctioned
-	 * @param state Copy of the truck's state
 	 * @param time Simulator time
 	 * @return Set of parcels that the StateEvaluator wants removed from the truck's state.
 	 */

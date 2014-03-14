@@ -1,4 +1,4 @@
-package ra;
+package ra.evaluator;
 
 import com.google.common.collect.ImmutableSet;
 import common.truck.StateEvaluator;
@@ -42,6 +42,12 @@ public class LocalStateEvaluator extends StateEvaluator {
 		return ret.build();
 	}
 
+    /**
+     * This method calculates the slack for every parcel owned by the truck.
+     * TODO aanvullen
+     *
+     * @return Map containing the slack for every parcel in the truck
+     */
 	Map<DefaultParcel, Double> calculateSlackForState() {
 		double curTime = 0;
 

@@ -130,6 +130,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
      * @return Whether or not parcel was successfully removed
 	 */
     // TODO do something with return value -> to reduce keep trying re-auction
+    // TODO why the hell is this a DefaultParcel?
 	private boolean removeParcel(DefaultParcel par) {
 		checkState(par instanceof ReAuctionableParcel, "Parcel needs to be re-auctionable in order to remove it from " +
 				"truck");

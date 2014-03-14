@@ -1,4 +1,4 @@
-package ra;
+package ra.evaluator;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
