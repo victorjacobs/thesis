@@ -18,16 +18,12 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
  * This state evaluator goes over all the parcels in the state and computes the slack for every one.
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class FixedSlackEvaluator extends StateEvaluator {
+public class FixedSlackEvaluator extends SlackEvaluator {
+    public FixedSlackEvaluator(long seed) {
+        super(seed);
+    }
 
-	private long nextReEvaluation = 50;
-	private Random rng;
-
-	public FixedSlackEvaluator(long seed) {
-		this.rng = new Random(seed);
-	}
-
-	@Override
+    @Override
 	public ImmutableSet<DefaultParcel> evaluateState(long time) {
 		ImmutableSet.Builder<DefaultParcel> ret = ImmutableSet.builder();
 		Map<DefaultParcel, Double> slacks = calculateSlackForState();
@@ -40,69 +36,6 @@ public class FixedSlackEvaluator extends StateEvaluator {
 		}
 
 		return ret.build();
-	}
-
-    /**
-     * This method calculates the slack for every parcel owned by the truck.
-     * TODO aanvullen
-     *
-     * @return Map containing the slack for every parcel in the truck
-     */
-	Map<DefaultParcel, Double> calculateSlackForState() {
-		double curTime = 0;
-
-		Map<DefaultParcel, Double> slacks = new HashMap<DefaultParcel, Double>();
-		Set<Parcel> simulatedCargo = newLinkedHashSet(getTruck().getContents());
-		Point simulatedPosition = getTruck().getPosition();
-
-		for (DefaultParcel par : getTruck().getRoute()) {
-			if (simulatedCargo.contains(par)) {
-				// Delivering
-				curTime += getTravelTimeBetween(simulatedPosition, par.getDestination());
-
-				// If arrive before timewindow, truck has to wait
-				curTime = (curTime < par.getDeliveryTimeWindow().begin) ? par.getDeliveryTimeWindow().begin : curTime;
-
-				// Don't bother adding slacks for parcels that are already in cargo
-				if (!getTruck().getContents().contains(par))
-					slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
-
-				curTime += par.getDeliveryDuration();
-				simulatedCargo.remove(par);
-				simulatedPosition = par.getDestination();
-			} else {
-				// Picking up
-				curTime += getTravelTimeBetween(simulatedPosition, par.getPickupLocation());
-
-				curTime = (curTime < par.getPickupTimeWindow().begin) ? par.getPickupTimeWindow().begin : curTime;
-
-				curTime += par.getPickupDuration();
-				simulatedCargo.add(par);
-				simulatedPosition = par.getPickupLocation();
-			}
-		}
-
-
-		return slacks;
-	}
-
-	private double getTravelTimeBetween(Point orig, Point dest) {
-		// TODO assume straight paths
-		double dist = Math.sqrt(Math.pow(orig.x - dest.x, 2) + Math.pow(orig.y - dest.y, 2));
-
-		return dist / getTruck().getSpeed();
-	}
-
-	@Override
-	public boolean shouldReEvaluate(long ticks) {
-		// TODO placeholder
-		if (ticks >= nextReEvaluation) {
-			nextReEvaluation += rng.nextInt(50);
-
-			return true;
-		}
-
-		return false;
 	}
 
 	public static SupplierRng<? extends FixedSlackEvaluator> supplier() {

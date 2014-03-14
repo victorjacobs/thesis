@@ -1,5 +1,8 @@
 import com.google.common.collect.ImmutableList;
 import common.auctioning.Auctioneer;
+import common.baseline.StubStateEvaluator;
+import ra.evaluator.FixedSlackEvaluator;
+import ra.evaluator.RandomStateEvaluator;
 import ra.parcel.ReAuctionableParcel;
 import common.baseline.SolverBidder;
 import common.results.ParcelTrackerModel;
@@ -28,7 +31,7 @@ public class Run {
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 
 	private static final int THREADS = 4;
-	private static final int REPETITIONS = 10;
+	private static final int REPETITIONS = 1;
 	private static final long SEED = 123L;
 
 	private Run() {}
@@ -61,33 +64,33 @@ public class Run {
 				.withThreads(THREADS)
 				.addScenarios(onlineScenarios)
 				//.addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
-				/*.addConfiguration(
-						new TruckConfiguration(
-								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-								ImmutableList.of(StubStateEvaluator.supplier()),
-                                ReAuctionableParcel.getCreator()
-						)
-				)
-				/*.addConfiguration(
-						new TruckConfiguration(
-								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-								ImmutableList.of(RandomStateEvaluator.supplier()),
-                                ReAuctionableParcel.getCreator()
-						)
-				)
 				.addConfiguration(
-						new TruckConfiguration(
-								SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-								ImmutableList.of(LocalStateEvaluator.supplier()),
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(StubStateEvaluator.supplier()),
                                 ReAuctionableParcel.getCreator()
                         )
-                )*/
+                )
+				.addConfiguration(
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(RandomStateEvaluator.supplier()),
+                                ReAuctionableParcel.getCreator()
+                        )
+                )
+				.addConfiguration(
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(FixedSlackEvaluator.supplier()),
+                                ReAuctionableParcel.getCreator()
+                        )
+                )
 				.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),

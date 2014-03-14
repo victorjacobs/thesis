@@ -13,9 +13,7 @@ import java.util.Map;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class AdaptiveSlackEvaluator extends FixedSlackEvaluator {
-	private double threshold;
-
+public class AdaptiveSlackEvaluator extends SlackEvaluator {
 	private double mean;
 	private int n;
 	private double M2;
