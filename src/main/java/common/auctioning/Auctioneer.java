@@ -68,7 +68,7 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 
 	@Override
 	public boolean unregister(Bidder element) {
-		throw new UnsupportedOperationException();	// TODO for now
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

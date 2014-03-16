@@ -105,7 +105,7 @@ public class ResultsProcessor {
 		Map<String, List<Experiment.SimulationResult>> dtoBins = new LinkedHashMap<String, List<Experiment.SimulationResult>>();
 		CSVWriter<String> csv;
 
-		// Bin statistics DTO's
+		// Bin SimulationResults
 		for (Experiment.SimulationResult res : data.results) {
 			if (!dtoBins.containsKey(res.masConfiguration.toString()))
 				dtoBins.put(res.masConfiguration.toString(), new LinkedList<Experiment.SimulationResult>());
@@ -119,7 +119,6 @@ public class ResultsProcessor {
 
 			for (String runName : dtoBins.keySet()) {
 				for (int i = 0; i < data.repetitions * data.scenarios.size(); i++) {
-					//csv.addToColumn(runName, Double.toString(m.getValue(dtoBins.get(runName).get(i))));
                     csv.addToColumn(runName, m.evaluate(dtoBins.get(runName).get(i)));
 				}
 			}
@@ -157,7 +156,7 @@ public class ResultsProcessor {
 	}
 
 	/**
-	 * Defines a measure to be evaluated on a StatisticsDTO
+	 * Defines a measure to be evaluated on a SimulationResult
 	 */
 	abstract class Measure<E> {
         private String name;

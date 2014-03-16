@@ -26,8 +26,9 @@ public abstract class SlackEvaluator extends StateEvaluator {
     }
 
     /**
-     * This method calculates the slack for every parcel owned by the truck.
-     * TODO aanvullen
+     * This method calculates the slack for every parcel owned by the truck. With "slack" is meant "the maximum
+     * amount of time the parcel can be delayed in the current schedule for it to be still on time". If effectively
+     * gives a measure for the flexibility of a certain parcel.
      *
      * @return Map containing the slack for every parcel in the truck
      */

@@ -56,7 +56,8 @@ public class Run {
 		final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
 		final List<Gendreau06Scenario> onlineScenarios = Gendreau06Parser.parser()
 				.addDirectory(SCENARIOS_PATH)
-				.filter(GendreauProblemClass.SHORT_LOW_FREQ).parse();
+				.filter(GendreauProblemClass.SHORT_LOW_FREQ)
+                .parse();
 
 		return Experiment
 				.build(objFunc)

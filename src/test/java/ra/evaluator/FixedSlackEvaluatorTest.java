@@ -13,7 +13,7 @@ import rinde.sim.core.model.pdp.Parcel;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.TimeWindow;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -61,7 +61,7 @@ public class FixedSlackEvaluatorTest {
 
 		buildRoute();
 
-		assertEquals(1.0, ev.calculateSlackForState().get(par));
+		assertEquals(1.0, ev.calculateSlackForState().get(par), 0.0001);
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class FixedSlackEvaluatorTest {
 
 		buildRoute();
 
-		assertEquals(1.0, ev.calculateSlackForState().get(par));
+		assertEquals(1.0, ev.calculateSlackForState().get(par), 0.0001);
 	}
 
 	@Test
@@ -97,8 +97,8 @@ public class FixedSlackEvaluatorTest {
 
 		buildRoute();
 
-		assertEquals(1.0, ev.calculateSlackForState().get(par1));
-		assertEquals(1.0, ev.calculateSlackForState().get(par2));
+		assertEquals(1.0, ev.calculateSlackForState().get(par1), 0.0001);
+		assertEquals(1.0, ev.calculateSlackForState().get(par2), 0.0001);
 	}
 
 	/**
