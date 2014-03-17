@@ -11,8 +11,15 @@ import rinde.sim.pdptw.common.ParcelDTO;
  * Created by victor on 10/03/14.
  */
 public class FixedSlackReAuctionableParcel extends AgentParcel {
+    private final int threshold;
+
     public FixedSlackReAuctionableParcel(ParcelDTO pDto) {
+        this(pDto, 20);
+    }
+
+    public FixedSlackReAuctionableParcel(ParcelDTO pDto, int threshold) {
         super(pDto);
+        this.threshold = threshold;
     }
 
     @Override
@@ -26,16 +33,20 @@ public class FixedSlackReAuctionableParcel extends AgentParcel {
     }
 
     public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {
+        return getCreator(20);
+    }
+
+    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(final int threshold) {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new FixedSlackReAuctionableParcel(event.parcelDTO));
+                sim.register(new FixedSlackReAuctionableParcel(event.parcelDTO, threshold));
                 return true;
             }
 
             @Override
             public String toString() {
-                return "Max20ReAuctions";
+                return "Max" + threshold + "Reauctions";
             }
         };
     }

@@ -1,6 +1,7 @@
 package ra.evaluator;
 
 import com.google.common.collect.ImmutableSet;
+import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
 
@@ -14,15 +15,21 @@ import java.util.Map;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class AdaptiveSlackEvaluator extends SlackEvaluator {
-	private double mean;
+    private final int numberStandardDeviations;
+    private double mean;
 	private int n;
 	private double M2;
 	private double variance;
 
-	public AdaptiveSlackEvaluator(long seed) {
-		super(seed);
+    public AdaptiveSlackEvaluator(long seed) {
+        this(seed, 1);
+    }
 
-		n = 0;
+	public AdaptiveSlackEvaluator(long seed, int numberStandardDeviations) {
+		super(seed);
+        this.numberStandardDeviations = numberStandardDeviations;
+
+        n = 0;
 		mean = 0;
 		M2 = 0;
 		variance = 0;
@@ -40,7 +47,7 @@ public class AdaptiveSlackEvaluator extends SlackEvaluator {
 			// Always add parcels with negative slacks
 			if ((curSlack = slacks.get(par)) < 0) {
 				ret.add(par);
-			} else if (curSlack < mean - getStandardDeviation()) {
+			} else if (curSlack < mean - numberStandardDeviations * getStandardDeviation()) {
 				ret.add(par);
 			}
 		}
@@ -68,12 +75,21 @@ public class AdaptiveSlackEvaluator extends SlackEvaluator {
 		return Math.sqrt(variance);
 	}
 
-	public static SupplierRng<? extends AdaptiveSlackEvaluator> supplier() {
+    public static SupplierRng<? extends AdaptiveSlackEvaluator> supplier() {
+        return supplier(1);
+    }
+
+	public static SupplierRng<? extends AdaptiveSlackEvaluator> supplier(final int numberStandardDeviations) {
 		return new SupplierRng.DefaultSupplierRng<AdaptiveSlackEvaluator>() {
 			@Override
 			public AdaptiveSlackEvaluator get(long seed) {
-				return new AdaptiveSlackEvaluator(seed);
+				return new AdaptiveSlackEvaluator(seed, numberStandardDeviations);
 			}
-		};
+
+            @Override
+            public String toString() {
+                return "AdaptiveSlackEvaluator" + numberStandardDeviations + "STD";
+            }
+        };
 	}
 }
