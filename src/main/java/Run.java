@@ -1,17 +1,15 @@
 import com.google.common.collect.ImmutableList;
 import common.auctioning.Auctioneer;
 import common.baseline.SolverBidder;
-import common.baseline.StubStateEvaluator;
 import common.results.ParcelTrackerModel;
 import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
-import ra.evaluator.AdaptiveSlackEvaluator;
-import ra.evaluator.ParcelLocalStateEvaluator;
+import ra.evaluator.ParcelSlackStateEvaluator;
+import ra.evaluator.ParcelSlackStateEvaluatorFixed;
 import ra.evaluator.RandomStateEvaluator;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
-import ra.parcel.FixedSlackReAuctionableParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
@@ -32,7 +30,7 @@ public class Run {
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 
 	private static final int THREADS = 4;
-	private static final int REPETITIONS = 10;
+	private static final int REPETITIONS = 1;
 	private static final long SEED = 123L;
 
 	private Run() {}
@@ -41,6 +39,7 @@ public class Run {
 		String outputDirectory = (args.length < 1) ? "results/test" + System.currentTimeMillis() + "/" : args[0];
 
 		Experiment.ExperimentResults result = performRAExperiment();
+        //Experiment.ExperimentResults result = performRandomExperiments();
 
 		System.out.println();
 
@@ -51,6 +50,35 @@ public class Run {
 		System.out.println();
 
 	}
+
+    private static Experiment.ExperimentResults performRandomExperiments() throws Exception {
+        final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
+        final List<Gendreau06Scenario> onlineScenarios = Gendreau06Parser.parser()
+                .addDirectory(SCENARIOS_PATH)
+                .filter(GendreauProblemClass.SHORT_LOW_FREQ)
+                .parse();
+
+        Experiment.Builder exp = Experiment
+                .build(objFunc)
+                .withRandomSeed(SEED)
+                .repeat(REPETITIONS)
+                .withThreads(THREADS)
+                .addScenarios(onlineScenarios);
+
+        for (int i = 1; i < 90; i += 5) {
+            exp.addConfiguration(
+                    new TruckConfiguration(
+                            SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                            SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                            ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                            ImmutableList.of(RandomStateEvaluator.supplier(i)),
+                            ReAuctionableParcel.getCreator()
+                    )
+            );
+        }
+
+        return exp.perform();
+    }
 
 	private static Experiment.ExperimentResults performRAExperiment() throws Exception {
 		final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
@@ -66,7 +94,7 @@ public class Run {
 				.withThreads(THREADS)
 				.addScenarios(onlineScenarios)
 				//.addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
-				.addConfiguration(
+				/*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -75,7 +103,7 @@ public class Run {
                                 ReAuctionableParcel.getCreator()
                         )
                 )
-                .addConfiguration(
+                /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -102,7 +130,7 @@ public class Run {
                                 ReAuctionableParcel.getCreator()
                         )
                 )*/
-				.addConfiguration(
+				/*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -119,13 +147,23 @@ public class Run {
                                 ImmutableList.of(AdaptiveSlackEvaluator.supplier()),
                                 FixedSlackReAuctionableParcel.getCreator()
                         )
+                )*/
+                .addConfiguration(
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(ParcelSlackStateEvaluator.supplier()),
+                                AdaptiveSlackReAuctionableParcel.getCreator()
+                        )
                 )
                 .addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                                ImmutableList.of(ParcelLocalStateEvaluator.supplier()),
+                                ImmutableList.of(ParcelSlackStateEvaluatorFixed.supplier()),
+                                ImmutableList.of(ParcelSlackStateEvaluatorFixed.supplier()),
                                 AdaptiveSlackReAuctionableParcel.getCreator()
                         )
                 )

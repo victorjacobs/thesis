@@ -162,7 +162,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 */
 	private void notifyChange() {
 		for (StateObserver l : stateObservers) {
-			l.notify(ImmutableSet.copyOf(state), getCurrentTime().getTime());
+			l.notify(getCurrentTime().getTime());
 		}
 	}
 

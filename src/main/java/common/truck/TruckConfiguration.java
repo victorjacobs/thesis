@@ -52,16 +52,26 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 	public TruckConfiguration(
 			SupplierRng<? extends RoutePlanner> routePlannerSupplier,
 			SupplierRng<? extends Bidder> bidderSupplier,
-			ImmutableList<? extends SupplierRng<? extends Model<?>>> modelSuppliers/*,
-			ImmutableList<? extends SupplierRng<? extends StateObserver>> stateObserverSuppliers*/,
+			ImmutableList<? extends SupplierRng<? extends Model<?>>> modelSuppliers,
+			ImmutableList<? extends SupplierRng<? extends StateObserver>> stateObserverSuppliers,
 			ImmutableList<? extends SupplierRng<? extends StateEvaluator>> stateEvaluatorSuppliers,
             DynamicPDPTWProblem.Creator<AddParcelEvent> parcelCreator) {
 		rpSupplier = routePlannerSupplier;
 		bSupplier = bidderSupplier;
 		mSuppliers = modelSuppliers;
-		/*soSuppliers = stateObserverSuppliers;*/
+		soSuppliers = stateObserverSuppliers;
 		seSuppliers = stateEvaluatorSuppliers;
         this.parcelCreator = parcelCreator;
+    }
+
+    public TruckConfiguration(
+            SupplierRng<? extends RoutePlanner> routePlannerSupplier,
+            SupplierRng<? extends Bidder> bidderSupplier,
+            ImmutableList<? extends SupplierRng<? extends Model<?>>> modelSuppliers,
+            ImmutableList<? extends SupplierRng<? extends StateEvaluator>> stateEvaluatorSuppliers,
+            DynamicPDPTWProblem.Creator<AddParcelEvent> parcelCreator) {
+        this(routePlannerSupplier, bidderSupplier, modelSuppliers, ImmutableList.<SupplierRng<? extends StateObserver>>of(), stateEvaluatorSuppliers,
+                parcelCreator);
     }
 
 	@Override
@@ -101,11 +111,11 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 	protected Truck createTruck(VehicleDTO dto, RoutePlanner rp, Bidder b, Simulator sim) {
 		Truck ret = new Truck(dto, rp, b);
 
-//		// Bind observers
-//		for (SupplierRng<? extends StateObserver> so : soSuppliers) {
-//			ret.addStateObserver(so.get(sim.getRandomGenerator().nextLong()));
-//		}
-//
+		// Bind observers
+		for (SupplierRng<? extends StateObserver> so : soSuppliers) {
+			ret.addStateObserver(so.get(sim.getRandomGenerator().nextLong()));
+		}
+
 		// Bind evaluators
 		for (SupplierRng<? extends StateEvaluator> se : seSuppliers) {
 			StateEvaluator s = se.get(sim.getRandomGenerator().nextLong());

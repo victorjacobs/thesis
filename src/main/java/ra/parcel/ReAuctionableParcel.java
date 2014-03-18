@@ -21,7 +21,6 @@ import static com.google.common.collect.Lists.newLinkedList;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class ReAuctionableParcel extends DefaultParcel {
-
 	private Optional<Auctioneer> auctioneer;
     private boolean reAuctionPrevented = false;
     protected List<Bidder> ownerHistory;
