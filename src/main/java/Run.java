@@ -7,7 +7,7 @@ import common.results.ResultsProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import ra.evaluator.ParcelSlackStateEvaluator;
-import ra.evaluator.ParcelSlackStateEvaluatorFixed;
+import ra.evaluator.ParcelSlackStateEvaluatorUpdateOnChange;
 import ra.evaluator.RandomStateEvaluator;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import ra.parcel.ReAuctionableParcel;
@@ -19,6 +19,7 @@ import rinde.sim.pdptw.gendreau06.Gendreau06Parser;
 import rinde.sim.pdptw.gendreau06.Gendreau06Scenario;
 import rinde.sim.pdptw.gendreau06.GendreauProblemClass;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -29,8 +30,8 @@ public class Run {
 
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 
-	private static final int THREADS = 4;
-	private static final int REPETITIONS = 1;
+	private static final int THREADS = Runtime.getRuntime().availableProcessors();
+	private static final int REPETITIONS = 10;
 	private static final long SEED = 123L;
 
 	private Run() {}
@@ -63,10 +64,11 @@ public class Run {
                 .withRandomSeed(SEED)
                 .repeat(REPETITIONS)
                 .withThreads(THREADS)
-                .addScenarios(onlineScenarios);
+                .addScenarios(onlineScenarios)
+                .usePostProcessor(new ResultsPostProcessor());
 
-        for (int i = 1; i < 90; i += 5) {
-            exp.addConfiguration(
+        for (int i = 1; i < 10; i += 5) {
+            exp = exp.addConfiguration(
                     new TruckConfiguration(
                             SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -162,8 +164,8 @@ public class Run {
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                                ImmutableList.of(ParcelSlackStateEvaluatorFixed.supplier()),
-                                ImmutableList.of(ParcelSlackStateEvaluatorFixed.supplier()),
+                                ImmutableList.of(ParcelSlackStateEvaluatorUpdateOnChange.supplier()),
+                                ImmutableList.of(ParcelSlackStateEvaluatorUpdateOnChange.supplier()),
                                 AdaptiveSlackReAuctionableParcel.getCreator()
                         )
                 )

@@ -113,7 +113,9 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 
 		// Bind observers
 		for (SupplierRng<? extends StateObserver> so : soSuppliers) {
-			ret.addStateObserver(so.get(sim.getRandomGenerator().nextLong()));
+            StateObserver observer = so.get(sim.getRandomGenerator().nextLong());
+            observer.setTruck(ret);
+			ret.addStateObserver(observer);
 		}
 
 		// Bind evaluators

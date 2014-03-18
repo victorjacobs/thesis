@@ -103,7 +103,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	private void bindRoutePlanner(RoutePlanner routePlanner) {
 		checkState(this.routePlanner == null, "Route planner already bound to Truck");
 
-		routePlanner.bindTruck(this);
+		routePlanner.setTruck(this);
 		this.routePlanner = routePlanner;    // TODO is this needed?
 		addStateObserver(routePlanner);
 	}

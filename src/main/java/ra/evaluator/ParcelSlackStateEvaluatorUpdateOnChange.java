@@ -18,10 +18,10 @@ import static com.google.common.base.Preconditions.checkState;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ParcelSlackStateEvaluatorFixed extends SlackEvaluator implements StateObserver {
+public class ParcelSlackStateEvaluatorUpdateOnChange extends SlackEvaluator implements StateObserver {
     Map<DefaultParcel, Double> oldSlacks;
 
-    public ParcelSlackStateEvaluatorFixed(long seed) {
+    public ParcelSlackStateEvaluatorUpdateOnChange(long seed) {
         super(seed);
     }
 
@@ -33,9 +33,6 @@ public class ParcelSlackStateEvaluatorFixed extends SlackEvaluator implements St
 
     @Override
     public void notify(long time) {
-        if (getTruck() == null)
-            return;
-
         Map<DefaultParcel, Double> slacks = calculateSlackForState();
         AgentParcel ap;
         // Should only update the parcels that changed
@@ -56,11 +53,11 @@ public class ParcelSlackStateEvaluatorFixed extends SlackEvaluator implements St
         }
     }
 
-    public static SupplierRng<? extends ParcelSlackStateEvaluatorFixed> supplier() {
-        return new SupplierRng.DefaultSupplierRng<ParcelSlackStateEvaluatorFixed>() {
+    public static SupplierRng<? extends ParcelSlackStateEvaluatorUpdateOnChange> supplier() {
+        return new SupplierRng.DefaultSupplierRng<ParcelSlackStateEvaluatorUpdateOnChange>() {
             @Override
-            public ParcelSlackStateEvaluatorFixed get(long seed) {
-                return new ParcelSlackStateEvaluatorFixed(seed);
+            public ParcelSlackStateEvaluatorUpdateOnChange get(long seed) {
+                return new ParcelSlackStateEvaluatorUpdateOnChange(seed);
             }
         };
     }

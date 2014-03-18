@@ -74,7 +74,6 @@ public class ReAuctionableParcel extends DefaultParcel {
         }
 
 		checkState(auctioneer.isPresent(), "Auctioneer needed to change owner");
-
 		ownerHistory.add(auctioneer.get().auction(this, time));
 
         return true;

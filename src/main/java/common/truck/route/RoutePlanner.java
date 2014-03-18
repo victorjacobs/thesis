@@ -12,10 +12,10 @@ import rinde.logistics.pdptw.mas.route.AbstractRoutePlanner;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public abstract class RoutePlanner extends AbstractRoutePlanner implements StateObserver {
-
 	protected Truck truck;
 
-	public void bindTruck(Truck truck) {
+    @Override
+	public void setTruck(Truck truck) {
 		this.truck = truck;
 	}
 }
