@@ -64,7 +64,6 @@ public class Bid implements Comparable<Bid> {
 		parcelsReceived = true;
 	}
 
-	// TODO
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(getBidValue(), getBidder(), getParcels());

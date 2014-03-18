@@ -237,7 +237,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 				// Since contents of this truck are added in the route planner, temporarily remove them here
 				// TODO only notify routePlanner -> this breaks the concept of observer pattern!!
 				Set<DefaultParcel> newState = new HashSet<DefaultParcel>(state);
-				newState.removeAll(pdpModel.get().getContents(this));
+				newState.removeAll(getContents());
 
 				routePlanner.update(newState, getCurrentTime().getTime());
 				routePlanner.next(getCurrentTime().getTime());

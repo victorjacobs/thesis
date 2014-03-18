@@ -79,8 +79,9 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 	}
 
 	/**
-	 *
-	 * @return
+	 * Override to allow TruckConfiguration to set different parcel creators.
+     *
+	 * @return Parcel creator defined by this TruckConfiguration
 	 */
 	@Override
 	public Optional<? extends Creator<AddParcelEvent>> getParcelCreator() {
