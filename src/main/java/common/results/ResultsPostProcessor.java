@@ -20,13 +20,8 @@ public class ResultsPostProcessor implements PostProcessor {
 		try {
             ParcelTrackerModel tracker = sim.getModelProvider().getModel(ParcelTrackerModel.class);
             AgentParcel ap;
-
-            // Display history
-            /*for (DefaultParcel par : tracker.getParcels()) {
-                ap = (AgentParcel) par;
-
-                System.out.println(par + " " + ap.getSlackHistory());
-            }*/
+            // TODO debug, remove me
+            System.out.println("[DEBUG] Total re-auctions: " + tracker.getTotalReAuctions());
 
             return tracker.getParcels();
         } catch (RuntimeException e) {

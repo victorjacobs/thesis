@@ -37,8 +37,8 @@ public class Run {
 
         FAST = localRun;
 
-		Experiment.ExperimentResults result = performRAExperiment();
-        //Experiment.ExperimentResults result = performRandomExperiments();
+		//Experiment.ExperimentResults result = performRAExperiment();
+        Experiment.ExperimentResults result = performRandomExperiments();
         //Experiment.ExperimentResults result = performAdaptiveSlackExperiment();
 
 		System.out.println();
@@ -82,13 +82,13 @@ public class Run {
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
         Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
 
-        for (int i = 1; i < 90; i += 5) {
+        for (int i = 0; i <= 50; i += 5) {
             builder = builder.addConfiguration(
                     new TruckConfiguration(
                             SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                            ImmutableList.of(RandomStateEvaluator.supplier(i)),
+                            ImmutableList.of(RandomStateEvaluatorMultipleParcels.supplier(i)),
                             ReAuctionableParcel.getCreator()
                     )
             );

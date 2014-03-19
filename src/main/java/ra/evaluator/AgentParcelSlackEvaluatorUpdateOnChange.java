@@ -27,7 +27,7 @@ public class AgentParcelSlackEvaluatorUpdateOnChange extends SlackEvaluator impl
 
     @Override
     public ImmutableSet<DefaultParcel> evaluateState(long time) {
-        // Return everything, the parcel is in charge of deciding on re-auctioning
+        // Return everything, the parcel has responsability of deciding on re-auction
         return getTruck().getParcels();
     }
 

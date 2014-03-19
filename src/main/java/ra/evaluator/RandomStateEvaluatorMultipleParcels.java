@@ -64,7 +64,7 @@ public class RandomStateEvaluatorMultipleParcels extends StateEvaluator {
 
             @Override
             public String toString() {
-                return "RandomStateEvaluator" + percentage;
+                return "RandomStateEvaluatorMultipleParcels" + percentage;
             }
         };
 	}

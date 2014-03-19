@@ -29,7 +29,7 @@ public class RandomStateEvaluator extends StateEvaluator {
 
 	@Override
 	public ImmutableSet<DefaultParcel> evaluateState(long time) {
-		if (getTruck().getParcels().isEmpty())
+		if (percentage == 0 || getTruck().getParcels().isEmpty())
 			return ImmutableSet.of();
 
 		int nb;

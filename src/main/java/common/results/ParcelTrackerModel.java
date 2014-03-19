@@ -22,11 +22,7 @@ public class ParcelTrackerModel extends AbstractModel<ReAuctionableParcel> {
 
 	private ParcelTrackerModel() {
 		parcels = newLinkedList();
-	}
-
-	public ImmutableList<ReAuctionableParcel> getParcels() {
-		return ImmutableList.copyOf(parcels);
-	}
+    }
 
 	@Override
 	public boolean register(ReAuctionableParcel element) {
@@ -35,10 +31,31 @@ public class ParcelTrackerModel extends AbstractModel<ReAuctionableParcel> {
 		return true;
 	}
 
-	@Override
-	public boolean unregister(ReAuctionableParcel element) {
-		throw new NotImplementedException();
-	}
+    @Override
+    public boolean unregister(ReAuctionableParcel element) {
+        parcels.remove(element);
+        System.out.println("WARNING: parcel removed from system");
+        return true;
+    }
+
+    public ImmutableList<ReAuctionableParcel> getParcels() {
+        return ImmutableList.copyOf(parcels);
+    }
+
+    /**
+     * Returns total number of re-auctions that occured in the simulation run.
+     *
+     * @return Total re-auctions of all parcels in the simulation
+     */
+    public int getTotalReAuctions() {
+        int total = 0;
+
+        for (ReAuctionableParcel par : parcels) {
+            total += par.getOwnerHistory().size();
+        }
+
+        return total;
+    }
 
 	public static SupplierRng<ParcelTrackerModel> supplier() {
 		return new SupplierRng.DefaultSupplierRng<ParcelTrackerModel>() {

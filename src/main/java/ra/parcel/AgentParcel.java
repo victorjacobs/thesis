@@ -14,6 +14,7 @@ import static com.google.common.collect.Lists.newLinkedList;
  */
 public abstract class AgentParcel extends ReAuctionableParcel {
     private List<Double> slackHistory;
+    private int updatesReceived = 0;
 
     public AgentParcel(ParcelDTO pDto) {
         super(pDto);
@@ -33,6 +34,7 @@ public abstract class AgentParcel extends ReAuctionableParcel {
     // TODO maybe change back to abstract
     public void update(double slack) {
         slackHistory.add(slack);
+        updatesReceived++;
     }
 
     public ImmutableList<Double> getSlackHistory() {
