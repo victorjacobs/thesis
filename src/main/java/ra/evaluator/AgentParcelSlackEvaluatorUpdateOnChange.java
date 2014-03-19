@@ -18,10 +18,10 @@ import static com.google.common.base.Preconditions.checkState;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ParcelSlackStateEvaluatorUpdateOnChange extends SlackEvaluator implements StateObserver {
+public class AgentParcelSlackEvaluatorUpdateOnChange extends SlackEvaluator implements StateObserver {
     Map<DefaultParcel, Double> oldSlacks;
 
-    public ParcelSlackStateEvaluatorUpdateOnChange(long seed) {
+    public AgentParcelSlackEvaluatorUpdateOnChange(long seed) {
         super(seed);
     }
 
@@ -53,11 +53,11 @@ public class ParcelSlackStateEvaluatorUpdateOnChange extends SlackEvaluator impl
         }
     }
 
-    public static SupplierRng<? extends ParcelSlackStateEvaluatorUpdateOnChange> supplier() {
-        return new SupplierRng.DefaultSupplierRng<ParcelSlackStateEvaluatorUpdateOnChange>() {
+    public static SupplierRng<? extends AgentParcelSlackEvaluatorUpdateOnChange> supplier() {
+        return new SupplierRng.DefaultSupplierRng<AgentParcelSlackEvaluatorUpdateOnChange>() {
             @Override
-            public ParcelSlackStateEvaluatorUpdateOnChange get(long seed) {
-                return new ParcelSlackStateEvaluatorUpdateOnChange(seed);
+            public AgentParcelSlackEvaluatorUpdateOnChange get(long seed) {
+                return new AgentParcelSlackEvaluatorUpdateOnChange(seed);
             }
         };
     }

@@ -23,11 +23,6 @@ public class FixedSlackReAuctionableParcel extends AgentParcel {
     }
 
     @Override
-    public void update(double slack) {
-
-    }
-
-    @Override
     public boolean shouldChangeOwner() {
         return (ownerHistory.size() <= 20);
     }

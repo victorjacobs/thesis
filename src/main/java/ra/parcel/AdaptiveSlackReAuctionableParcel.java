@@ -35,6 +35,8 @@ public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
 
     @Override
     public void update(double slack) {
+        super.update(slack);
+
         n++;
         double delta = lastSlack - mean;
         mean += delta / n;

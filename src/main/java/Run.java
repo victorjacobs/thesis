@@ -6,9 +6,7 @@ import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
-import ra.evaluator.ParcelSlackStateEvaluator;
-import ra.evaluator.ParcelSlackStateEvaluatorUpdateOnChange;
-import ra.evaluator.RandomStateEvaluator;
+import ra.evaluator.*;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
@@ -132,7 +130,7 @@ public class Run {
                                 ReAuctionableParcel.getCreator()
                         )
                 )*/
-				/*.addConfiguration(
+				.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -146,26 +144,35 @@ public class Run {
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(AdaptiveSlackEvaluatorApache.supplier()),
+                                ReAuctionableParcel.getCreator()
+                        )
+                )
+                /*.addConfiguration(
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
                                 ImmutableList.of(AdaptiveSlackEvaluator.supplier()),
                                 FixedSlackReAuctionableParcel.getCreator()
                         )
                 )*/
-                .addConfiguration(
+                /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                                ImmutableList.of(ParcelSlackStateEvaluator.supplier()),
+                                ImmutableList.of(AgentParcelSlackEvaluator.supplier()),
                                 AdaptiveSlackReAuctionableParcel.getCreator()
                         )
-                )
-                .addConfiguration(
+                )*/
+                /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                                ImmutableList.of(ParcelSlackStateEvaluatorUpdateOnChange.supplier()),
-                                ImmutableList.of(ParcelSlackStateEvaluatorUpdateOnChange.supplier()),
+                                ImmutableList.of(AgentParcelSlackEvaluatorUpdateOnChange.supplier()),
+                                ImmutableList.of(AgentParcelSlackEvaluatorUpdateOnChange.supplier()),
                                 AdaptiveSlackReAuctionableParcel.getCreator()
                         )
                 )
