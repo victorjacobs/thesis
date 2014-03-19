@@ -27,15 +27,14 @@ import java.util.List;
 public class Run {
 
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
-
-	private static final int THREADS = Runtime.getRuntime().availableProcessors();
-	private static final int REPETITIONS = 10;
 	private static final long SEED = 123L;
+    private static final boolean FAST = true;
 
 	private Run() {}
 
 	public static void main(String[] args) throws Exception {
-		String outputDirectory = (args.length < 1) ? "results/test" + System.currentTimeMillis() + "/" : args[0];
+        if (FAST)
+            System.out.println("Doing short run");
 
 		Experiment.ExperimentResults result = performRAExperiment();
         //Experiment.ExperimentResults result = performRandomExperiments();
@@ -44,29 +43,22 @@ public class Run {
 
 		ResultsProcessor processor = new ResultsProcessor(result);
 
-		processor.write(outputDirectory);
+        if (args.length < 1) {
+            System.out.println(processor);
+        } else {
+            processor.write(args[0]);
+        }
 
 		System.out.println();
 
 	}
 
-    private static Experiment.ExperimentResults performRandomExperiments() throws Exception {
+    private static Experiment.ExperimentResults performAdaptiveSlackExperiment() throws Exception {
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-        final List<Gendreau06Scenario> onlineScenarios = Gendreau06Parser.parser()
-                .addDirectory(SCENARIOS_PATH)
-                .filter(GendreauProblemClass.SHORT_LOW_FREQ)
-                .parse();
-
-        Experiment.Builder exp = Experiment
-                .build(objFunc)
-                .withRandomSeed(SEED)
-                .repeat(REPETITIONS)
-                .withThreads(THREADS)
-                .addScenarios(onlineScenarios)
-                .usePostProcessor(new ResultsPostProcessor());
+        Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
 
         for (int i = 1; i < 10; i += 5) {
-            exp = exp.addConfiguration(
+            builder = builder.addConfiguration(
                     new TruckConfiguration(
                             SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -77,22 +69,33 @@ public class Run {
             );
         }
 
-        return exp.perform();
+        return builder.perform();
+    }
+
+    private static Experiment.ExperimentResults performRandomExperiments() throws Exception {
+        final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
+        Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
+
+        for (int i = 1; i < 10; i += 5) {
+            builder = builder.addConfiguration(
+                    new TruckConfiguration(
+                            SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                            SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                            ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                            ImmutableList.of(RandomStateEvaluator.supplier(i)),
+                            ReAuctionableParcel.getCreator()
+                    )
+            );
+        }
+
+        return builder.perform();
     }
 
 	private static Experiment.ExperimentResults performRAExperiment() throws Exception {
-		final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-		final List<Gendreau06Scenario> onlineScenarios = Gendreau06Parser.parser()
-				.addDirectory(SCENARIOS_PATH)
-				.filter(GendreauProblemClass.SHORT_LOW_FREQ)
-                .parse();
+        final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
+        Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
 
-		return Experiment
-				.build(objFunc)
-				.withRandomSeed(SEED)
-				.repeat(REPETITIONS)
-				.withThreads(THREADS)
-				.addScenarios(onlineScenarios)
+		return builder
 				//.addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
 				/*.addConfiguration(
                         new TruckConfiguration(
@@ -175,36 +178,40 @@ public class Run {
                                 ImmutableList.of(AgentParcelSlackEvaluatorUpdateOnChange.supplier()),
                                 AdaptiveSlackReAuctionableParcel.getCreator()
                         )
-                )
-				/*.addConfiguration(
-						new TruckConfiguration(
-								SolverRoutePlanner.supplier(CheapestInsertionHeuristic.supplier(objFunc)),
-								SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
-								ImmutableList.of(Auctioneer.supplier()),
-								ImmutableList.of(RandomStateEvaluator.supplier())
-						)
-				)
-				.addConfiguration(
-						new TruckConfiguration(
-								SolverRoutePlanner.supplier(CheapestInsertionHeuristic.supplier(objFunc)),
-								SolverBidder.supplier(objFunc, CheapestInsertionHeuristic.supplier(objFunc)),
-								ImmutableList.of(Auctioneer.supplier()),
-								ImmutableList.of(LocalStateEvaluator.supplier())))
-				.addConfiguration(
-						new TruckConfiguration(
-								SolverRoutePlanner.supplier(CheapestInsertionHeuristic.supplier(objFunc)),
-								SolverBidder.supplier(objFunc, CheapestInsertionHeuristic.supplier(objFunc)),
-								ImmutableList.of(Auctioneer.supplier()),
-								ImmutableList.of(AdaptiveLocalStateEvaluator.supplier())))*/
-				//.showGui()
-				/*.addConfiguration(
-						new TruckConfiguration(
-								SolverRoutePlanner.supplier(CheapestInsertionHeuristic.supplier(objFunc)),
-								SolverBidder.supplier(objFunc, CheapestInsertionHeuristic.supplier(objFunc)),
-								ImmutableList.of(Auctioneer.supplier()),
-								ImmutableList.<SupplierRng<? extends StateEvaluator>>of()))*/
-				.usePostProcessor(new ResultsPostProcessor())
+                )*/
 				.perform();
 	}
+
+    /**
+     * Creates basic experiment builder, shared between different test setups. Takes a flag which toggles a shorter
+     * run (only one scenario and one repetition).
+     *
+     * @param objFunc
+     * @param fast
+     * @return
+     */
+    private static Experiment.Builder getExperimentBuilder(ObjectiveFunction objFunc, boolean fast) {
+        int threads = Runtime.getRuntime().availableProcessors();
+        int repetitions = 10;
+
+        final List<Gendreau06Scenario> onlineScenarios = Gendreau06Parser.parser()
+                .addDirectory(SCENARIOS_PATH)
+                .filter(GendreauProblemClass.SHORT_LOW_FREQ)
+                .parse();
+
+        Experiment.Builder builder = Experiment
+                .build(objFunc)
+                .withRandomSeed(SEED)
+                .withThreads(threads)
+                .usePostProcessor(new ResultsPostProcessor());
+
+        if (fast) {
+            return builder
+                    .addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
+                    .repeat(1);
+        } else {
+            return builder.addScenarios(onlineScenarios).repeat(repetitions);
+        }
+    }
 
 }
