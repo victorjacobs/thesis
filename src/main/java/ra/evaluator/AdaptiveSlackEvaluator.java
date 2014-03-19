@@ -15,7 +15,7 @@ import java.util.Map;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class AdaptiveSlackEvaluator extends SlackEvaluator {
-    private final int numberStandardDeviations;
+    private final float numberStandardDeviations;
     private double mean;
 	private int n;
 	private double M2;
@@ -25,7 +25,7 @@ public class AdaptiveSlackEvaluator extends SlackEvaluator {
         this(seed, 1);
     }
 
-	public AdaptiveSlackEvaluator(long seed, int numberStandardDeviations) {
+	public AdaptiveSlackEvaluator(long seed, float numberStandardDeviations) {
 		super(seed);
         this.numberStandardDeviations = numberStandardDeviations;
 
@@ -79,7 +79,7 @@ public class AdaptiveSlackEvaluator extends SlackEvaluator {
         return supplier(1);
     }
 
-	public static SupplierRng<? extends AdaptiveSlackEvaluator> supplier(final int numberStandardDeviations) {
+	public static SupplierRng<? extends AdaptiveSlackEvaluator> supplier(final float numberStandardDeviations) {
 		return new SupplierRng.DefaultSupplierRng<AdaptiveSlackEvaluator>() {
 			@Override
 			public AdaptiveSlackEvaluator get(long seed) {

@@ -28,22 +28,24 @@ public class Run {
 
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 	private static final long SEED = 123L;
-    private static final boolean FAST = true;
+    private static boolean FAST = true;
 
 	private Run() {}
 
 	public static void main(String[] args) throws Exception {
-        if (FAST)
-            System.out.println("Doing short run");
+        boolean localRun = args.length < 1;
+
+        FAST = localRun;
 
 		Experiment.ExperimentResults result = performRAExperiment();
         //Experiment.ExperimentResults result = performRandomExperiments();
+        //Experiment.ExperimentResults result = performAdaptiveSlackExperiment();
 
 		System.out.println();
 
 		ResultsProcessor processor = new ResultsProcessor(result);
 
-        if (args.length < 1) {
+        if (localRun) {
             System.out.println(processor);
         } else {
             processor.write(args[0]);
@@ -54,16 +56,18 @@ public class Run {
 	}
 
     private static Experiment.ExperimentResults performAdaptiveSlackExperiment() throws Exception {
+        System.out.println("Doing adaptive slack experiment");
+
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
         Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
 
-        for (int i = 1; i < 10; i += 5) {
+        for (float i = 3; i >= 0; i -= 0.2) {
             builder = builder.addConfiguration(
                     new TruckConfiguration(
                             SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                            ImmutableList.of(RandomStateEvaluator.supplier(i)),
+                            ImmutableList.of(AdaptiveSlackEvaluator.supplier(i)),
                             ReAuctionableParcel.getCreator()
                     )
             );
@@ -73,10 +77,12 @@ public class Run {
     }
 
     private static Experiment.ExperimentResults performRandomExperiments() throws Exception {
+        System.out.println("Doing random experiment");
+
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
         Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
 
-        for (int i = 1; i < 10; i += 5) {
+        for (int i = 1; i < 90; i += 5) {
             builder = builder.addConfiguration(
                     new TruckConfiguration(
                             SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -105,8 +111,8 @@ public class Run {
                                 ImmutableList.of(StubStateEvaluator.supplier()),
                                 ReAuctionableParcel.getCreator()
                         )
-                )
-                /*.addConfiguration(
+                )*/
+                .addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -124,6 +130,24 @@ public class Run {
                                 ReAuctionableParcel.getCreator()
                         )
                 )
+                .addConfiguration(
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(RandomStateEvaluatorMultipleParcels.supplier(10)),
+                                ReAuctionableParcel.getCreator()
+                        )
+                )
+                .addConfiguration(
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(RandomStateEvaluatorMultipleParcels.supplier(30)),
+                                ReAuctionableParcel.getCreator()
+                        )
+                )
 				/*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -133,7 +157,7 @@ public class Run {
                                 ReAuctionableParcel.getCreator()
                         )
                 )*/
-				.addConfiguration(
+				/*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -186,9 +210,9 @@ public class Run {
      * Creates basic experiment builder, shared between different test setups. Takes a flag which toggles a shorter
      * run (only one scenario and one repetition).
      *
-     * @param objFunc
-     * @param fast
-     * @return
+     * @param objFunc Objective function used in the experiments
+     * @param fast Flag that toggles a fast run mode (only one repetition on one scenario) for debugging
+     * @return Experiment builder object entirely setup, only need to add configurations and run it
      */
     private static Experiment.Builder getExperimentBuilder(ObjectiveFunction objFunc, boolean fast) {
         int threads = Runtime.getRuntime().availableProcessors();
@@ -206,6 +230,7 @@ public class Run {
                 .usePostProcessor(new ResultsPostProcessor());
 
         if (fast) {
+            System.out.println("Doing fast run");
             return builder
                     .addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
                     .repeat(1);

@@ -16,7 +16,7 @@ import java.util.Map;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class AdaptiveSlackEvaluatorApache extends SlackEvaluator {
-    private final int numberStandardDeviations;
+    private final float numberStandardDeviations;
     private StandardDeviation standardDeviation;
     private Mean mean;
 
@@ -24,7 +24,7 @@ public class AdaptiveSlackEvaluatorApache extends SlackEvaluator {
         this(seed, 1);
     }
 
-	public AdaptiveSlackEvaluatorApache(long seed, int numberStandardDeviations) {
+	public AdaptiveSlackEvaluatorApache(long seed, float numberStandardDeviations) {
 		super(seed);
         this.numberStandardDeviations = numberStandardDeviations;
 
@@ -73,7 +73,14 @@ public class AdaptiveSlackEvaluatorApache extends SlackEvaluator {
         return supplier(1);
     }
 
-	public static SupplierRng<? extends AdaptiveSlackEvaluatorApache> supplier(final int numberStandardDeviations) {
+    /**
+     * Returns a supplier of the AdaptiveSlackEvaluator object, given a number of standard deviations which is the
+     * threshold for auctioning (higher means less re-auctions).
+     *
+     * @param numberStandardDeviations
+     * @return
+     */
+	public static SupplierRng<? extends AdaptiveSlackEvaluatorApache> supplier(final float numberStandardDeviations) {
 		return new SupplierRng.DefaultSupplierRng<AdaptiveSlackEvaluatorApache>() {
 			@Override
 			public AdaptiveSlackEvaluatorApache get(long seed) {
