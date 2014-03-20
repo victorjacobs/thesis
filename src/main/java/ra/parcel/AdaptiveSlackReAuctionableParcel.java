@@ -12,6 +12,7 @@ import rinde.sim.pdptw.common.ParcelDTO;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
+    private final float numberStandardDeviations;
     private double mean;
     private int n;
     private double M2;
@@ -19,8 +20,9 @@ public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
 
     private double lastSlack;
 
-    public AdaptiveSlackReAuctionableParcel(ParcelDTO pDto) {
+    public AdaptiveSlackReAuctionableParcel(ParcelDTO pDto, float numberStandardDeviations) {
         super(pDto);
+        this.numberStandardDeviations = numberStandardDeviations;
 
         n = 0;
         mean = 0;
@@ -30,7 +32,7 @@ public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
 
     @Override
     public boolean shouldChangeOwner() {
-        return (lastSlack < mean - getStandardDeviation());
+        return (lastSlack < mean - numberStandardDeviations * getStandardDeviation());
     }
 
     @Override
@@ -48,26 +50,22 @@ public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
         lastSlack = slack;
     }
 
-    double getMean() {
-        return mean;
-    }
-
     double getStandardDeviation() {
         return Math.sqrt(variance);
     }
 
 
-    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {
+    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(final float numberStandardDeviations) {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new AdaptiveSlackReAuctionableParcel(event.parcelDTO));
+                sim.register(new AdaptiveSlackReAuctionableParcel(event.parcelDTO, numberStandardDeviations));
                 return true;
             }
 
             @Override
             public String toString() {
-                return "AdaptiveSlack1STD";
+                return "AdaptiveSlack" + numberStandardDeviations + "STD";
             }
         };
     }

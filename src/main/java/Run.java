@@ -33,13 +33,15 @@ public class Run {
 	private Run() {}
 
 	public static void main(String[] args) throws Exception {
+        final long startTime = System.currentTimeMillis();
         boolean localRun = args.length < 1;
 
         FAST = localRun;
 
 		//Experiment.ExperimentResults result = performRAExperiment();
-        Experiment.ExperimentResults result = performRandomExperiments();
+        //Experiment.ExperimentResults result = performRandomExperiments();
         //Experiment.ExperimentResults result = performAdaptiveSlackExperiment();
+        Experiment.ExperimentResults result = performAgentParcelExperiments();
 
 		System.out.println();
 
@@ -51,8 +53,8 @@ public class Run {
             processor.write(args[0]);
         }
 
-		System.out.println();
-
+        System.out.println();
+        System.out.println("Simulation took " + Math.round(System.currentTimeMillis() - startTime / 1000));
 	}
 
     private static Experiment.ExperimentResults performAdaptiveSlackExperiment() throws Exception {
@@ -61,13 +63,14 @@ public class Run {
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
         Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
 
-        for (float i = 3; i >= 0; i -= 0.2) {
+        // Do loop over int, than divide by 10 because floating point
+        for (int i = 30; i >= 0; i -= 2) {
             builder = builder.addConfiguration(
                     new TruckConfiguration(
                             SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                            ImmutableList.of(AdaptiveSlackEvaluator.supplier(i)),
+                            ImmutableList.of(AdaptiveSlackEvaluator.supplier((float) i / 10)),
                             ReAuctionableParcel.getCreator()
                     )
             );
@@ -90,6 +93,29 @@ public class Run {
                             ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
                             ImmutableList.of(RandomStateEvaluatorMultipleParcels.supplier(i)),
                             ReAuctionableParcel.getCreator()
+                    )
+            );
+        }
+
+        return builder.perform();
+    }
+
+    private static Experiment.ExperimentResults performAgentParcelExperiments() throws Exception {
+        System.out.println("Doing agent parcel experiment");
+
+        final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
+        Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
+
+        // Do loop over int, than divide by 10 because floating point
+        // Go through negative values, to force more re-auctions
+        for (int i = 30; i >= -10; i -= 2) {
+            builder = builder.addConfiguration(
+                    new TruckConfiguration(
+                            SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                            SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                            ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                            ImmutableList.of(AgentParcelSlackEvaluator.supplier()),
+                            AdaptiveSlackReAuctionableParcel.getCreator((float) i / 10)
                     )
             );
         }

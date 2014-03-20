@@ -20,8 +20,6 @@ public class ResultsPostProcessor implements PostProcessor {
 		try {
             ParcelTrackerModel tracker = sim.getModelProvider().getModel(ParcelTrackerModel.class);
             AgentParcel ap;
-            // TODO debug, remove me
-            System.out.println("[DEBUG] Total re-auctions: " + tracker.getTotalReAuctions());
 
             return tracker.getParcels();
         } catch (RuntimeException e) {
