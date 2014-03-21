@@ -1,6 +1,7 @@
 import com.google.common.collect.ImmutableList;
 import common.auctioning.Auctioneer;
 import common.baseline.SolverBidder;
+import common.results.CSVWriter;
 import common.results.ParcelTrackerModel;
 import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
@@ -18,6 +19,7 @@ import rinde.sim.pdptw.gendreau06.Gendreau06Scenario;
 import rinde.sim.pdptw.gendreau06.GendreauProblemClass;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,7 +35,24 @@ public class Run {
 	private Run() {}
 
 	public static void main(String[] args) throws Exception {
-        final long startTime = System.currentTimeMillis();
+        final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
+        Experiment.Builder b = getExperimentBuilder(objFunc, true);
+        b = b.addConfiguration(
+                new TruckConfiguration(
+                        SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                        SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                        ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                        ImmutableList.of(AdaptiveSlackEvaluator.supplier(2.0f)),
+                        ReAuctionableParcel.getCreator()
+                )
+        );
+
+        Experiment.ExperimentResults result = b.perform();
+        ResultsProcessor processor = new ResultsProcessor(result);
+        processor.createOwnerGraph(result.results.get(0));
+
+
+        /*final long startTime = System.currentTimeMillis();
         boolean localRun = args.length < 1;
 
         FAST = localRun;
@@ -54,7 +73,7 @@ public class Run {
         }
 
         System.out.println();
-        System.out.println("Simulation took " + Math.round(System.currentTimeMillis() - startTime / 1000));
+        System.out.println("Simulation took " + Math.round(System.currentTimeMillis() - startTime / 1000));*/
 	}
 
     private static Experiment.ExperimentResults performAdaptiveSlackExperiment() throws Exception {

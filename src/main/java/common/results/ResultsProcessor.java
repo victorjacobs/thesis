@@ -1,6 +1,7 @@
 package common.results;
 
 import com.google.common.collect.ImmutableList;
+import common.truck.Bidder;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -154,6 +155,56 @@ public class ResultsProcessor {
 
 		return sb.toString();
 	}
+
+    // Brute force TODO make this cleaner
+    public void createOwnerGraph(Experiment.SimulationResult result) {
+        CSVWriter<String> w = new CSVWriter<String>("ownerGraph", false);
+        List<ReAuctionableParcel> pars = (List<ReAuctionableParcel>) result.simulationData;
+
+        // Find parcel with most re-auctions, this will be the most interesting
+        int maxReAuctions = Integer.MIN_VALUE;
+        ReAuctionableParcel maxPar = null;
+        for (ReAuctionableParcel par : pars) {
+            if (par.getOwnerHistory().size() > maxReAuctions) {
+                maxReAuctions = par.getOwnerHistory().size();
+                maxPar = par;
+            }
+        }
+
+        // Loop over owner history
+        Map<String, Integer> edgeList = new HashMap<String, Integer>();
+        Bidder currentLocation = null;
+        String edgeKey;
+        for (Bidder b : maxPar.getOwnerHistory()) {
+            if (currentLocation == null) {
+                currentLocation = b;
+                continue;
+            }
+
+            edgeKey = currentLocation.toString() + "-" + b.toString();
+
+            if (!edgeList.containsKey(edgeKey)) {
+                edgeList.put(edgeKey, 1);
+            } else {
+                edgeList.put(edgeKey, edgeList.get(edgeKey) + 1);
+            }
+
+            currentLocation = b;
+        }
+
+        // To CSV
+        List<String> row;
+        for (String edge : edgeList.keySet()) {
+            row = new LinkedList<String>();
+            row.add(edge.split("-")[0]);
+            row.add(edge.split("-")[1]);
+            row.add(Integer.toString(edgeList.get(edge)));
+
+            w.addRow(row);
+        }
+
+        System.out.println(w);
+    }
 
 	/**
 	 * Defines a measure to be evaluated on a SimulationResult

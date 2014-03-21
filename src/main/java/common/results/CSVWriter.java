@@ -19,8 +19,10 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class CSVWriter<E> {
-	private Map<String, List<E>> data;
-	private String name;
+    private Map<String, List<E>> data;
+	private final String name;
+    private final boolean writeHeaders;
+    private int nextRow = 0;     // For use when no headers are used
 
 	/**
 	 * Creates CSVWriter with given name. This name is used to identify it. When doing {@link CSVWriter#write(String)}
@@ -29,9 +31,14 @@ public class CSVWriter<E> {
 	 * @param name Name of the writer
 	 */
 	public CSVWriter(String name) {
-		data = newLinkedHashMap();
-		this.name = name;
+        this(name, true);
 	}
+
+    public CSVWriter(String name, boolean writeHeaders) {
+        this.writeHeaders = writeHeaders;
+        data = newLinkedHashMap();
+        this.name = name;
+    }
 
 	/**
 	 * Add data to certain column with given name.
@@ -45,6 +52,24 @@ public class CSVWriter<E> {
 
 		data.get(header).add(d);
 	}
+
+    /**
+     * Add a row to the CSV file. For now don't try to mix this with the {@link #addToColumn(String, Object)} calls.
+     * TODO
+     *
+     * @param d
+     */
+    public void addRow(List<E> d) {
+        // Make sure columns match
+        while (data.keySet().size() < d.size())
+            data.put(Integer.toString(data.keySet().size()), new LinkedList<E>());
+
+        for (int col = 0; col < data.keySet().size(); col++) {
+            data.get(Integer.toString(col)).add(nextRow, d.get(col));
+        }
+
+        nextRow++;
+    }
 
     public void addToColumn(String header, List<E> d) {
         for (E el : d)
@@ -95,12 +120,14 @@ public class CSVWriter<E> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
-		// Write headers
-		for (String head : data.keySet()) {
-			sb = sb.append(head).append(",");
-		}
+        if (writeHeaders) {
+            // Write headers
+            for (String head : data.keySet()) {
+                sb = sb.append(head).append(",");
+            }
 
-		sb = sb.deleteCharAt(sb.length() - 1).append('\n');
+            sb = sb.deleteCharAt(sb.length() - 1).append('\n');
+        }
 
 		// Figure out rows
 		int nbRows = -1;
