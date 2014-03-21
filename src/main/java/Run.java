@@ -40,8 +40,8 @@ public class Run {
 
 		//Experiment.ExperimentResults result = performRAExperiment();
         //Experiment.ExperimentResults result = performRandomExperiments();
-        //Experiment.ExperimentResults result = performAdaptiveSlackExperiment();
-        Experiment.ExperimentResults result = performAgentParcelExperiments();
+        Experiment.ExperimentResults result = performAdaptiveSlackExperiment();
+        //Experiment.ExperimentResults result = performAgentParcelExperiments();
 
 		System.out.println();
 
