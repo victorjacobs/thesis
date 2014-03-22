@@ -21,7 +21,8 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
 public class CSVWriter<E> {
     private Map<String, List<E>> data;
 	private final String name;
-    private final boolean writeHeaders;
+    private boolean writeHeaders;
+    private String separator;
     private int nextRow = 0;     // For use when no headers are used
 
 	/**
@@ -36,8 +37,9 @@ public class CSVWriter<E> {
 
     public CSVWriter(String name, boolean writeHeaders) {
         this.writeHeaders = writeHeaders;
-        data = newLinkedHashMap();
+        this.data = newLinkedHashMap();
         this.name = name;
+        this.separator = ",";
     }
 
 	/**
@@ -52,6 +54,14 @@ public class CSVWriter<E> {
 
 		data.get(header).add(d);
 	}
+
+    public void writeHeaders(boolean writeHeaders) {
+        this.writeHeaders = writeHeaders;
+    }
+
+    public void separator(String separator) {
+        this.separator = separator;
+    }
 
     /**
      * Add a row to the CSV file. For now don't try to mix this with the {@link #addToColumn(String, Object)} calls.
@@ -123,7 +133,7 @@ public class CSVWriter<E> {
         if (writeHeaders) {
             // Write headers
             for (String head : data.keySet()) {
-                sb = sb.append(head).append(",");
+                sb = sb.append(head).append(separator);
             }
 
             sb = sb.deleteCharAt(sb.length() - 1).append('\n');
@@ -143,7 +153,7 @@ public class CSVWriter<E> {
                     // Don't do anything
                 }
 
-				sb = sb.append(',');
+				sb = sb.append(separator);
 			}
 
 			sb = sb.deleteCharAt(sb.length() - 1).append('\n');

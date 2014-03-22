@@ -35,31 +35,14 @@ public class Run {
 	private Run() {}
 
 	public static void main(String[] args) throws Exception {
-        final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-        Experiment.Builder b = getExperimentBuilder(objFunc, true);
-        b = b.addConfiguration(
-                new TruckConfiguration(
-                        SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
-                        SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
-                        ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                        ImmutableList.of(AdaptiveSlackEvaluator.supplier()),
-                        ReAuctionableParcel.getCreator()
-                )
-        );
-
-        Experiment.ExperimentResults result = b.perform();
-        ResultsProcessor processor = new ResultsProcessor(result);
-        processor.createOwnerGraph(result.results.get(0));
-
-
-        /*final long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
         boolean localRun = args.length < 1;
 
         FAST = localRun;
 
-		//Experiment.ExperimentResults result = performRAExperiment();
+		Experiment.ExperimentResults result = performRAExperiment();
         //Experiment.ExperimentResults result = performRandomExperiments();
-        Experiment.ExperimentResults result = performAdaptiveSlackExperiment();
+        //Experiment.ExperimentResults result = performAdaptiveSlackExperiment();
         //Experiment.ExperimentResults result = performAgentParcelExperiments();
 
 		System.out.println();
@@ -73,7 +56,7 @@ public class Run {
         }
 
         System.out.println();
-        System.out.println("Simulation took " + Math.round(System.currentTimeMillis() - startTime / 1000));*/
+        System.out.println("Simulation took " + Math.round(System.currentTimeMillis() - startTime / 1000));
 	}
 
     private static Experiment.ExperimentResults performAdaptiveSlackExperiment() throws Exception {
