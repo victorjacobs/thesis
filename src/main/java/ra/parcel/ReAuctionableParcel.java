@@ -10,7 +10,10 @@ import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem;
 import rinde.sim.pdptw.common.ParcelDTO;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
@@ -78,6 +81,39 @@ public class ReAuctionableParcel extends DefaultParcel {
 
         return true;
 	}
+
+    /**
+     * Returns a list of weighed edges representing the owner graph. The weight is the number of times the edge
+     * occurs in the graph (how many times the re-auction between the agents in question occurs).
+     *
+     * @return Map representing the owner graph. The key is in the form of v1-v2,
+     * with v1 and v2 string representations of two vertices. The value is the weight of the edge.
+     */
+    // TODO change vertex string representation from hashcode to something more useful
+    public final Map<String, Integer> getWeighedEdgeListOwnerGraph() {
+        // Loop over owner history
+        Map<String, Integer> weighedEdgeList = new HashMap<String, Integer>();
+        Bidder currentLocation = null;
+        String edgeKey;
+        for (Bidder b : getOwnerHistory()) {
+            if (currentLocation == null) {
+                currentLocation = b;
+                continue;
+            }
+
+            edgeKey = currentLocation.toString() + "-" + b.toString();
+
+            if (!weighedEdgeList.containsKey(edgeKey)) {
+                weighedEdgeList.put(edgeKey, 1);
+            } else {
+                weighedEdgeList.put(edgeKey, weighedEdgeList.get(edgeKey) + 1);
+            }
+
+            currentLocation = b;
+        }
+
+        return weighedEdgeList;
+    }
 
     @Override
     public String toString() {

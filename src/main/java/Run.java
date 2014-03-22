@@ -42,7 +42,7 @@ public class Run {
                         SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                         SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                         ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                        ImmutableList.of(AdaptiveSlackEvaluator.supplier(2.0f)),
+                        ImmutableList.of(AdaptiveSlackEvaluator.supplier()),
                         ReAuctionableParcel.getCreator()
                 )
         );

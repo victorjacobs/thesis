@@ -1,7 +1,6 @@
 package common.results;
 
 import com.google.common.collect.ImmutableList;
-import common.truck.Bidder;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -171,26 +170,7 @@ public class ResultsProcessor {
             }
         }
 
-        // Loop over owner history
-        Map<String, Integer> edgeList = new HashMap<String, Integer>();
-        Bidder currentLocation = null;
-        String edgeKey;
-        for (Bidder b : maxPar.getOwnerHistory()) {
-            if (currentLocation == null) {
-                currentLocation = b;
-                continue;
-            }
-
-            edgeKey = currentLocation.toString() + "-" + b.toString();
-
-            if (!edgeList.containsKey(edgeKey)) {
-                edgeList.put(edgeKey, 1);
-            } else {
-                edgeList.put(edgeKey, edgeList.get(edgeKey) + 1);
-            }
-
-            currentLocation = b;
-        }
+        Map<String, Integer> edgeList = maxPar.getWeighedEdgeListOwnerGraph();
 
         // To CSV
         List<String> row;
