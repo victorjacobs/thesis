@@ -26,6 +26,7 @@ public class OwnerGraphMeasure extends Measure<String> {
         Iterator<String> it = resultBins.keySet().iterator();
         Experiment.SimulationResult result = resultBins.get(it.next()).get(0);
 
+        // Change some settings of the CSV writer
         csv.writeHeaders(false);
         csv.separator(" ");
 

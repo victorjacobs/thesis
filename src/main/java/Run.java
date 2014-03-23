@@ -9,6 +9,7 @@ import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import ra.evaluator.*;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
+import ra.parcel.LimitedAuctionReAuctionableParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
@@ -140,7 +141,7 @@ public class Run {
                                 ReAuctionableParcel.getCreator()
                         )
                 )*/
-                .addConfiguration(
+                /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -194,7 +195,7 @@ public class Run {
                                 ReAuctionableParcel.getCreator()
                         )
                 )
-                .addConfiguration(
+                /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -202,16 +203,16 @@ public class Run {
                                 ImmutableList.of(AdaptiveSlackEvaluatorApache.supplier()),
                                 ReAuctionableParcel.getCreator()
                         )
-                )
-                /*.addConfiguration(
+                )*/
+                .addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
                                 ImmutableList.of(AdaptiveSlackEvaluator.supplier()),
-                                FixedSlackReAuctionableParcel.getCreator()
+                                LimitedAuctionReAuctionableParcel.getCreator()
                         )
-                )*/
+                )
                 /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
