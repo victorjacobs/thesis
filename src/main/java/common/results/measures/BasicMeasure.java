@@ -64,10 +64,8 @@ public abstract class BasicMeasure<E> extends Measure<E> {
 
         @Override
         protected List<String> calculate(Experiment.SimulationResult result) {
-            List<ReAuctionableParcel> pars = (List<ReAuctionableParcel>) result.simulationData;
-
             int total = 0;
-            for (ReAuctionableParcel par : pars) {
+            for (ReAuctionableParcel par : getParcelsFromRun(result)) {
                 total += par.getOwnerHistory().size();
             }
 
@@ -84,9 +82,7 @@ public abstract class BasicMeasure<E> extends Measure<E> {
         protected List<String> calculate(Experiment.SimulationResult result) {
             List<String> ret = newLinkedList();
 
-            List<ReAuctionableParcel> pars = (List<ReAuctionableParcel>) result.simulationData;
-
-            for (ReAuctionableParcel par : pars)
+            for (ReAuctionableParcel par : getParcelsFromRun(result))
                 ret.add(Integer.toString(par.getOwnerHistory().size()));
 
             return ret;

@@ -3,8 +3,7 @@ package common.results;
 import common.results.measures.BasicMeasure;
 import common.results.measures.Measure;
 import common.results.measures.OwnerGraphMeasure;
-import ra.parcel.ReAuctionableParcel;
-import rinde.sim.pdptw.common.ObjectiveFunction;
+import common.results.measures.WeighedOwnerGraphMeasure;
 import rinde.sim.pdptw.experiment.Experiment;
 
 import java.io.File;
@@ -46,6 +45,7 @@ public class ResultsProcessor {
         addMeasure(new BasicMeasure.ComputationTime());
         addMeasure(new BasicMeasure.TotalReAuctions());
         addMeasure(new BasicMeasure.NumberReAuctions());
+        addMeasure(new WeighedOwnerGraphMeasure());
         addMeasure(new OwnerGraphMeasure());
 
 		load(data);

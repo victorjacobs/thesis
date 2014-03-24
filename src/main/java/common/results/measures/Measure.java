@@ -1,7 +1,9 @@
 package common.results.measures;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import common.results.CSVWriter;
+import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
 
@@ -29,6 +31,22 @@ public abstract class Measure<E> {
         checkState(objectiveFunction.isPresent(), "No objective function set");
 
         return objectiveFunction.get();
+    }
+
+    // Place this here to do some extensive checking whether simulationData is what we hope it is
+    @SuppressWarnings("unchecked")
+    public final List<ReAuctionableParcel> getParcelsFromRun(Experiment.SimulationResult result) {
+        checkState(result.simulationData != null, "Simulation data is null, did you add a post processor?");
+        List<ReAuctionableParcel> ret;
+
+        try {
+            ret = (List<ReAuctionableParcel>) result.simulationData;
+        } catch(ClassCastException e) {
+            System.err.println("WARNING: simulation data couldn't be cast properly, returning empty list");
+            ret = ImmutableList.of();
+        }
+
+        return ret;
     }
 
     public abstract CSVWriter<E> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins);
