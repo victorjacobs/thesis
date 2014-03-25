@@ -1,5 +1,7 @@
 package common.results.measures;
 
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import common.results.CSVWriter;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -11,6 +13,7 @@ import java.util.*;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
+// TODO this is broken because it uses a Map -> allows no double keys
 public class OwnerGraphMeasure extends Measure<String> {
     public OwnerGraphMeasure() {
         super("ownerGraph", null);
@@ -56,32 +59,23 @@ public class OwnerGraphMeasure extends Measure<String> {
      * @param edgeMap Map mapping edge to weight. If weight is -1, the weight is dropped.
      * @return Writer containing data from the graph
      */
-    protected final CSVWriter<String> getWriter(Map<String, Integer> edgeMap) {
+    protected final CSVWriter<String> getWriter(Multimap<String, Integer> edgeMap) {
         // Change some settings of the CSV writer
         csv.writeHeaders(false);
         csv.separator(" ");
 
         // To CSV
         List<String> row;
-        for (String edge : edgeMap.keySet()) {
+        for (Map.Entry<String, Integer> edge : edgeMap.entries()) {
             row = new LinkedList<String>();
-            row.add(edge.split("-")[0]);
-            row.add(edge.split("-")[1]);
-            if (edgeMap.get(edge) != -1)
-                row.add(Integer.toString(edgeMap.get(edge)));
+            row.add(edge.getKey().split("-")[0]);
+            row.add(edge.getKey().split("-")[1]);
+            if (edge.getValue() != -1)
+                row.add(Integer.toString(edge.getValue()));
 
             csv.addRow(row);
         }
 
         return csv;
-    }
-
-    protected final CSVWriter<String> getWriter(List<String> edgeList) {
-        Map<String, Integer> ret = new HashMap<String, Integer>();
-
-        for (String k : edgeList)
-            ret.put(k, -1);
-
-        return getWriter(ret);
     }
 }

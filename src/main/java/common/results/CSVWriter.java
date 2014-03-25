@@ -74,7 +74,7 @@ public class CSVWriter<E> {
         while (data.keySet().size() < d.size())
             data.put(Integer.toString(data.keySet().size()), new LinkedList<E>());
 
-        for (int col = 0; col < data.keySet().size(); col++) {
+        for (int col = 0; col < d.size(); col++) {
             data.get(Integer.toString(col)).add(nextRow, d.get(col));
         }
 

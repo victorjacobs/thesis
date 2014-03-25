@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Measure that returns a weighed edge list (in NCol format) of the ownership graph of a certain run.
+ * Measure that returns a weighed edge list (in NCol format) of the ownership graph of a certain run. Weight of a
+ * certain edge is the number of times it occurs in the graph. This representation does not in any shape or form
+ * retain order of the transitions.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */

@@ -2,6 +2,8 @@ package ra.parcel;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import common.auctioning.Auctioneer;
 import common.truck.Bidder;
 import rinde.sim.core.Simulator;
@@ -82,11 +84,11 @@ public class ReAuctionableParcel extends DefaultParcel {
     /**
      * Returns the edge list representing the owner graph.
      *
-     * @return
+     * @return Linked list multimap containing all edges in the owner graph. The keys are sorted in order of occurence.
      */
-    public final List<String> getEdgeList() {
+    public final Multimap<String, Integer> getEdgeList() {
         // Loop over owner history
-        List<String> edgeList = newLinkedList();
+        Multimap<String, Integer> edgeList = LinkedListMultimap.create();
         Bidder currentLocation = null;
         String edgeKey;
 
@@ -99,7 +101,7 @@ public class ReAuctionableParcel extends DefaultParcel {
             // TODO make edgekey something more useful
             edgeKey = currentLocation.toString() + "-" + b.toString();
 
-            edgeList.add(edgeKey);
+            edgeList.put(edgeKey, -1);
 
             currentLocation = b;
         }
@@ -114,21 +116,21 @@ public class ReAuctionableParcel extends DefaultParcel {
      * @return Map representing the owner graph. The key is in the form of v1-v2,
      * with v1 and v2 string representations of two vertices. The value is the weight of the edge.
      */
-    public final Map<String, Integer> getWeighedEdgeListOwnerGraph() {
-        Map<String, Integer> weighedEdgeList = new HashMap<String, Integer>();
-        List<String> edgeList = getEdgeList();
+    public final Multimap<String, Integer> getWeighedEdgeListOwnerGraph() {
+        // Collapse multimap into new multimap
+        Multimap<String, Integer> edgeList = getEdgeList();
+        Multimap<String, Integer> collapsed = LinkedListMultimap.create();
 
-        Set<String> keys = new HashSet<String>(edgeList);
-        for (String k : keys) {
-            weighedEdgeList.put(k, Collections.frequency(edgeList, k));
+        for (String k : edgeList.keySet()) {
+            collapsed.put(k, edgeList.get(k).size());
         }
 
-        return weighedEdgeList;
+        return collapsed;
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return "[ReAuctionableParcel " + dto + "]";
     }
 
     public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {
