@@ -57,7 +57,7 @@ public class Run {
         }
 
         System.out.println();
-        System.out.println("Simulation took " + Math.round(System.currentTimeMillis() - startTime / 1000));
+        System.out.println("Simulation took " + Math.round(((double) System.currentTimeMillis() - startTime) / 1000));
 	}
 
     private static Experiment.ExperimentResults performAdaptiveSlackExperiment() throws Exception {
@@ -186,7 +186,7 @@ public class Run {
                                 ReAuctionableParcel.getCreator()
                         )
                 )*/
-				.addConfiguration(
+				/*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -212,8 +212,8 @@ public class Run {
                                 ImmutableList.of(AdaptiveSlackEvaluator.supplier()),
                                 LimitedAuctionReAuctionableParcel.getCreator()
                         )
-                )
-                /*.addConfiguration(
+                )*/
+                .addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -221,7 +221,7 @@ public class Run {
                                 ImmutableList.of(AgentParcelSlackEvaluator.supplier()),
                                 AdaptiveSlackReAuctionableParcel.getCreator()
                         )
-                )*/
+                )
                 /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -244,7 +244,8 @@ public class Run {
      * @return Experiment builder object entirely setup, only need to add configurations and run it
      */
     private static Experiment.Builder getExperimentBuilder(ObjectiveFunction objFunc, boolean fast) {
-        int threads = Runtime.getRuntime().availableProcessors();
+        //int threads = Runtime.getRuntime().availableProcessors();
+        int threads = 24;
         int repetitions = 10;
 
         final List<Gendreau06Scenario> onlineScenarios = Gendreau06Parser.parser()

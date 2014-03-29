@@ -54,6 +54,9 @@ public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
         return Math.sqrt(variance);
     }
 
+    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {
+        return getCreator(1);
+    }
 
     public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(final float numberStandardDeviations) {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {

@@ -13,7 +13,6 @@ import java.util.*;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-// TODO this is broken because it uses a Map -> allows no double keys
 public class OwnerGraphMeasure extends Measure<String> {
     public OwnerGraphMeasure() {
         super("ownerGraph", null);

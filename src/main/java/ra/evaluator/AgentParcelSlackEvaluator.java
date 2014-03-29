@@ -28,7 +28,7 @@ public class AgentParcelSlackEvaluator extends SlackEvaluator {
         AgentParcel rp;
 
         for (DefaultParcel par : slacks.keySet()) {
-            checkState(par instanceof AgentParcel);
+            checkState(par instanceof AgentParcel, "AgentParcelSlackEvaluator only works with AgentParcels");
 
             rp = (AgentParcel) par;
 
