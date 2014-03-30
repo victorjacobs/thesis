@@ -1,18 +1,20 @@
 package common.results.measures;
 
 import common.results.CSVWriter;
+import common.truck.Bidder;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newLinkedList;
 
 /**
- * Defines a Measure that will be evaluated for every configuration.
+ * Defines a Measure that will be evaluated for every result.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
@@ -21,6 +23,12 @@ public abstract class BasicMeasure<E> extends Measure<E> {
         super(name, objectiveFunction);
     }
 
+    /**
+     * Calculate measure for a single simulation result. This might return a list for values for a certain result.
+     *
+     * @param result Simulation result for which the measure should be calculated
+     * @return List of values that are calculated from the result
+     */
     protected abstract List<E> calculate(Experiment.SimulationResult result);
 
     @Override
@@ -34,7 +42,9 @@ public abstract class BasicMeasure<E> extends Measure<E> {
         return csv;
     }
 
-    // TODO maybe to interface?
+    /**
+     * Returns the fitness for a simulation result.
+     */
     public static class Fitness extends BasicMeasure<String> {
         public Fitness(ObjectiveFunction objectiveFunction) {
             super("fitness", objectiveFunction);
@@ -46,6 +56,9 @@ public abstract class BasicMeasure<E> extends Measure<E> {
         }
     }
 
+    /**
+     * Returns the computation time for a simulation result.
+     */
     public static class ComputationTime extends BasicMeasure<String> {
         public ComputationTime() {
             super("computationtime", null);
@@ -57,6 +70,9 @@ public abstract class BasicMeasure<E> extends Measure<E> {
         }
     }
 
+    /**
+     * Returns the total re-auctions done in a certain configuration.
+     */
     public static class TotalReAuctions extends BasicMeasure<String> {
         public TotalReAuctions() {
             super("totalReauctions", null);
@@ -73,6 +89,9 @@ public abstract class BasicMeasure<E> extends Measure<E> {
         }
     }
 
+    /**
+     * Returns the number of re-auctions per parcel for a result.
+     */
     public static class NumberReAuctions extends BasicMeasure<String> {
         public NumberReAuctions() {
             super("nbReauctions", null);
@@ -84,6 +103,29 @@ public abstract class BasicMeasure<E> extends Measure<E> {
 
             for (ReAuctionableParcel par : getParcelsFromRun(result))
                 ret.add(Integer.toString(par.getOwnerHistory().size()));
+
+            return ret;
+        }
+    }
+
+    /**
+     * Returns the ratio of #re-auctions/#distinct owners per parcel for a result.
+     */
+    // TODO need to fix that ownerhistory contains first owner!!!¡¡¡
+    public static class AuctionOwnerRatio extends BasicMeasure<String> {
+        public AuctionOwnerRatio() {
+            super("auctionOwnerRatio", null);
+        }
+
+        @Override
+        protected List<String> calculate(Experiment.SimulationResult result) {
+            List<String> ret = newLinkedList();
+            int distinctOwners;
+
+            for (ReAuctionableParcel par : getParcelsFromRun(result)) {
+                distinctOwners = (new HashSet<Bidder>(par.getOwnerHistory())).size();
+                ret.add(Double.toString(par.getOwnerHistory().size() / distinctOwners));
+            }
 
             return ret;
         }

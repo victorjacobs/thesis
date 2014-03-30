@@ -21,6 +21,8 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Sets.newLinkedHashSet;
 
 /**
+ * Implements an auctioneer. It calls all bidders to do a bid on a parcel and then allocates said parcel to the
+ * winning bidder.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */

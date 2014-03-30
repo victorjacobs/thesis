@@ -54,7 +54,9 @@ public class ReAuctionableParcel extends DefaultParcel {
 	}
 
     /**
-     * This method allows the parcel to have a say in re-auctioning.
+     * This method allows the parcel to have a say in re-auctioning. This is called after it being selected by an
+     * implementation of {@link common.truck.StateEvaluator}. If you want the parcel to have full deciding power,
+     * couple it with a state evaluator that returns all parcels.
      *
      * @return
      */
@@ -98,11 +100,8 @@ public class ReAuctionableParcel extends DefaultParcel {
                 continue;
             }
 
-            // TODO make edgekey something more useful
-            edgeKey = currentLocation.toString() + "-" + b.toString();
-
+            edgeKey = currentLocation.hashCode() + "-" + b.hashCode();
             edgeList.put(edgeKey, -1);
-
             currentLocation = b;
         }
 

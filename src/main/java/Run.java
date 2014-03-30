@@ -24,11 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Class that contains main method and testing setup.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
+// TODO this needs to be refactored
 public class Run {
-
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 	private static final long SEED = 123L;
     private static boolean FAST = true;
@@ -41,26 +42,25 @@ public class Run {
 
         FAST = localRun;
 
-		Experiment.ExperimentResults result = performRAExperiment();
+		ResultsProcessor result = performRAExperiment();
         //Experiment.ExperimentResults result = performRandomExperiments();
         //Experiment.ExperimentResults result = performAdaptiveSlackExperiment();
         //Experiment.ExperimentResults result = performAgentParcelExperiments();
 
 		System.out.println();
 
-		ResultsProcessor processor = new ResultsProcessor(result);
-
         if (localRun) {
-            System.out.println(processor);
+            System.out.println(result);
         } else {
-            processor.write(args[0]);
+            result.write(args[0]);
         }
 
         System.out.println();
-        System.out.println("Simulation took " + Math.round(((double) System.currentTimeMillis() - startTime) / 1000));
+        System.out.println("Simulation took " + Math.round(((double) System.currentTimeMillis() - startTime) / 1000)
+                + "s");
 	}
 
-    private static Experiment.ExperimentResults performAdaptiveSlackExperiment() throws Exception {
+    private static ResultsProcessor performAdaptiveSlackExperiment() throws Exception {
         System.out.println("Doing adaptive slack experiment");
 
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
@@ -79,10 +79,10 @@ public class Run {
             );
         }
 
-        return builder.perform();
+        return new ResultsProcessor(builder.perform());
     }
 
-    private static Experiment.ExperimentResults performRandomExperiments() throws Exception {
+    private static ResultsProcessor performRandomExperiments() throws Exception {
         System.out.println("Doing random experiment");
 
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
@@ -100,10 +100,10 @@ public class Run {
             );
         }
 
-        return builder.perform();
+        return new ResultsProcessor(builder.perform());
     }
 
-    private static Experiment.ExperimentResults performAgentParcelExperiments() throws Exception {
+    private static ResultsProcessor performAgentParcelExperiments() throws Exception {
         System.out.println("Doing agent parcel experiment");
 
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
@@ -123,14 +123,14 @@ public class Run {
             );
         }
 
-        return builder.perform();
+        return new ResultsProcessor(builder.perform());
     }
 
-	private static Experiment.ExperimentResults performRAExperiment() throws Exception {
+	private static ResultsProcessor performRAExperiment() throws Exception {
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
         Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
 
-		return builder
+		builder =  builder
 				//.addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
 				/*.addConfiguration(
                         new TruckConfiguration(
@@ -231,8 +231,9 @@ public class Run {
                                 ImmutableList.of(AgentParcelSlackEvaluatorUpdateOnChange.supplier()),
                                 AdaptiveSlackReAuctionableParcel.getCreator()
                         )
-                )*/
-				.perform();
+                )*/;
+
+        return new ResultsProcessor(builder.perform());
 	}
 
     /**

@@ -45,6 +45,7 @@ public class ResultsProcessor {
         addMeasure(new BasicMeasure.ComputationTime());
         addMeasure(new BasicMeasure.TotalReAuctions());
         addMeasure(new BasicMeasure.NumberReAuctions());
+        //addMeasure(new BasicMeasure.AuctionOwnerRatio());
         addMeasure(new WeighedOwnerGraphMeasure());
         addMeasure(new OwnerGraphMeasure());
 
