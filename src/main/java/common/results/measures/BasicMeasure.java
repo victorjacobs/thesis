@@ -111,7 +111,6 @@ public abstract class BasicMeasure<E> extends Measure<E> {
     /**
      * Returns the ratio of #re-auctions/#distinct owners per parcel for a result.
      */
-    // TODO need to fix that ownerhistory contains first owner!!!¡¡¡
     public static class AuctionOwnerRatio extends BasicMeasure<String> {
         public AuctionOwnerRatio() {
             super("auctionOwnerRatio", null);

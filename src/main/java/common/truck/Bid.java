@@ -24,7 +24,6 @@ public class Bid implements Comparable<Bid> {
 	private boolean parcelsReceived = false;
 
 	public Bid(Bidder bidder, final DefaultParcel parcel, double bidValue) {
-		// NOTE double brace initialisation
 		this(bidder, newLinkedHashSet(Collections.singleton(parcel)), bidValue);
 	}
 

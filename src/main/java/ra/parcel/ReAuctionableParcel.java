@@ -44,6 +44,10 @@ public class ReAuctionableParcel extends DefaultParcel {
 		auctioneer = Optional.of(auct);
 	}
 
+    public final void setOwner(Bidder owner) {
+        ownerHistory.add(owner);
+    }
+
     /**
      * Is the parcel owned by an auctioneer?
      *
@@ -78,7 +82,7 @@ public class ReAuctionableParcel extends DefaultParcel {
         }
 
 		checkState(auctioneer.isPresent(), "Auctioneer needed to change owner");
-		ownerHistory.add(auctioneer.get().auction(this, time));
+		auctioneer.get().auction(this, time);
 
         return true;
 	}
