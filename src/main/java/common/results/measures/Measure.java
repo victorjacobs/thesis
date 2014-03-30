@@ -8,13 +8,14 @@ import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
 
 import javax.annotation.Nullable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
 
 /**
- * Defines a measure to be evaluated on a list of simulation results
+ * Defines a measure to be evaluated on a list of simulation results.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
@@ -33,14 +34,19 @@ public abstract class Measure<E> {
         return objectiveFunction.get();
     }
 
-    // Place this here to do some extensive checking whether simulationData is what we hope it is
+    /**
+     * Extract the parcels from a simulation result, gathered through {@link common.results.ParcelTrackerModel}.
+     *
+     * @param result Simulation result to get the parcels from
+     * @return List of parcels that were used in the simulation
+     */
     @SuppressWarnings("unchecked")
     public final List<ReAuctionableParcel> getParcelsFromRun(Experiment.SimulationResult result) {
         checkState(result.simulationData != null, "Simulation data is null, did you add a post processor?");
         List<ReAuctionableParcel> ret;
 
         try {
-            ret = (List<ReAuctionableParcel>) result.simulationData;
+            ret = new LinkedList<ReAuctionableParcel>((List<ReAuctionableParcel>) result.simulationData);
         } catch(ClassCastException e) {
             System.err.println("WARNING: simulation data couldn't be cast properly, returning empty list");
             ret = ImmutableList.of();
@@ -49,6 +55,13 @@ public abstract class Measure<E> {
         return ret;
     }
 
+    /**
+     * Evaluate the measure on a list of simulation results bins. It returns a {@link common.results.CSVWriter}
+     * containing the results in format desired for outputting.
+     *
+     * @param resultBins Bins containing the simulation results
+     * @return A writer containing the measure result
+     */
     public abstract CSVWriter<E> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins);
 
 }

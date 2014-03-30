@@ -130,7 +130,7 @@ public class Run {
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
         Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
 
-		builder =  builder
+		builder = builder
 				//.addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
 				/*.addConfiguration(
                         new TruckConfiguration(
@@ -192,15 +192,6 @@ public class Run {
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
                                 ImmutableList.of(AdaptiveSlackEvaluator.supplier()),
-                                ReAuctionableParcel.getCreator()
-                        )
-                )
-                /*.addConfiguration(
-                        new TruckConfiguration(
-                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
-                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
-                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                                ImmutableList.of(AdaptiveSlackEvaluatorApache.supplier()),
                                 ReAuctionableParcel.getCreator()
                         )
                 )*/

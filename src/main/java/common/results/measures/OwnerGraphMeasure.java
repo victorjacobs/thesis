@@ -1,12 +1,14 @@
 package common.results.measures;
 
-import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import common.results.CSVWriter;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.experiment.Experiment;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Calculates the raw edge list (in NCol format) of the owner graph.
@@ -24,7 +26,7 @@ public class OwnerGraphMeasure extends Measure<String> {
 
     @Override
     public CSVWriter<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
-        return getWriter(parcelToProcess(resultBins).getEdgeList());
+        return getWriter(parcelToGenerateGraph(resultBins).getEdgeList());
     }
 
     /**
@@ -35,7 +37,7 @@ public class OwnerGraphMeasure extends Measure<String> {
      * @param resultBins The binned experimental results
      * @return One parcel to calculate owner graph measures on
      */
-    protected final ReAuctionableParcel parcelToProcess(Map<String, List<Experiment.SimulationResult>> resultBins) {
+    protected final ReAuctionableParcel parcelToGenerateGraph(Map<String, List<Experiment.SimulationResult>> resultBins) {
         Iterator<String> it = resultBins.keySet().iterator();
         Experiment.SimulationResult result = resultBins.get(it.next()).get(0);
 

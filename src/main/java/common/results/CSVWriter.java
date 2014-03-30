@@ -1,7 +1,5 @@
 package common.results;
 
-import com.google.common.collect.ImmutableList;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -10,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
 /**
@@ -55,10 +52,20 @@ public class CSVWriter<E> {
 		data.get(header).add(d);
 	}
 
+    /**
+     * Set whether or not to write column headers to file. This defaults to true.
+     *
+     * @param writeHeaders Whether or not columns are written
+     */
     public void writeHeaders(boolean writeHeaders) {
         this.writeHeaders = writeHeaders;
     }
 
+    /**
+     * Set the column separator for the file. This defaults to ",".
+     *
+     * @param separator Separator used for separating columns in the file
+     */
     public void separator(String separator) {
         this.separator = separator;
     }

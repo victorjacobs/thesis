@@ -1,9 +1,6 @@
 package common.results;
 
-import common.results.measures.BasicMeasure;
-import common.results.measures.Measure;
-import common.results.measures.OwnerGraphMeasure;
-import common.results.measures.WeighedOwnerGraphMeasure;
+import common.results.measures.*;
 import rinde.sim.pdptw.experiment.Experiment;
 
 import java.io.File;
@@ -42,12 +39,13 @@ public class ResultsProcessor {
 
 		// What data to extract
         addMeasure(new BasicMeasure.Fitness(data.objectiveFunction));
-        //addMeasure(new BasicMeasure.ComputationTime());
+        addMeasure(new BasicMeasure.ComputationTime());
         addMeasure(new BasicMeasure.TotalReAuctions());
         addMeasure(new BasicMeasure.NumberReAuctions());
         addMeasure(new BasicMeasure.AuctionOwnerRatio());
         addMeasure(new WeighedOwnerGraphMeasure());
         addMeasure(new OwnerGraphMeasure());
+        addMeasure(new ParcelSlackHistoryMeasure());
 
 		load(data);
 	}
@@ -83,8 +81,9 @@ public class ResultsProcessor {
 		}
 
 		// Calculate measures
+        CSVWriter<String> w;
 		for (Measure<String> m : measures) {
-			processedData.add(m.evaluate(dtoBins));
+            if ((w = m.evaluate(dtoBins)) != null) processedData.add(w);
 		}
 	}
 
