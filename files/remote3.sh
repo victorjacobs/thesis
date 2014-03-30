@@ -1,11 +1,16 @@
 #!/bin/bash
 if [ -z "$1" ]; then
-  echo "Usage: $0 <RunName>"
+  echo "Usage: $0 <RunName> [<nbThreads>]"
   exit
 fi
 
-HOST="feynman"
+REMOTE_CMD="./run.sh"
 
+if [ ! -z "$2" ]; then
+  REMOTE_CMD=$REMOTE_CMD" -t "$2
+fi
+
+HOST="feynman"
 RUN="$(date +%s)$1"
 
 echo "Executing $RUN on $HOST"
@@ -25,7 +30,7 @@ echo "Uploading..."
 scp payload.tar.gz feynman.cs.kuleuven.be:~/vault
 rm payload.tar.gz
 echo "Executing..."
-ssh feynman.cs.kuleuven.be "export RUN='$RUN'; cd vault; ./run.sh"
+ssh feynman.cs.kuleuven.be "export RUN='$RUN'; cd vault; "$REMOTE_CMD
 
 cd '/Users/victor/Documents/Leuven/Thesis/Results/'
 echo "Fetching results..."

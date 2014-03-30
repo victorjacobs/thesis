@@ -1,15 +1,14 @@
 import com.google.common.collect.ImmutableList;
 import common.auctioning.Auctioneer;
 import common.baseline.SolverBidder;
-import common.results.CSVWriter;
 import common.results.ParcelTrackerModel;
 import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
+import org.apache.commons.cli.*;
 import ra.evaluator.*;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
-import ra.parcel.LimitedAuctionReAuctionableParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
@@ -20,7 +19,6 @@ import rinde.sim.pdptw.gendreau06.Gendreau06Scenario;
 import rinde.sim.pdptw.gendreau06.GendreauProblemClass;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,39 +30,97 @@ import java.util.List;
 public class Run {
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 	private static final long SEED = 123L;
-    private static boolean FAST = true;
 
-	private Run() {}
+    private boolean quickRun = true; // Flag that toggles a fast run mode (only one repetition on one scenario) for debugging
+    private int threads = Runtime.getRuntime().availableProcessors();
+    private int repetitions = 10;
 
-	public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
+        // Set up command line
+        Options opt = new Options();
+
+        opt.addOption(OptionBuilder
+                .withArgName("resultsDir")
+                .hasArg()
+                .withDescription("Directory to output results to")
+                .create("o"));
+        opt.addOption(OptionBuilder
+                .withArgName("nbThreads")
+                .hasArg()
+                .withDescription("Number of threads, defaults to number of cores in system")
+                .create("t"));
+        opt.addOption(OptionBuilder
+                .withArgName("repetitions")
+                .hasArg()
+                .withDescription("Number of repetitions, defaults to 10")
+                .create("r"));
+        opt.addOption(new Option("q", "Quick run: one repetition of one scenario"));
+        opt.addOption(new Option("help", "Print this message"));
+
+        CommandLineParser parser = new BasicParser();
+
+        CommandLine cmd = parser.parse(opt, args);
+
+        if (cmd.hasOption("help")) {
+            (new HelpFormatter()).printHelp("java -jar Thesis.jar", opt);
+            return;
+        }
+
+        if (!cmd.hasOption("q") && !cmd.hasOption("o")) {
+            System.err.println("Missing option: o");
+
+            (new HelpFormatter()).printHelp("java -jar Thesis.jar", opt);
+            return;
+        }
+
+        new Run(cmd);
+    }
+
+	private Run(CommandLine cmd) throws Exception {
+        // Extract some info from cli
+        quickRun = cmd.hasOption("q");
+        if (cmd.hasOption("t")) {
+            try {
+                threads = Integer.parseInt(cmd.getOptionValue("t"));
+                System.out.println(threads);
+            } catch (NumberFormatException e) {
+                System.out.println("Warning: -t " + cmd.getOptionValue("t") + " not valid option");
+            }
+        }
+
+        if (cmd.hasOption("r")) {
+            try {
+                repetitions = Integer.parseInt(cmd.getOptionValue("r"));
+            } catch (NumberFormatException e) {
+                System.out.println("Warning: -r " + cmd.getOptionValue("r") + " not valid option");
+            }
+        }
+
         final long startTime = System.currentTimeMillis();
-        boolean localRun = args.length < 1;
 
-        FAST = localRun;
-
-		ResultsProcessor result = performRAExperiment();
+        ResultsProcessor result = performRAExperiment();
         //Experiment.ExperimentResults result = performRandomExperiments();
         //Experiment.ExperimentResults result = performAdaptiveSlackExperiment();
         //Experiment.ExperimentResults result = performAgentParcelExperiments();
 
-		System.out.println();
+        System.out.println();
 
-        if (localRun) {
+        if (quickRun) {
             System.out.println(result);
         } else {
-            result.write(args[0]);
+            result.write(cmd.getOptionValue("o"));
         }
 
         System.out.println();
         System.out.println("Simulation took " + Math.round(((double) System.currentTimeMillis() - startTime) / 1000)
                 + "s");
-	}
+    }
 
-    private static ResultsProcessor performAdaptiveSlackExperiment() throws Exception {
+    private ResultsProcessor performAdaptiveSlackExperiment() throws Exception {
         System.out.println("Doing adaptive slack experiment");
 
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-        Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
+        Experiment.Builder builder = getExperimentBuilder(objFunc);
 
         // Do loop over int, than divide by 10 because floating point
         for (int i = 30; i >= 0; i -= 2) {
@@ -82,11 +138,11 @@ public class Run {
         return new ResultsProcessor(builder.perform());
     }
 
-    private static ResultsProcessor performRandomExperiments() throws Exception {
+    private ResultsProcessor performRandomExperiments() throws Exception {
         System.out.println("Doing random experiment");
 
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-        Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
+        Experiment.Builder builder = getExperimentBuilder(objFunc);
 
         for (int i = 0; i <= 50; i += 5) {
             builder = builder.addConfiguration(
@@ -103,11 +159,11 @@ public class Run {
         return new ResultsProcessor(builder.perform());
     }
 
-    private static ResultsProcessor performAgentParcelExperiments() throws Exception {
+    private ResultsProcessor performAgentParcelExperiments() throws Exception {
         System.out.println("Doing agent parcel experiment");
 
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-        Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
+        Experiment.Builder builder = getExperimentBuilder(objFunc);
 
         // Do loop over int, than divide by 10 because floating point
         // Go through negative values, to force more re-auctions
@@ -126,9 +182,9 @@ public class Run {
         return new ResultsProcessor(builder.perform());
     }
 
-	private static ResultsProcessor performRAExperiment() throws Exception {
+	private ResultsProcessor performRAExperiment() throws Exception {
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-        Experiment.Builder builder = getExperimentBuilder(objFunc, FAST);
+        Experiment.Builder builder = getExperimentBuilder(objFunc);
 
 		builder = builder
 				//.addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
@@ -232,14 +288,9 @@ public class Run {
      * run (only one scenario and one repetition).
      *
      * @param objFunc Objective function used in the experiments
-     * @param fast Flag that toggles a fast run mode (only one repetition on one scenario) for debugging
      * @return Experiment builder object entirely setup, only need to add configurations and run it
      */
-    private static Experiment.Builder getExperimentBuilder(ObjectiveFunction objFunc, boolean fast) {
-        //int threads = Runtime.getRuntime().availableProcessors();
-        int threads = 24;
-        int repetitions = 10;
-
+    private Experiment.Builder getExperimentBuilder(ObjectiveFunction objFunc) {
         final List<Gendreau06Scenario> onlineScenarios = Gendreau06Parser.parser()
                 .addDirectory(SCENARIOS_PATH)
                 .filter(GendreauProblemClass.SHORT_LOW_FREQ)
@@ -251,7 +302,7 @@ public class Run {
                 .withThreads(threads)
                 .usePostProcessor(new ResultsPostProcessor());
 
-        if (fast) {
+        if (quickRun) {
             System.out.println("Doing fast run");
             return builder
                     .addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
