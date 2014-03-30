@@ -72,14 +72,14 @@ public abstract class ParcelAllocatorTest {
 		Bidder b2 = mock(Bidder.class);
 
 		// Create bids
-		List<Bid> bidSet1 = new LinkedList<Bid>();
+		List<Bid<DefaultParcel>> bidSet1 = new LinkedList<Bid<DefaultParcel>>();
 		for (List<DefaultParcel> b : bundleSet1) {
-			bidSet1.add(new Bid(b1, newLinkedHashSet(b), 20));
+			bidSet1.add(new Bid<DefaultParcel>(b1, newLinkedHashSet(b), 20));
 		}
 
-		List<Bid> bidSet2 = new LinkedList<Bid>();
+		List<Bid<DefaultParcel>> bidSet2 = new LinkedList<Bid<DefaultParcel>>();
 		for (List<DefaultParcel> b : bundleSet2) {
-			bidSet2.add(new Bid(b2, newLinkedHashSet(b), 10));
+			bidSet2.add(new Bid<DefaultParcel>(b2, newLinkedHashSet(b), 10));
 		}
 
 		// Finally add everything to the allocator

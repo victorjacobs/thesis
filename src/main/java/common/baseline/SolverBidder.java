@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import common.truck.Bid;
 import common.truck.Bidder;
+import ra.parcel.ReAuctionableParcel;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
 import rinde.sim.pdptw.central.GlobalStateObject;
@@ -93,7 +94,7 @@ public class SolverBidder extends Bidder implements SimulatorUser {
 		final double newCost = objectiveFunction.computeCost(Solvers.computeStats(
 				context.state, ImmutableList.of(Solvers.toDtoList(newRoute))));
 
-		return new Bid(this, p, newCost - baseline);
+		return new Bid<ReAuctionableParcel>(this, p, newCost - baseline);
 	}
 
 	//@Override

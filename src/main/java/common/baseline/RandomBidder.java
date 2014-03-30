@@ -24,7 +24,7 @@ public class RandomBidder extends Bidder {
 	public Bid getBidFor(DefaultParcel par, long time) {
 		int bid = rng.nextInt(100);
 
-		return new Bid(this, par, bid);
+		return new Bid<DefaultParcel>(this, par, bid);
 	}
 
 	public static SupplierRng<RandomBidder> supplier() {

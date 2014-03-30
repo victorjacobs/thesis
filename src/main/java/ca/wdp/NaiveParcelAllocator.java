@@ -16,7 +16,7 @@ public class NaiveParcelAllocator extends ParcelAllocator {
 	ParcelAllocation solve() {
 		ParcelAllocation allocation = new ParcelAllocation();
 
-		for (Bid curBid : bids) {
+		for (Bid<DefaultParcel> curBid : bids) {
 			for (DefaultParcel par : curBid.getParcels()) {		// Oops O(n^2)
 				if (!allocation.parcelExists(par) || curBid.getBidValue() < allocation.getValueOfParcel(par)) {
 					allocation.allocateBid(curBid);

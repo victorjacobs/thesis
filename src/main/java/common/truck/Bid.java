@@ -6,29 +6,29 @@ import com.google.common.collect.ImmutableSet;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Sets.newLinkedHashSet;
 
 /**
- * Represents a bid made by an agent
+ * Represents a bid made by an agent.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class Bid implements Comparable<Bid> {
-
-	private ImmutableSet<DefaultParcel> parcels;
+public class Bid<E extends DefaultParcel> implements Comparable<Bid> {
+	private ImmutableSet<E> parcels;
 	private final double bidValue;
 	private final Bidder bidder;
 	private boolean parcelsReceived = false;
 
-	public Bid(Bidder bidder, final DefaultParcel parcel, double bidValue) {
-		// NOTE double brace initialisation
+	public Bid(Bidder bidder, E parcel, double bidValue) {
 		this(bidder, newLinkedHashSet(Collections.singleton(parcel)), bidValue);
 	}
 
-	public Bid(Bidder bidder, Set<DefaultParcel> parcels, double bidValue) {
+	public Bid(Bidder bidder, Set<E> parcels, double bidValue) {
 		this.parcels = ImmutableSet.copyOf(parcels);
 		this.bidValue = bidValue;
 		this.bidder = bidder;
@@ -38,7 +38,7 @@ public class Bid implements Comparable<Bid> {
 		return bidValue;
 	}
 
-	public ImmutableSet<DefaultParcel> getParcels() {
+	public ImmutableSet<E> getParcels() {
 		return parcels;
 	}
 
@@ -58,9 +58,10 @@ public class Bid implements Comparable<Bid> {
 	/**
 	 * The bidder that made this bid, receives all parcels that this bid represents, this can happen only once
 	 */
+    @SuppressWarnings("unchecked")
 	public void receiveParcels() {
 		checkState(!parcelsReceived, "Bidder already received parcels");
-		bidder.receiveParcels(parcels);
+		bidder.receiveParcels((ImmutableSet<DefaultParcel>) parcels);   // Because java type inference
 		parcelsReceived = true;
 	}
 

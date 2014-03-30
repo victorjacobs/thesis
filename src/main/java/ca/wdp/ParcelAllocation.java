@@ -3,10 +3,7 @@ package ca.wdp;
 import common.truck.Bid;
 import rinde.sim.pdptw.common.DefaultParcel;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -16,16 +13,16 @@ import static com.google.common.base.Preconditions.checkArgument;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class ParcelAllocation {
-	private Map<DefaultParcel, Bid> allocation;	// Might change this to protected
+	private Map<DefaultParcel, Bid<DefaultParcel>> allocation;	// Might change this to protected
 
 	public ParcelAllocation() {
-		this.allocation = new HashMap<DefaultParcel, Bid>();
+		this.allocation = new HashMap<DefaultParcel, Bid<DefaultParcel>>();
 	}
 
 	public ParcelAllocation(ParcelAllocation copy) {
 		this();
 
-		this.allocation = new HashMap<DefaultParcel, Bid>(copy.allocation);
+		this.allocation = new HashMap<DefaultParcel, Bid<DefaultParcel>>(copy.allocation);
 	}
 
 	/**
@@ -33,7 +30,7 @@ public class ParcelAllocation {
 	 * that's up to the subclass to do in solve().
 	 * @param b The bid being allocated
 	 */
-	public void allocateBid(Bid b) {
+	public void allocateBid(Bid<DefaultParcel> b) {
 		for (DefaultParcel p : b.getParcels()) {
 			allocation.put(p, b);
 		}
@@ -45,7 +42,7 @@ public class ParcelAllocation {
 	 * @param b
 	 * @return
 	 */
-	public boolean conflictingBid(Bid b) {
+	public boolean conflictingBid(Bid<DefaultParcel> b) {
 		for (DefaultParcel p : b.getParcels()) {
 			if (allocation.containsKey(p))
 				return true;
@@ -54,7 +51,7 @@ public class ParcelAllocation {
 		return false;
 	}
 
-	public boolean containsBid(Bid b) {
+	public boolean containsBid(Bid<DefaultParcel> b) {
 		for (DefaultParcel p : b.getParcels()) {
 			if (!allocation.containsKey(p))
 				return false;
@@ -63,7 +60,7 @@ public class ParcelAllocation {
 		return true;
 	}
 
-	public boolean containsAll(Collection<Bid> bids) {
+	public boolean containsAll(Collection<Bid<DefaultParcel>> bids) {
 		for (Bid b : bids) {
 			if (!allocation.containsValue(b))
 				return false;

@@ -12,17 +12,17 @@ import java.util.*;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public abstract class ParcelAllocator {
-	protected List<Bid> bids;
+	protected List<Bid<DefaultParcel>> bids;
 
 	public ParcelAllocator() {
-		bids = new ArrayList<Bid>();
+		bids = new ArrayList<Bid<DefaultParcel>>();
 	}
 
 	public void addBid(Bid newBid) {
 		bids.add(newBid);
 	}
 
-	public void addAllBids(List<Bid> newBids) {
+	public void addAllBids(List<Bid<DefaultParcel>> newBids) {
 		bids.addAll(newBids);
 	}
 
