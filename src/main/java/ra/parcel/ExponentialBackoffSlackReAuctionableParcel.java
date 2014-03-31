@@ -31,11 +31,11 @@ public class ExponentialBackoffSlackReAuctionableParcel extends AdaptiveSlackReA
         if (!super.shouldChangeOwner())
             return false;
 
-        System.out.println(backoff);
-
         // Backing off
         if (backoff > 0) {
             backoff--;
+
+            //System.out.println(backoff);
 
             // If this reduces backoff to 0, allow to auction
             return backoff == 0;
@@ -75,7 +75,7 @@ public class ExponentialBackoffSlackReAuctionableParcel extends AdaptiveSlackReA
 
             @Override
             public String toString() {
-                return "AdaptiveSlack" + numberStandardDeviations + "STD";
+                return "ExponentialBackoff" + numberStandardDeviations + "STD";
             }
         };
     }

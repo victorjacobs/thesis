@@ -24,7 +24,6 @@ import static com.google.common.collect.Lists.newLinkedList;
  */
 public class ReAuctionableParcel extends DefaultParcel {
 	private Optional<Auctioneer> auctioneer;
-    private boolean reAuctionPrevented = false;
     protected List<Bidder> ownerHistory;
 
 	public ReAuctionableParcel(ParcelDTO pDto) {
@@ -76,10 +75,11 @@ public class ReAuctionableParcel extends DefaultParcel {
      * @return Whether re-auction is allowed or not (decided by the parcel itself)
      */
 	public final boolean changeOwner(long time) {
-        if (this.reAuctionPrevented || !shouldChangeOwner()) {
+        // TODO FIX THIS
+        /*if (this.reAuctionPrevented || !shouldChangeOwner()) {
             this.reAuctionPrevented = true;
             return false;
-        }
+        }*/
 
 		checkState(auctioneer.isPresent(), "Auctioneer needed to change owner");
 		auctioneer.get().auction(this, time);
@@ -154,9 +154,5 @@ public class ReAuctionableParcel extends DefaultParcel {
     // Stats
     public final ImmutableList<Bidder> getOwnerHistory() {
         return ImmutableList.copyOf(ownerHistory);
-    }
-
-    public final boolean reAuctionPrevented() {
-        return reAuctionPrevented;
     }
 }

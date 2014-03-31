@@ -70,8 +70,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		bindRoutePlanner(rp);
 
 		// Register self as listener to stateMachine events
-		stateMachine.getEventAPI().addListener(this,
-				StateMachine.StateMachineEvent.STATE_TRANSITION);
+		stateMachine.getEventAPI().addListener(this, StateMachine.StateMachineEvent.STATE_TRANSITION);
 	}
 
 	// Setup
@@ -145,6 +144,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
         ReAuctionableParcel rParcel = ((ReAuctionableParcel) par);
 
         if (rParcel.shouldChangeOwner()) {
+            // First remove the parcel from local state + update route planner etc, then change owner
             state.remove(par);
             fixedParcels.remove(par);
             notifyChange();
@@ -204,6 +204,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 
 	/**
 	 * Updates internal state of the truck when the fsm behind RouteFollowingVehicle changes state.
+     *
 	 * @param e
 	 */
 	@Override
@@ -265,10 +266,20 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		return super.getRoadModel();
 	}
 
+    /**
+     * Gets contents of this truck from the pdpModel.
+     *
+     * @return Set of parcels that is contained in cargo
+     */
 	public ImmutableSet<Parcel> getContents() {
 		return this.pdpModel.get().getContents(this);
 	}
 
+    /**
+     * Gets position of this truck from the road model
+     *
+     * @return Position of this truck
+     */
 	public Point getPosition() {
 		return super.getRoadModel().getPosition(this);
 	}
