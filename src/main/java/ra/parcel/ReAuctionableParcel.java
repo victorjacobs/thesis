@@ -62,7 +62,7 @@ public class ReAuctionableParcel extends DefaultParcel {
      * implementation of {@link common.truck.StateEvaluator}. If you want the parcel to have full deciding power,
      * couple it with a state evaluator that returns all parcels.
      *
-     * @return
+     * @return Whether or not the parcel wants to be re-auctioned
      */
     public boolean shouldChangeOwner() {
         return true;

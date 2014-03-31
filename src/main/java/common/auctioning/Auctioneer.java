@@ -30,7 +30,6 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 	private Set<Bidder> bidders;
 
 	public Auctioneer() {
-
 		bidders = newLinkedHashSet();
 	}
 
@@ -39,7 +38,7 @@ public class Auctioneer extends AbstractModel<Bidder> implements ModelReceiver {
 	}
 
 	public void auction(ReAuctionableParcel par, double reservationPrice, long time) {
-		checkState(!bidders.isEmpty(), "There are no bidders..");
+		checkState(!bidders.isEmpty(), "No bidders registered in auctioneer");
 
 		// Bind Auctioneer to the parcel
 		if (!par.hasAuctioneer())

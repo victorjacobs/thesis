@@ -9,6 +9,7 @@ import common.truck.route.SolverRoutePlanner;
 import org.apache.commons.cli.*;
 import ra.evaluator.*;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
+import ra.parcel.ExponentialBackoffSlackReAuctionableParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
@@ -82,7 +83,6 @@ public class Run {
         if (cmd.hasOption("t")) {
             try {
                 threads = Integer.parseInt(cmd.getOptionValue("t"));
-                System.out.println(threads);
             } catch (NumberFormatException e) {
                 System.out.println("Warning: -t " + cmd.getOptionValue("t") + " not valid option");
             }
@@ -260,7 +260,7 @@ public class Run {
                                 LimitedAuctionReAuctionableParcel.getCreator()
                         )
                 )*/
-                .addConfiguration(
+                /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -278,7 +278,16 @@ public class Run {
                                 ImmutableList.of(AgentParcelSlackEvaluatorUpdateOnChange.supplier()),
                                 AdaptiveSlackReAuctionableParcel.getCreator()
                         )
-                )*/;
+                )*/
+                .addConfiguration(
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(AgentParcelSlackEvaluator.supplier()),
+                                ExponentialBackoffSlackReAuctionableParcel.getCreator()
+                        )
+                ).showGui();
 
         return new ResultsProcessor(builder.perform());
 	}
