@@ -288,7 +288,7 @@ public class Run {
                                 LimitedAuctionReAuctionableParcel.getCreator()
                         )
                 )*/
-                /*.addConfiguration(
+                .addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),

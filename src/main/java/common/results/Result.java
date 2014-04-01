@@ -15,21 +15,27 @@ public abstract class Result<E> {
     }
 
     /**
-     * A name identifying the result. Could be used as directory name or
+     * A name identifying the result. This is used for identifying the result on disk (either via file name or
+     * directory name etc.)
      *
-     * @return
+     * @return Name of the result
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Write the represented Result to given directory. This might be a single csv file or several.
+     * Write the represented Result to given directory. This might be a single csv file or a directory.
      *
      * @param directory Directory to output data to
      * @throws IOException Thrown when IO fails
      */
     public abstract void write(String directory) throws IOException;
 
+    /**
+     * Returns a pretty printed string representation of the result.
+     *
+     * @return String representing the result
+     */
     public abstract String prettyPrint();
 }

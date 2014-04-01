@@ -43,8 +43,7 @@ public class ResultsProcessor {
         addMeasure(new BasicMeasure.TotalReAuctions());
         addMeasure(new BasicMeasure.NumberReAuctions());
         addMeasure(new BasicMeasure.AuctionOwnerRatio());
-        addMeasure(new WeighedOwnerGraphMeasure());
-        addMeasure(new OwnerGraphMeasure());
+        addMeasure(new MaxEdgesOwnerGraph());
         addMeasure(new ParcelSlackHistoryMeasure());
         addMeasure(new AllWeighedOwnerGraphMeasure());
 

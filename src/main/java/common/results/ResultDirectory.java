@@ -14,11 +14,21 @@ import static com.google.common.collect.Lists.newLinkedList;
 public class ResultDirectory<E> extends Result<E> {
     private List<Result<E>> results;
 
-    public ResultDirectory(String name) {
-        super(name);
+    /**
+     * Constructs a new ResultDirectory, given a directory name
+     *
+     * @param directoryName Name of the directory in which the contained results will be written
+     */
+    public ResultDirectory(String directoryName) {
+        super(directoryName);
         this.results = newLinkedList();
     }
 
+    /**
+     * Add a result to this directory.
+     *
+     * @param res Result to be added
+     */
     public void addResult(Result<E> res) {
         results.add(res);
     }

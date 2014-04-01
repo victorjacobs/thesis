@@ -5,20 +5,19 @@ import common.results.ResultDirectory;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.experiment.Experiment;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 /**
- * This is the same as {@link common.results.measures.WeighedOwnerGraphMeasure} except that it generates files for
+ * This is the same as {@link common.results.measures.MaxEdgesOwnerGraph} except that it generates files for
  * every parcel in the simulation, neatly organised in directories.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class AllWeighedOwnerGraphMeasure extends OwnerGraphMeasure {
+public class AllWeighedOwnerGraphMeasure extends MaxEdgesOwnerGraph {
     @Override
     public Result<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
-        ResultDirectory<String> topDir = new ResultDirectory<String>("weighedGraph");
+        ResultDirectory<String> topDir = new ResultDirectory<String>("allGraphs");
         ResultDirectory<String> configDir;
         ResultDirectory<String> runDir;
         int runNumber;

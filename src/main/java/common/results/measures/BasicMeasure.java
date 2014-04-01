@@ -20,6 +20,12 @@ import static com.google.common.collect.Lists.newLinkedList;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public abstract class BasicMeasure<E> extends Measure<E> {
+    /**
+     * Creates a BasicMeasure object, given an objective function and a filename to represent it on disk.
+     *
+     * @param name Name of file on disk (name.csv)
+     * @param objectiveFunction Objective function used in certain BasicMeasures.
+     */
     public BasicMeasure(String name, ObjectiveFunction objectiveFunction) {
         super(name, objectiveFunction);
     }
