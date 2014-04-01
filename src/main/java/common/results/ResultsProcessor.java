@@ -18,14 +18,14 @@ import static com.google.common.collect.Lists.newLinkedList;
  */
 // TODO maybe change how Measures that return multiple values work
 public class ResultsProcessor {
-	private List<CSVWriter<String>> processedData;	// CSV writers containing measures
+	private List<Result<String>> processedData;	// CSV writers containing measures
 	private List<Measure<String>> measures;
 
 	/**
 	 * Creates empty ResultsProcessor. Add own Measures and then call load(). For now, don't let anyone use it
 	 */
 	private ResultsProcessor() {
-		processedData = new LinkedList<CSVWriter<String>>();
+		processedData = new LinkedList<Result<String>>();
 		measures = newLinkedList();
 	}
 
@@ -46,6 +46,7 @@ public class ResultsProcessor {
         addMeasure(new WeighedOwnerGraphMeasure());
         addMeasure(new OwnerGraphMeasure());
         addMeasure(new ParcelSlackHistoryMeasure());
+        addMeasure(new AllWeighedOwnerGraphMeasure());
 
 		load(data);
 	}
@@ -81,7 +82,7 @@ public class ResultsProcessor {
 		}
 
 		// Calculate measures
-        CSVWriter<String> w;
+        Result<String> w;
 		for (Measure<String> m : measures) {
             if ((w = m.evaluate(dtoBins)) != null) processedData.add(w);
 		}
@@ -99,7 +100,7 @@ public class ResultsProcessor {
 		File dir = new File(directory);
 		if (!dir.exists()) dir.mkdir();
 
-		for (CSVWriter<String> w : processedData) {
+		for (Result<String> w : processedData) {
 			w.write(directory);
 		}
 	}
@@ -108,9 +109,9 @@ public class ResultsProcessor {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
-		for (CSVWriter<String> w : processedData) {
-			sb.append('\n').append(w.getName()).append(".csv\n");
-			sb.append(w.toString());
+		for (Result<String> result : processedData) {
+            sb.append(result.prettyPrint());
+            sb.append('\n');
 		}
 
 		return sb.toString();

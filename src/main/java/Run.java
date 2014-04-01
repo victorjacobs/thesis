@@ -13,6 +13,7 @@ import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import ra.parcel.ExponentialBackoffSlackReAuctionableParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
+import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
 import rinde.sim.pdptw.gendreau06.Gendreau06ObjectiveFunction;
@@ -22,6 +23,8 @@ import rinde.sim.pdptw.gendreau06.GendreauProblemClass;
 
 import java.io.File;
 import java.util.List;
+
+import static com.google.common.collect.Lists.newLinkedList;
 
 /**
  * Class that contains main method and testing setup.
@@ -99,11 +102,11 @@ public class Run {
 
         final long startTime = System.currentTimeMillis();
 
-        //ResultsProcessor result = performRAExperiment();
+        ResultsProcessor result = performRAExperiment();
         //Experiment.ExperimentResults result = performRandomExperiments();
         //Experiment.ExperimentResults result = performAdaptiveSlackExperiment();
         //Experiment.ExperimentResults result = performAgentParcelExperiments();
-        ResultsProcessor result = performExponentialBackoffExperiments();
+        //ResultsProcessor result = performExponentialBackoffExperiments();
 
         System.out.println();
 
@@ -192,17 +195,17 @@ public class Run {
 
         // Do loop over int, than divide by 10 because floating point
         // Go through negative values, to force more re-auctions
-        for (int i = 30; i >= -10; i -= 2) {
+        //for (int i = 20; i >= 10; i -= 1) {
             builder = builder.addConfiguration(
                     new TruckConfiguration(
                             SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
                             ImmutableList.of(AgentParcelSlackEvaluator.supplier()),
-                            ExponentialBackoffSlackReAuctionableParcel.getCreator((float) i / 10)
+                            ExponentialBackoffSlackReAuctionableParcel.getCreator(1, /*(float) i / 10*/ 0)
                     )
             );
-        }
+        //}
 
         return new ResultsProcessor(builder.perform());
     }
@@ -213,7 +216,7 @@ public class Run {
 
 		builder = builder
 				//.addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
-				.addConfiguration(
+				/*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -240,7 +243,7 @@ public class Run {
                                 ReAuctionableParcel.getCreator()
                         )
                 )*/
-                .addConfiguration(
+                /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -267,7 +270,7 @@ public class Run {
                                 ReAuctionableParcel.getCreator()
                         )
                 )*/
-				.addConfiguration(
+				/*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -285,7 +288,7 @@ public class Run {
                                 LimitedAuctionReAuctionableParcel.getCreator()
                         )
                 )*/
-                .addConfiguration(
+                /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),

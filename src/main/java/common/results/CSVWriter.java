@@ -15,9 +15,8 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class CSVWriter<E> {
+public class CSVWriter<E> extends Result<E> {
     private Map<String, List<E>> data;
-	private final String name;
     private boolean writeHeaders;
     private String separator;
     private int nextRow = 0;     // For use when no headers are used
@@ -33,9 +32,9 @@ public class CSVWriter<E> {
 	}
 
     public CSVWriter(String name, boolean writeHeaders) {
+        super(name);
         this.writeHeaders = writeHeaders;
         this.data = newLinkedHashMap();
-        this.name = name;
         this.separator = ",";
     }
 
@@ -117,20 +116,14 @@ public class CSVWriter<E> {
 		data.remove(header);
 	}
 
-	/**
-	 * Write the represented CSV file to given directory. The data can be found at directory/name.csv.
-	 *
-	 * @param directory Directory to output data to
-	 * @throws IOException Thrown when IO fails
-	 */
+    @Override
 	public void write(String directory) throws IOException {
+        if (data.isEmpty())
+            return;
+
 		Writer w = new PrintWriter(directory + "/" + getName() + ".csv");
 		w.write(toString());
 		w.close();
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	@Override
@@ -168,4 +161,12 @@ public class CSVWriter<E> {
 
 		return sb.toString();
 	}
+
+    @Override
+    public String prettyPrint() {
+        if (!data.isEmpty())
+            return getName() + ".csv\n" + toString();
+        else
+            return null;
+    }
 }

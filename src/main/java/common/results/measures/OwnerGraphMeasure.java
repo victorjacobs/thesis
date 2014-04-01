@@ -2,13 +2,11 @@ package common.results.measures;
 
 import com.google.common.collect.Multimap;
 import common.results.CSVWriter;
+import common.results.Result;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.experiment.Experiment;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Calculates the raw edge list (in NCol format) of the owner graph.
@@ -25,7 +23,7 @@ public class OwnerGraphMeasure extends Measure<String> {
     }
 
     @Override
-    public CSVWriter<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
+    public Result<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
         return getWriter(parcelToGenerateGraph(resultBins).getEdgeList());
     }
 
@@ -60,8 +58,9 @@ public class OwnerGraphMeasure extends Measure<String> {
      * @param edgeMap Map mapping edge to weight. If weight is -1, the weight is dropped.
      * @return Writer containing data from the graph
      */
-    protected final CSVWriter<String> getWriter(Multimap<String, Integer> edgeMap) {
+    protected final CSVWriter<String> getWriter(String name, Multimap<String, Integer> edgeMap) {
         // Change some settings of the CSV writer
+        CSVWriter<String> csv = new CSVWriter<String>(name);
         csv.writeHeaders(false);
         csv.separator(" ");
 
@@ -78,5 +77,9 @@ public class OwnerGraphMeasure extends Measure<String> {
         }
 
         return csv;
+    }
+
+    protected final CSVWriter<String> getWriter(Multimap<String, Integer> edgeMap) {
+        return getWriter(getName(), edgeMap);
     }
 }

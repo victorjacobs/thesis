@@ -3,6 +3,7 @@ package common.results.measures;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import common.results.CSVWriter;
+import common.results.Result;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -21,17 +22,21 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public abstract class Measure<E> {
     private final Optional<ObjectiveFunction> objectiveFunction;
-    protected final CSVWriter<E> csv;
+    private final String name;
 
     public Measure(String name, @Nullable ObjectiveFunction objectiveFunction) {
         this.objectiveFunction = Optional.fromNullable(objectiveFunction);
-        this.csv = new CSVWriter<E>(name);
+        this.name = name;
     }
 
     public ObjectiveFunction getObjectiveFunction() {
         checkState(objectiveFunction.isPresent(), "No objective function set");
 
         return objectiveFunction.get();
+    }
+
+    public String getName() {
+        return name;
     }
 
     /**
@@ -62,6 +67,6 @@ public abstract class Measure<E> {
      * @param resultBins Bins containing the simulation results
      * @return A writer containing the measure result
      */
-    public abstract CSVWriter<E> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins);
+    public abstract Result<E> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins);
 
 }

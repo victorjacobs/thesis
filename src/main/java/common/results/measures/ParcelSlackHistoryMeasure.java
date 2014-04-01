@@ -3,6 +3,7 @@ package common.results.measures;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import common.results.CSVWriter;
+import common.results.Result;
 import ra.parcel.AgentParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -25,8 +26,10 @@ public class ParcelSlackHistoryMeasure extends Measure<String> {
 
     // TODO this needs a better selector thingamajig
     @Override
-    public CSVWriter<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
+    public Result<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
         try {
+            CSVWriter<String> csv = new CSVWriter<String>(getName());
+
             AgentParcel ap;
 
             Iterator<String> it = resultBins.keySet().iterator();

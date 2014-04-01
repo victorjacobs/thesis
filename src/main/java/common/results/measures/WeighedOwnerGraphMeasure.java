@@ -1,8 +1,10 @@
 package common.results.measures;
 
 import common.results.CSVWriter;
+import common.results.Result;
 import rinde.sim.pdptw.experiment.Experiment;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +21,7 @@ public class WeighedOwnerGraphMeasure extends OwnerGraphMeasure {
     }
 
     @Override
-    public CSVWriter<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
+    public Result<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
         return getWriter(parcelToGenerateGraph(resultBins).getWeighedEdgeListOwnerGraph());
     }
 }

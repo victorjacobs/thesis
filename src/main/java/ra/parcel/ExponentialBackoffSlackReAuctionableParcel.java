@@ -6,8 +6,6 @@ import rinde.sim.pdptw.common.AddParcelEvent;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem;
 import rinde.sim.pdptw.common.ParcelDTO;
 
-import java.util.Collections;
-
 /**
  * This parcel extends the {@link ra.parcel.AdaptiveSlackReAuctionableParcel} in such a way that it implements an
  * exponential backoff scheme when auctioning. I.e. when the parcel is repeatedly auctioned and won by the same
@@ -17,12 +15,16 @@ import java.util.Collections;
  */
 public class ExponentialBackoffSlackReAuctionableParcel extends AdaptiveSlackReAuctionableParcel {
     private int backoff;
-    private int step;
+    private float nextBackoff;
+    private float step;
 
-    public ExponentialBackoffSlackReAuctionableParcel(ParcelDTO pDto, float numberStandardDeviations) {
+    public ExponentialBackoffSlackReAuctionableParcel(ParcelDTO pDto, float numberStandardDeviations,
+                                                      float backoffStep) {
         super(pDto, numberStandardDeviations);
         backoff = 0;
-        step = 2;
+        step = backoffStep;
+
+        nextBackoff = step;
     }
 
     @Override
@@ -34,8 +36,6 @@ public class ExponentialBackoffSlackReAuctionableParcel extends AdaptiveSlackReA
         // Backing off
         if (backoff > 0) {
             backoff--;
-
-            //System.out.println(backoff);
 
             // If this reduces backoff to 0, allow to auction
             return backoff == 0;
@@ -51,31 +51,40 @@ public class ExponentialBackoffSlackReAuctionableParcel extends AdaptiveSlackReA
 
         if (loopCount == 0) {
             // Changed owner, reset
-            step = 2;
+            nextBackoff = step;
             return true;
         } else {
             // Looping to self
-            backoff = step;
-            step *= 2;
+            backoff = Math.round(nextBackoff);
+            nextBackoff *= step;
             return false;
         }
     }
 
     public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {
-        return getCreator(1);
+        return getCreator(1, 2);
     }
 
-    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(final float numberStandardDeviations) {
+    /**
+     * Gets a creator for this parcel.
+     *
+     * @param numberStandardDeviations Number of standard deviations used as threshold for re-auctioning
+     * @param backoffStep Step for exponential backoff
+     * @return Creator for this parcel
+     */
+    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(final float numberStandardDeviations,
+                                                                         final float backoffStep) {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new ExponentialBackoffSlackReAuctionableParcel(event.parcelDTO, numberStandardDeviations));
+                sim.register(new ExponentialBackoffSlackReAuctionableParcel(event.parcelDTO,
+                        numberStandardDeviations, backoffStep));
                 return true;
             }
 
             @Override
             public String toString() {
-                return "ExponentialBackoff" + numberStandardDeviations + "STD";
+                return "ExponentialBackoff" + numberStandardDeviations + "STD" + backoffStep + "step";
             }
         };
     }
