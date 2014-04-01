@@ -3,7 +3,7 @@ package common.results;
 import java.io.IOException;
 
 /**
- * Interface that defines a result that can be written to disk through {@link #write(String)}.
+ * Interface that defines an abstraction for result data to be written to disk through {@link #write(String)}.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */

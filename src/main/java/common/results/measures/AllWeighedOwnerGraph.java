@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class AllWeighedOwnerGraphMeasure extends MaxEdgesOwnerGraph {
+public class AllWeighedOwnerGraph extends MaxEdgesOwnerGraph {
     @Override
     public Result<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
         ResultDirectory<String> topDir = new ResultDirectory<String>("allGraphs");
@@ -32,7 +32,8 @@ public class AllWeighedOwnerGraphMeasure extends MaxEdgesOwnerGraph {
                 configDir.addResult(runDir);
 
                 for (ReAuctionableParcel par : getParcelsFromRun(run)) {
-                    runDir.addResult(getWriter(Integer.toString(par.hashCode()), par.getWeighedEdgeListOwnerGraph()));
+                    runDir.addResult(getWriter(Integer.toString(runNumber) + Integer.toString(par.hashCode()),
+                            par.getWeighedEdgeListOwnerGraph()));
                 }
 
                 runNumber++;

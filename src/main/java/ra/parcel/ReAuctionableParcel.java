@@ -152,7 +152,18 @@ public class ReAuctionableParcel extends DefaultParcel {
 	}
 
     // Stats
+
+    /**
+     * Gets an immutable view of the list containing all bidders that owned this parcel. This also contains the
+     * original owner of the parcel. If you want to get the number of re-auctions that occurred, use {@link #getNumberReAuctions()}
+     *
+     * @return List of all bidders that owned this parcel
+     */
     public final ImmutableList<Bidder> getOwnerHistory() {
         return ImmutableList.copyOf(ownerHistory);
+    }
+
+    public final int getNumberReAuctions() {
+        return ownerHistory.size() - 1; // -1 because see above
     }
 }

@@ -39,6 +39,7 @@ public class Run {
     private boolean quickRun = true; // Flag that toggles a fast run mode (only one repetition on one scenario) for debugging
     private int threads = Runtime.getRuntime().availableProcessors();
     private int repetitions = 10;
+    private boolean showGui = false;
 
     public static void main(String[] args) throws Exception {
         // Set up command line
@@ -61,6 +62,7 @@ public class Run {
                 .create("r"));
         opt.addOption(new Option("q", "Quick run: one repetition of one scenario"));
         opt.addOption(new Option("help", "Print this message"));
+        opt.addOption(new Option("g", "Show gui"));
 
         CommandLineParser parser = new BasicParser();
 
@@ -98,6 +100,10 @@ public class Run {
             } catch (NumberFormatException e) {
                 System.out.println("Warning: -r " + cmd.getOptionValue("r") + " not valid option");
             }
+        }
+
+        if (showGui = cmd.hasOption("g")) {
+            threads = 1;
         }
 
         final long startTime = System.currentTimeMillis();
@@ -288,7 +294,7 @@ public class Run {
                                 LimitedAuctionReAuctionableParcel.getCreator()
                         )
                 )*/
-                .addConfiguration(
+                /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -341,9 +347,14 @@ public class Run {
 
         if (quickRun) {
             System.out.println("Doing fast run");
-            return builder
+            builder = builder
                     .addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
                     .repeat(1);
+            if (showGui) {
+                builder = builder.showGui();
+            }
+
+            return builder;
         } else {
             return builder.addScenarios(onlineScenarios).repeat(repetitions);
         }

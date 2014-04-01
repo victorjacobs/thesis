@@ -91,7 +91,7 @@ public abstract class BasicMeasure<E> extends Measure<E> {
         protected List<String> calculate(Experiment.SimulationResult result) {
             int total = 0;
             for (ReAuctionableParcel par : getParcelsFromRun(result)) {
-                total += par.getOwnerHistory().size();
+                total += par.getNumberReAuctions();
             }
 
             return Collections.singletonList(Integer.toString(total));
@@ -111,7 +111,7 @@ public abstract class BasicMeasure<E> extends Measure<E> {
             List<String> ret = newLinkedList();
 
             for (ReAuctionableParcel par : getParcelsFromRun(result))
-                ret.add(Integer.toString(par.getOwnerHistory().size()));
+                ret.add(Integer.toString(par.getNumberReAuctions()));
 
             return ret;
         }

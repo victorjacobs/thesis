@@ -19,8 +19,8 @@ import java.util.Map;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ParcelSlackHistoryMeasure extends Measure<String> {
-    public ParcelSlackHistoryMeasure() {
+public class ParcelSlackHistory extends Measure<String> {
+    public ParcelSlackHistory() {
         super("parcelSlackHistory", null);
     }
 
@@ -52,7 +52,7 @@ public class ParcelSlackHistoryMeasure extends Measure<String> {
 
             return csv;
         } catch (ClassCastException e) {
-            System.out.println("Warning: trying to use ParcelSlackHistoryMeasure on non-agentParcel");
+            System.out.println("Warning: trying to use ParcelSlackHistory on non-agentParcel");
             return null;
         }
     }

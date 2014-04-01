@@ -11,12 +11,10 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
 
 /**
- * Class that writes out ExperimentResults from an experiment run to csv files. On one hand,
- * it interpretes data from ExperimentResults and on the other hand data from static fields in stats objects.
+ * Class that takes in the experiment results from an experiment
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-// TODO maybe change how Measures that return multiple values work
 public class ResultsProcessor {
 	private List<Result<String>> processedData;	// CSV writers containing measures
 	private List<Measure<String>> measures;
@@ -44,8 +42,8 @@ public class ResultsProcessor {
         addMeasure(new BasicMeasure.NumberReAuctions());
         addMeasure(new BasicMeasure.AuctionOwnerRatio());
         addMeasure(new MaxEdgesOwnerGraph());
-        addMeasure(new ParcelSlackHistoryMeasure());
-        addMeasure(new AllWeighedOwnerGraphMeasure());
+        addMeasure(new ParcelSlackHistory());
+        addMeasure(new AllWeighedOwnerGraph());
 
 		load(data);
 	}
