@@ -1,7 +1,6 @@
 import com.google.common.collect.ImmutableList;
 import common.auctioning.Auctioneer;
 import common.baseline.SolverBidder;
-import common.baseline.StubStateEvaluator;
 import common.results.ParcelTrackerModel;
 import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
@@ -10,10 +9,10 @@ import common.truck.route.SolverRoutePlanner;
 import org.apache.commons.cli.*;
 import ra.evaluator.*;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
+import ra.parcel.ExponentialBackoffRandomSelectionReAuctionableParcel;
 import ra.parcel.ExponentialBackoffSlackReAuctionableParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
-import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
 import rinde.sim.pdptw.gendreau06.Gendreau06ObjectiveFunction;
@@ -254,7 +253,7 @@ public class Run {
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                                ImmutableList.of(RandomStateEvaluatorMultipleParcels.supplier(10)),
+                                ImmutableList.of(RandomStateEvaluatorMultipleParcels.supplier(5)),
                                 ReAuctionableParcel.getCreator()
                         )
                 )
@@ -263,7 +262,7 @@ public class Run {
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
-                                ImmutableList.of(RandomStateEvaluatorMultipleParcels.supplier(30)),
+                                ImmutableList.of(RandomStateEvaluatorMultipleParcels.supplier(1)),
                                 ReAuctionableParcel.getCreator()
                         )
                 )
@@ -320,6 +319,15 @@ public class Run {
                                 ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
                                 ImmutableList.of(AgentParcelSlackEvaluator.supplier()),
                                 ExponentialBackoffSlackReAuctionableParcel.getCreator()
+                        )
+                )
+                .addConfiguration(
+                        new TruckConfiguration(
+                                SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
+                                ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
+                                ImmutableList.of(AgentParcelSlackEvaluator.supplier()),
+                                ExponentialBackoffRandomSelectionReAuctionableParcel.getCreator(2, 2)
                         )
                 );
 
