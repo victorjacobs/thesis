@@ -3,17 +3,23 @@ package common.truck;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import common.auctioning.Auctioneer;
+import common.baseline.SolverBidder;
+import common.results.ParcelTrackerModel;
 import common.truck.route.RoutePlanner;
+import common.truck.route.SolverRoutePlanner;
+import ra.evaluator.AgentParcelSlackEvaluator;
+import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import rinde.logistics.pdptw.mas.comm.Communicator;
+import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.core.Simulator;
 import rinde.sim.core.model.Model;
-import rinde.sim.pdptw.common.AddParcelEvent;
-import rinde.sim.pdptw.common.AddVehicleEvent;
-import rinde.sim.pdptw.common.DynamicPDPTWProblem;
+import rinde.sim.pdptw.common.*;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem.Creator;
-import rinde.sim.pdptw.common.VehicleDTO;
 import rinde.sim.pdptw.experiment.DefaultMASConfiguration;
 import rinde.sim.util.SupplierRng;
+
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * A {@link rinde.sim.pdptw.experiment.MASConfiguration} that configures a
@@ -136,6 +142,70 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 	@Override
 	public String toString() {
         // TODO
-        return Joiner.on("-").join(seSuppliers.get(0), parcelCreator);
+        return hashCode() + Joiner.on("-").join(seSuppliers.get(0), parcelCreator);
 	}
+
+    /**
+     * Builds a TruckConfiguration.
+     */
+    @SuppressWarnings("all")    // Some generics thing
+    public static class Builder {
+        private SupplierRng<? extends RoutePlanner> routePlannerSupplier;
+        private SupplierRng<? extends Bidder> bidderSupplier;
+        private ImmutableList.Builder<? extends SupplierRng<? extends Model<?>>> modelSuppliers;
+        private ImmutableList.Builder<? extends SupplierRng<? extends StateObserver>> stateObserverSuppliers;
+        private ImmutableList.Builder<? extends SupplierRng<? extends StateEvaluator>> stateEvaluatorSuppliers;
+        private DynamicPDPTWProblem.Creator<AddParcelEvent> parcelCreator;
+
+        public Builder() {
+            modelSuppliers = new ImmutableList.Builder<SupplierRng<? extends Model<?>>>();
+            stateObserverSuppliers = new ImmutableList.Builder<SupplierRng<? extends StateObserver>>();
+            stateEvaluatorSuppliers = new ImmutableList.Builder<SupplierRng<? extends StateEvaluator>>();
+        }
+
+        public Builder withRoutePlanner(SupplierRng<? extends RoutePlanner> routePlannerSupplier) {
+            this.routePlannerSupplier = routePlannerSupplier;
+            return this;
+        }
+
+        public Builder withBidder(SupplierRng<? extends Bidder> bidderSupplier) {
+            this.bidderSupplier = bidderSupplier;
+            return this;
+        }
+
+        public Builder addModel(SupplierRng<? extends Model<?>> modelSupplier) {
+            modelSuppliers.add(modelSupplier);
+            return this;
+        }
+
+        public Builder addStateObserver(SupplierRng<? extends StateObserver> stateObserverSupplier) {
+            stateObserverSuppliers.add(stateObserverSupplier);
+            return this;
+        }
+
+        public Builder addStateEvaluator(SupplierRng<? extends StateEvaluator> stateEvaluatorSupplier) {
+            stateEvaluatorSuppliers.add(stateEvaluatorSupplier);
+            return this;
+        }
+
+        public Builder withParcelCreator(DynamicPDPTWProblem.Creator<AddParcelEvent> parcelCreator) {
+            this.parcelCreator = parcelCreator;
+            return this;
+        }
+
+        public TruckConfiguration build() {
+            checkState(routePlannerSupplier != null, "TruckConfiguration needs a route planner");
+            checkState(bidderSupplier != null, "TruckConfiguration needs bidder");
+            checkState(parcelCreator != null, "TruckConfiguration needs parcel creator");
+
+            return new TruckConfiguration(
+                    routePlannerSupplier,
+                    bidderSupplier,
+                    modelSuppliers.build(),
+                    stateObserverSuppliers.build(),
+                    stateEvaluatorSuppliers.build(),
+                    parcelCreator
+            );
+        }
+    }
 }

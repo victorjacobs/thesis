@@ -40,6 +40,7 @@ rm results.$HOST.tar.gz
 
 echo "Generating images..."
 cd $RUN
+cd main
 rscript '/Users/victor/Documents/Leuven/Thesis/Code/files/diagram2.R'
 
 open .

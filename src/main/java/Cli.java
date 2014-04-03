@@ -1,6 +1,8 @@
 import org.apache.commons.cli.*;
 
 /**
+ * Handles CLI input and configuration in general. Provides sensible defaults for everything.
+ *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class Cli {
@@ -81,26 +83,54 @@ public class Cli {
         }
     }
 
+    /**
+     * Prints CLI help.
+     */
     public void printHelp() {
         (new HelpFormatter()).printHelp("java -jar Thesis.jar", options);
     }
 
+    /**
+     * Show a GUI? Defaults to false.
+     *
+     * @return Whether or not to show a gui
+     */
     public boolean showGui() {
         return showGui;
     }
 
+    /**
+     * Number of repetitions for every configuration in the simulator. Defaults to 10.
+     *
+     * @return Number of repetitions of configurations
+     */
     public int repetitions() {
         return repetitions;
     }
 
+    /**
+     * Number of threads to run the simulator on. Defaults to total number available in system.
+     *
+     * @return Number of threads to run
+     */
     public int threads() {
         return threads;
     }
 
+    /**
+     * Toggles a quick run mode, in which only one scenario is tested and one repetition. Defaults to false.
+     *
+     * @return Whether or not a quick run should be run
+     */
     public boolean quickrun() {
         return quickRun;
     }
 
+    /**
+     * Directory to output results to. No default.
+     *
+     * @return Directory where to results should be written
+     */
     public String outDir() {
         return outDir;
     }
