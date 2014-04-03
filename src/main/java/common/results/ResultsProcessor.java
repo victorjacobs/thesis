@@ -11,29 +11,31 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
 
 /**
- * Class that takes in the experiment results from an experiment
+ * Calculates the {@link common.results.measures.Measure}s added through {@link #addMeasure(common.results.measures.Measure)}
+ * on an {@link rinde.sim.pdptw.experiment.Experiment.ExperimentResults} set. The result is then written to a
+ * directory with a given name.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ResultsProcessor {
-	private List<Result<String>> processedData;	// CSV writers containing measures
+public class ResultsProcessor extends ResultDirectory<String> {
 	private List<Measure<String>> measures;
 
 	/**
 	 * Creates empty ResultsProcessor. Add own Measures and then call load(). For now, don't let anyone use it
 	 */
-	private ResultsProcessor() {
-		processedData = new LinkedList<Result<String>>();
+	private ResultsProcessor(String experimentName) {
+        super(experimentName);
 		measures = newLinkedList();
 	}
 
 	/**
 	 * Constructs default ResultsProcessor with standard result measures (objective value and computation time)
 	 *
+     * @param experimentName Name of the experiment for which this processor will process the results
 	 * @param data ExperimentResults to be processed
 	 */
-	public ResultsProcessor(Experiment.ExperimentResults data) {
-		this();
+	public ResultsProcessor(String experimentName, Experiment.ExperimentResults data) {
+		this(experimentName);
 
 		// What data to extract
         addMeasure(new BasicMeasure.Fitness(data.objectiveFunction));
@@ -43,7 +45,7 @@ public class ResultsProcessor {
         addMeasure(new BasicMeasure.AuctionOwnerRatio());
         addMeasure(new MaxEdgesOwnerGraph());
         addMeasure(new ParcelSlackHistory());
-        //addMeasure(new AllWeighedOwnerGraph());
+        addMeasure(new AllWeighedOwnerGraph());
 
 		load(data);
 	}
@@ -64,7 +66,7 @@ public class ResultsProcessor {
 	 */
     // TODO: immutable map?
 	public void load(Experiment.ExperimentResults data) {
-		checkState(processedData.isEmpty(), "Data already loaded");
+		checkState(isEmpty(), "Data already loaded");
 		checkState(!measures.isEmpty(), "I need some measures to evaluate");
 
 		// Create some stuff
@@ -79,39 +81,8 @@ public class ResultsProcessor {
 		}
 
 		// Calculate measures
-        Result<String> w;
-		for (Measure<String> m : measures) {
-            if ((w = m.evaluate(dtoBins)) != null) processedData.add(w);
-		}
-	}
-
-	/**
-	 * Write processed data to a set of CSV files in given directory.
-	 *
-	 * @param directory Directory where to write processed data
-	 * @throws IOException IO broke
-	 */
-    @SuppressWarnings("all")    // Compiler complains that we ignore return value of mkdir()
-	public void write(String directory) throws IOException {
-		// Create result directory if it doesn't exist
-		File dir = new File(directory);
-		if (!dir.exists()) dir.mkdir();
-
-		for (Result<String> w : processedData) {
-			w.write(directory);
-		}
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-
-		for (Result<String> result : processedData) {
-            sb.append(result.prettyPrint());
-            sb.append('\n');
-		}
-
-		return sb.toString();
+		for (Measure<String> m : measures)
+            addResult(m.evaluate(dtoBins));
 	}
 
 }

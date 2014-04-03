@@ -4,12 +4,11 @@ import com.google.common.collect.ImmutableList;
 import ra.parcel.AgentParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.core.Simulator;
-import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.experiment.PostProcessor;
 
 /**
  * {@link rinde.sim.pdptw.experiment.PostProcessor} that simply returns all the parcels tracked by the {@link
- * common.results.ParcelTrackerModel} for certain simulation. Might merge with {@link common.results.ResultsProcessor}.
+ * common.results.ParcelTrackerModel} for certain simulation. Might merge with {@link ResultsProcessor}.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */

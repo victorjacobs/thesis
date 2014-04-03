@@ -2,14 +2,13 @@ import com.google.common.collect.ImmutableList;
 import common.auctioning.Auctioneer;
 import common.baseline.SolverBidder;
 import common.results.ParcelTrackerModel;
-import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
+import common.results.ResultsPostProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import org.apache.commons.cli.*;
 import ra.evaluator.*;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
-import ra.parcel.ExponentialBackoffRandomSelectionReAuctionableParcel;
 import ra.parcel.ExponentialBackoffSlackReAuctionableParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
@@ -23,7 +22,6 @@ import rinde.sim.pdptw.gendreau06.GendreauProblemClass;
 import java.io.File;
 import java.util.List;
 
-import static com.google.common.collect.Lists.newLinkedList;
 
 /**
  * Class that contains main method and testing setup.
@@ -145,7 +143,7 @@ public class Run {
             );
         }
 
-        return new ResultsProcessor(builder.perform());
+        return new ResultsProcessor("adaptiveDifferentThreshold", builder.perform());
     }
 
     private ResultsProcessor performRandomExperiments() throws Exception {
@@ -166,7 +164,7 @@ public class Run {
             );
         }
 
-        return new ResultsProcessor(builder.perform());
+        return new ResultsProcessor("randomDifferentPercentages", builder.perform());
     }
 
     private ResultsProcessor performAgentParcelExperiments() throws Exception {
@@ -189,7 +187,7 @@ public class Run {
             );
         }
 
-        return new ResultsProcessor(builder.perform());
+        return new ResultsProcessor("agentParcelDifferentThreshold", builder.perform());
     }
 
     private ResultsProcessor performExponentialBackoffExperiments() throws Exception {
@@ -200,26 +198,25 @@ public class Run {
 
         // Do loop over int, than divide by 10 because floating point
         // Go through negative values, to force more re-auctions
-        //for (int i = 20; i >= 10; i -= 1) {
+        for (int i = 20; i >= 10; i -= 1) {
             builder = builder.addConfiguration(
                     new TruckConfiguration(
                             SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
                             ImmutableList.of(Auctioneer.supplier(), ParcelTrackerModel.supplier()),
                             ImmutableList.of(AgentParcelSlackEvaluator.supplier()),
-                            ExponentialBackoffSlackReAuctionableParcel.getCreator(1, /*(float) i / 10*/ 0)
+                            ExponentialBackoffSlackReAuctionableParcel.getCreator(1, (float) i / 10)
                     )
             );
-        //}
+        }
 
-        return new ResultsProcessor(builder.perform());
+        return new ResultsProcessor("agentParcelExponentialBackoff", builder.perform());
     }
 
 	private ResultsProcessor performRAExperiment() throws Exception {
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-        Experiment.Builder builder = getExperimentBuilder(objFunc);
 
-		builder = builder
+		Experiment.Builder builder = getExperimentBuilder(objFunc)
 				//.addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
 				/*.addConfiguration(
                         new TruckConfiguration(
@@ -293,7 +290,7 @@ public class Run {
                                 LimitedAuctionReAuctionableParcel.getCreator()
                         )
                 )*/
-                /*.addConfiguration(
+                .addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -312,7 +309,7 @@ public class Run {
                                 AdaptiveSlackReAuctionableParcel.getCreator()
                         )
                 )*/
-                .addConfiguration(
+                /*.addConfiguration(
                         new TruckConfiguration(
                                 SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)),
                                 SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)),
@@ -329,9 +326,9 @@ public class Run {
                                 ImmutableList.of(AgentParcelSlackEvaluator.supplier()),
                                 ExponentialBackoffRandomSelectionReAuctionableParcel.getCreator(2, 2)
                         )
-                );
+                )*/;
 
-        return new ResultsProcessor(builder.perform());
+        return new ResultsProcessor("main", builder.perform());
 	}
 
     /**

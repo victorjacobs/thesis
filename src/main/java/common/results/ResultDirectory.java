@@ -7,7 +7,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.newLinkedList;
 
 /**
- * Bundles several Results in one.
+ * Bundles several {@link common.results.Result}s in one.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
@@ -24,21 +24,27 @@ public class ResultDirectory<E> extends Result<E> {
         this.results = newLinkedList();
     }
 
+    public boolean isEmpty() {
+        return results.isEmpty();
+    }
+
     /**
      * Add a result to this directory.
      *
      * @param res Result to be added
      */
     public void addResult(Result<E> res) {
-        results.add(res);
+        if (res != null)
+            results.add(res);
     }
 
     @Override
+    @SuppressWarnings("all")
     public void write(String directory) throws IOException {
         String outDir = directory + "/" + getName();
 
         File dir = new File(outDir);
-        if (!dir.exists()) dir.mkdir();
+        if (!dir.exists()) dir.mkdirs();
 
         for (Result<E> res : results) {
             res.write(outDir);
