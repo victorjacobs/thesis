@@ -142,7 +142,7 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 	@Override
 	public String toString() {
         // TODO
-        return hashCode() + Joiner.on("-").join(seSuppliers.get(0), parcelCreator);
+        return Joiner.on("-").join(seSuppliers.get(0), parcelCreator);
 	}
 
     /**
@@ -158,9 +158,9 @@ public class TruckConfiguration extends DefaultMASConfiguration {
         private DynamicPDPTWProblem.Creator<AddParcelEvent> parcelCreator;
 
         public Builder() {
-            modelSuppliers = new ImmutableList.Builder<SupplierRng<? extends Model<?>>>();
-            stateObserverSuppliers = new ImmutableList.Builder<SupplierRng<? extends StateObserver>>();
-            stateEvaluatorSuppliers = new ImmutableList.Builder<SupplierRng<? extends StateEvaluator>>();
+            modelSuppliers = ImmutableList.builder();
+            stateObserverSuppliers = ImmutableList.builder();
+            stateEvaluatorSuppliers = ImmutableList.builder();
         }
 
         public Builder withRoutePlanner(SupplierRng<? extends RoutePlanner> routePlannerSupplier) {

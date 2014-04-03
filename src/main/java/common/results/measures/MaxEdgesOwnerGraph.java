@@ -24,14 +24,14 @@ public class MaxEdgesOwnerGraph extends Measure<String> {
     @Override
     @SuppressWarnings("null")
     public Result evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
-        ResultDirectory<String> topDir = new ResultDirectory<String>(getName());
-        ResultDirectory<String> configDir;
+        ResultDirectory topDir = new ResultDirectory(getName());
+        ResultDirectory configDir;
 
         int maxReAuctions;
         ReAuctionableParcel maxPar;
 
         for (String config : resultBins.keySet()) {
-            configDir = new ResultDirectory<String>(config);
+            configDir = new ResultDirectory(config);
             topDir.addResult(configDir);
 
             maxReAuctions = Integer.MIN_VALUE;

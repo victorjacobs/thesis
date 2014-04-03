@@ -1,15 +1,12 @@
-import com.google.common.collect.ImmutableList;
 import common.auctioning.Auctioneer;
 import common.baseline.SolverBidder;
-import common.results.ParcelTrackerModel;
-import common.results.ResultsProcessor;
-import common.results.ResultsPostProcessor;
+import common.baseline.StubStateEvaluator;
+import common.results.*;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import ra.evaluator.*;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import ra.parcel.ExponentialBackoffSlackReAuctionableParcel;
-import ra.parcel.LimitedAuctionReAuctionableParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
@@ -33,27 +30,32 @@ public class Run {
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 	private static final long SEED = 123L;
     private final Cli c;
+    private final ObjectiveFunction objectiveFunction;
 
     public static void main(String[] args) throws Exception {
         new Run(new Cli(args));
     }
 
 	private Run(Cli c) throws Exception {
+        objectiveFunction = new Gendreau06ObjectiveFunction();
         this.c = c;
+
+
         final long startTime = System.currentTimeMillis();
 
-        //ResultsProcessor result = performRAExperiment();
-        ResultsProcessor result = performRandomExperiments();
-        //ResultsProcessor result = performAdaptiveSlackExperiment();
-        //ResultsProcessor result = performAgentParcelExperiments();
-        //ResultsProcessor result = performExponentialBackoffExperiments();
+        //Result result = performRAExperiment();
+        //Result result = performRandomExperiments();
+        //Result result = performAdaptiveSlackExperiment();
+        //Result result = performAgentParcelExperiments();
+        //Result result = performExponentialBackoffExperiments();
+        Result result = performAllScenariosSeperated();
 
         System.out.println();
 
         if (c.outDir() == null) {
             System.out.println(result);
         } else {
-            result.write(c.outDir());
+            result.write();
         }
 
         System.out.println();
@@ -64,13 +66,12 @@ public class Run {
     private ResultsProcessor performAdaptiveSlackExperiment() throws Exception {
         System.out.println("Doing adaptive slack experiment");
 
-        final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-        Experiment.Builder builder = getExperimentBuilder(objFunc);
+        Experiment.Builder builder = getExperimentBuilder();
 
         // Do loop over int, than divide by 10 because floating point
         for (int i = 30; i >= 0; i -= 2) {
             builder.addConfiguration(
-                    getTruckConfigurationBuilder(objFunc)
+                    getTruckConfigurationBuilder()
                         .addStateEvaluator(AdaptiveSlackEvaluator.supplier((float) i / 10))
                         .build()
             );
@@ -82,12 +83,11 @@ public class Run {
     private ResultsProcessor performRandomExperiments() throws Exception {
         System.out.println("Doing random experiment");
 
-        final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-        Experiment.Builder builder = getExperimentBuilder(objFunc);
+        Experiment.Builder builder = getExperimentBuilder();
 
         for (int i = 0; i <= 50; i += 5) {
             builder.addConfiguration(
-                    getTruckConfigurationBuilder(objFunc)
+                    getTruckConfigurationBuilder()
                         .addStateEvaluator(RandomStateEvaluatorMultipleParcels.supplier(i))
                         .build()
             );
@@ -99,14 +99,13 @@ public class Run {
     private ResultsProcessor performAgentParcelExperiments() throws Exception {
         System.out.println("Doing agent parcel experiment");
 
-        final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-        Experiment.Builder builder = getExperimentBuilder(objFunc);
+        Experiment.Builder builder = getExperimentBuilder();
 
         // Do loop over int, than divide by 10 because floating point
         // Go through negative values, to force more re-auctions
         for (int i = 30; i >= -10; i -= 2) {
             builder.addConfiguration(
-                    getTruckConfigurationBuilder(objFunc)
+                    getTruckConfigurationBuilder()
                         .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
                         .withParcelCreator(AdaptiveSlackReAuctionableParcel.getCreator((float) i / 10))
                         .build()
@@ -119,14 +118,13 @@ public class Run {
     private ResultsProcessor performExponentialBackoffExperiments() throws Exception {
         System.out.println("Doing agent exponential backoff experiments");
 
-        final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-        Experiment.Builder builder = getExperimentBuilder(objFunc);
+        Experiment.Builder builder = getExperimentBuilder();
 
         // Do loop over int, than divide by 10 because floating point
         // Go through negative values, to force more re-auctions
         for (int i = 20; i >= 10; i -= 1) {
             builder.addConfiguration(
-                    getTruckConfigurationBuilder(objFunc)
+                    getTruckConfigurationBuilder()
                         .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
                         .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator(1, (float) i / 10))
                         .build()
@@ -136,10 +134,46 @@ public class Run {
         return new ResultsProcessor("agentParcelExponentialBackoff", builder.perform());
     }
 
+    private Result performAllScenariosSeperated() throws Exception {
+        System.out.println("WARNING: this might take a while");
+
+        ResultDirectory topDir = new ResultDirectory(c.outDir());
+        Experiment.Builder builder;
+        File d = new File(SCENARIOS_PATH);
+
+        for (File scenarioFile : d.listFiles()) {
+            System.out.println("Starting " + scenarioFile.getName());
+
+            builder = Experiment
+                    .build(objectiveFunction)
+                    .withRandomSeed(SEED)
+                    .withThreads(c.threads())
+                    .usePostProcessor(new ResultsPostProcessor())
+                    .addScenario(Gendreau06Parser.parse(scenarioFile))
+                    .repeat(c.repetitions())
+                    .addConfiguration(
+                            getTruckConfigurationBuilder()
+                                    .addStateEvaluator(StubStateEvaluator.supplier())
+                                    .build()
+                    )
+                    .addConfiguration(
+                            getTruckConfigurationBuilder()
+                                    .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator())
+                                    .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
+                                    .build()
+                    );
+
+            topDir.addResult(new ResultsProcessor(scenarioFile.getName(), builder.perform()));
+        }
+
+
+        return topDir;
+    }
+
 	private ResultsProcessor performRAExperiment() throws Exception {
         final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
 
-		Experiment.Builder builder = getExperimentBuilder(objFunc)
+		Experiment.Builder builder = getExperimentBuilder()
                 /*.addConfiguration(
                         getTruckConfigurationBuilder(objFunc)
                             .addStateEvaluator(StubStateEvaluator.supplier())
@@ -172,7 +206,7 @@ public class Run {
                                 .build()
                 )*/
                 .addConfiguration(
-                        getTruckConfigurationBuilder(objFunc)
+                        getTruckConfigurationBuilder()
                                 .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
                                 .withParcelCreator(AdaptiveSlackReAuctionableParcel.getCreator())
                                 .build()
@@ -204,17 +238,16 @@ public class Run {
      * Creates basic experiment builder, shared between different test setups. Takes a flag which toggles a shorter
      * run (only one scenario and one repetition).
      *
-     * @param objFunc Objective function used in the experiments
      * @return Experiment builder object entirely setup, only need to add configurations and run it
      */
-    private Experiment.Builder getExperimentBuilder(ObjectiveFunction objFunc) {
+    private Experiment.Builder getExperimentBuilder() {
         final List<Gendreau06Scenario> onlineScenarios = Gendreau06Parser.parser()
                 .addDirectory(SCENARIOS_PATH)
                 .filter(GendreauProblemClass.SHORT_LOW_FREQ)
                 .parse();
 
         Experiment.Builder builder = Experiment
-                .build(objFunc)
+                .build(objectiveFunction)
                 .withRandomSeed(SEED)
                 .withThreads(c.threads())
                 .usePostProcessor(new ResultsPostProcessor());
@@ -240,10 +273,10 @@ public class Run {
      *
      * @return Truck configuration builder with common settings set up
      */
-    private TruckConfiguration.Builder getTruckConfigurationBuilder(ObjectiveFunction objFunc) {
+    private TruckConfiguration.Builder getTruckConfigurationBuilder() {
         TruckConfiguration.Builder builder = new TruckConfiguration.Builder();
 
-        builder.withBidder(SolverBidder.supplier(objFunc, MultiVehicleHeuristicSolver.supplier(50, 1000)))
+        builder.withBidder(SolverBidder.supplier(objectiveFunction, MultiVehicleHeuristicSolver.supplier(50, 1000)))
                 .withRoutePlanner(SolverRoutePlanner.supplier(MultiVehicleHeuristicSolver.supplier(50, 1000)))
                 .addModel(Auctioneer.supplier())
                 .addModel(ParcelTrackerModel.supplier())

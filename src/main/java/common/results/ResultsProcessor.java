@@ -17,7 +17,7 @@ import static com.google.common.collect.Lists.newLinkedList;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ResultsProcessor extends ResultDirectory<String> {
+public class ResultsProcessor extends ResultDirectory {
 	private List<Measure<String>> measures;
 
 	/**

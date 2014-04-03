@@ -17,18 +17,18 @@ import java.util.Map;
 public class AllWeighedOwnerGraph extends MaxEdgesOwnerGraph {
     @Override
     public Result evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
-        ResultDirectory<String> topDir = new ResultDirectory<String>("allGraphs");
-        ResultDirectory<String> configDir;
-        ResultDirectory<String> runDir;
+        ResultDirectory topDir = new ResultDirectory("allGraphs");
+        ResultDirectory configDir;
+        ResultDirectory runDir;
         int runNumber;
 
         for (String config : resultBins.keySet()) {
-            configDir = new ResultDirectory<String>(config);
+            configDir = new ResultDirectory(config);
             topDir.addResult(configDir);
 
             runNumber = 1;
             for (Experiment.SimulationResult run : resultBins.get(config)) {
-                runDir = new ResultDirectory<String>(Integer.toString(runNumber));
+                runDir = new ResultDirectory(Integer.toString(runNumber));
                 configDir.addResult(runDir);
 
                 for (ReAuctionableParcel par : getParcelsFromRun(run)) {

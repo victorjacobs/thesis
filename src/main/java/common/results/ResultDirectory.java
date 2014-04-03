@@ -11,7 +11,7 @@ import static com.google.common.collect.Lists.newLinkedList;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ResultDirectory<E> extends Result {
+public class ResultDirectory extends Result {
     private List<Result> results;
 
     /**
@@ -41,7 +41,7 @@ public class ResultDirectory<E> extends Result {
     @Override
     @SuppressWarnings("all")
     public void write(String directory) throws IOException {
-        String outDir = directory + "/" + getName();
+        String outDir = (directory == "") ? getName() : directory + "/" + getName();
 
         File dir = new File(outDir);
         if (!dir.exists()) dir.mkdirs();

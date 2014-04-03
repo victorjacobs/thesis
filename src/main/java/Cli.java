@@ -10,7 +10,7 @@ public class Cli {
 
     private String outDir;
     private boolean showGui = false;
-    private int repetitions = 10;
+    private int repetitions = 12;   // TODO
     private int threads = Runtime.getRuntime().availableProcessors();
     private boolean quickRun = false;
 

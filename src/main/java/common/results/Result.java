@@ -20,7 +20,7 @@ public abstract class Result {
      *
      * @return Name of the result
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -31,6 +31,14 @@ public abstract class Result {
      * @throws IOException Thrown when IO fails
      */
     public abstract void write(String directory) throws IOException;
+
+    /**
+     * Use with caution
+     * @throws IOException
+     */
+    public void write() throws IOException {
+        write("");
+    }
 
     /**
      * Returns a pretty printed string representation of the result.

@@ -10,6 +10,6 @@ lapply(list.files(pattern = ".csv", recursive = T), function(p){
   E(g)$width <- 1 + 5 * (E(g)$weight / max(E(g)$weight))
   E(g)$color <- rgb((E(g)$weight / max(E(g)$weight)), 1 - (E(g)$weight / max(E(g)$weight)), 0)
   l <- layout.kamada.kawai(g)
-  plot(g, layout = l, edge.curved = 0.2, edge.label.cex = 15, edge.label.font = 2, edge.label.color = "black")
+  plot(g, layout = l, edge.curved = 0.2, edge.label.cex = 1.5, edge.label.font = 2, edge.label.color = "black")
   invisible(dev.off())
 })
