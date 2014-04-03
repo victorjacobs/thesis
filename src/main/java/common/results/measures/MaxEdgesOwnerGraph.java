@@ -23,7 +23,7 @@ public class MaxEdgesOwnerGraph extends Measure<String> {
 
     @Override
     @SuppressWarnings("null")
-    public Result<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
+    public Result evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
         ResultDirectory<String> topDir = new ResultDirectory<String>(getName());
         ResultDirectory<String> configDir;
 

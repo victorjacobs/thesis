@@ -7,7 +7,7 @@ import java.io.IOException;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public abstract class Result<E> {
+public abstract class Result {
     private final String name;
 
     protected Result(String name) {
@@ -34,6 +34,7 @@ public abstract class Result<E> {
 
     /**
      * Returns a pretty printed string representation of the result.
+     * TODO this is probably left over from some refactoring. Maybe just move to toString()
      *
      * @return String representing the result
      */

@@ -67,6 +67,6 @@ public abstract class Measure<E> {
      * @param resultBins Bins containing the simulation results
      * @return A writer containing the measure result
      */
-    public abstract Result<E> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins);
+    public abstract Result evaluate(Map<String, List<Experiment.SimulationResult>> resultBins);
 
 }

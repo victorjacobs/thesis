@@ -85,4 +85,8 @@ public class ResultsProcessor extends ResultDirectory<String> {
             addResult(m.evaluate(dtoBins));
 	}
 
+    @Override
+    public String toString() {
+        return prettyPrint();
+    }
 }

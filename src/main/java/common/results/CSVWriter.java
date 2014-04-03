@@ -15,7 +15,7 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class CSVWriter<E> extends Result<E> {
+public class CSVWriter<E> extends Result {
     private Map<String, List<E>> data;
     private boolean writeHeaders;
     private String separator;

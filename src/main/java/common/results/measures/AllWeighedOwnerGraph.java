@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class AllWeighedOwnerGraph extends MaxEdgesOwnerGraph {
     @Override
-    public Result<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
+    public Result evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
         ResultDirectory<String> topDir = new ResultDirectory<String>("allGraphs");
         ResultDirectory<String> configDir;
         ResultDirectory<String> runDir;

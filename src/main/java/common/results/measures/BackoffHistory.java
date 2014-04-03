@@ -17,7 +17,7 @@ public class BackoffHistory extends Measure<String> {
     }
 
     @Override
-    public Result<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
+    public Result evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
         return null;
     }
 }

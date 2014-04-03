@@ -6,7 +6,6 @@ import common.results.ResultsProcessor;
 import common.results.ResultsPostProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
-import org.apache.commons.cli.*;
 import ra.evaluator.*;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import ra.parcel.ExponentialBackoffSlackReAuctionableParcel;
@@ -32,77 +31,14 @@ import java.util.List;
 public class Run {
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 	private static final long SEED = 123L;
-
-    private boolean quickRun = true; // Flag that toggles a fast run mode (only one repetition on one scenario) for debugging
-    private int threads = Runtime.getRuntime().availableProcessors();
-    private int repetitions = 10;
-    private boolean showGui = false;
+    private final Cli c;
 
     public static void main(String[] args) throws Exception {
-        // Set up command line
-        Options opt = new Options();
-
-        opt.addOption(OptionBuilder
-                .withArgName("resultsDir")
-                .hasArg()
-                .withDescription("Directory to output results to")
-                .create("o"));
-        opt.addOption(OptionBuilder
-                .withArgName("nbThreads")
-                .hasArg()
-                .withDescription("Number of threads, defaults to number of cores in system")
-                .create("t"));
-        opt.addOption(OptionBuilder
-                .withArgName("repetitions")
-                .hasArg()
-                .withDescription("Number of repetitions, defaults to 10")
-                .create("r"));
-        opt.addOption(new Option("q", "Quick run: one repetition of one scenario"));
-        opt.addOption(new Option("help", "Print this message"));
-        opt.addOption(new Option("g", "Show gui"));
-
-        CommandLineParser parser = new BasicParser();
-
-        CommandLine cmd = parser.parse(opt, args);
-
-        if (cmd.hasOption("help")) {
-            (new HelpFormatter()).printHelp("java -jar Thesis.jar", opt);
-            return;
-        }
-
-        if (!cmd.hasOption("q") && !cmd.hasOption("o")) {
-            System.err.println("Missing option: o");
-
-            (new HelpFormatter()).printHelp("java -jar Thesis.jar", opt);
-            return;
-        }
-
-        new Run(cmd);
+        new Run(new Cli(args));
     }
 
-	private Run(CommandLine cmd) throws Exception {
-        // Extract some info from cli
-        quickRun = cmd.hasOption("q");
-        if (cmd.hasOption("t")) {
-            try {
-                threads = Integer.parseInt(cmd.getOptionValue("t"));
-            } catch (NumberFormatException e) {
-                System.out.println("Warning: -t " + cmd.getOptionValue("t") + " not valid option");
-            }
-        }
-
-        if (cmd.hasOption("r")) {
-            try {
-                repetitions = Integer.parseInt(cmd.getOptionValue("r"));
-            } catch (NumberFormatException e) {
-                System.out.println("Warning: -r " + cmd.getOptionValue("r") + " not valid option");
-            }
-        }
-
-        if (showGui = cmd.hasOption("g")) {
-            threads = 1;
-        }
-
+	private Run(Cli c) throws Exception {
+        this.c = c;
         final long startTime = System.currentTimeMillis();
 
         ResultsProcessor result = performRAExperiment();
@@ -113,10 +49,10 @@ public class Run {
 
         System.out.println();
 
-        if (quickRun) {
+        if (c.quickrun()) {
             System.out.println(result);
         } else {
-            result.write(cmd.getOptionValue("o"));
+            result.write(c.outDir());
         }
 
         System.out.println();
@@ -347,21 +283,21 @@ public class Run {
         Experiment.Builder builder = Experiment
                 .build(objFunc)
                 .withRandomSeed(SEED)
-                .withThreads(threads)
+                .withThreads(c.threads())
                 .usePostProcessor(new ResultsPostProcessor());
 
-        if (quickRun) {
+        if (c.quickrun()) {
             System.out.println("Doing fast run");
             builder = builder
                     .addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
                     .repeat(1);
-            if (showGui) {
+            if (c.showGui()) {
                 builder = builder.showGui();
             }
 
             return builder;
         } else {
-            return builder.addScenarios(onlineScenarios).repeat(repetitions);
+            return builder.addScenarios(onlineScenarios).repeat(c.repetitions());
         }
     }
 

@@ -26,7 +26,7 @@ public class ParcelSlackHistory extends Measure<String> {
 
     // TODO this needs a better selector thingamajig
     @Override
-    public Result<String> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
+    public Result evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
         try {
             CSVWriter<String> csv = new CSVWriter<String>(getName());
 

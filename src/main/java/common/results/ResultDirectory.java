@@ -11,8 +11,8 @@ import static com.google.common.collect.Lists.newLinkedList;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ResultDirectory<E> extends Result<E> {
-    private List<Result<E>> results;
+public class ResultDirectory<E> extends Result {
+    private List<Result> results;
 
     /**
      * Constructs a new ResultDirectory, given a directory name
@@ -33,7 +33,7 @@ public class ResultDirectory<E> extends Result<E> {
      *
      * @param res Result to be added
      */
-    public void addResult(Result<E> res) {
+    public void addResult(Result res) {
         if (res != null)
             results.add(res);
     }
@@ -46,7 +46,7 @@ public class ResultDirectory<E> extends Result<E> {
         File dir = new File(outDir);
         if (!dir.exists()) dir.mkdirs();
 
-        for (Result<E> res : results) {
+        for (Result res : results) {
             res.write(outDir);
         }
     }
@@ -55,7 +55,7 @@ public class ResultDirectory<E> extends Result<E> {
     public String prettyPrint() {
         StringBuilder sb = new StringBuilder();
 
-        for (Result<E> res : results) {
+        for (Result res : results) {
             if (res.prettyPrint() == null)
                 continue;
             sb.append(getName());

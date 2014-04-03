@@ -39,7 +39,7 @@ public abstract class BasicMeasure<E> extends Measure<E> {
     protected abstract List<E> calculate(Experiment.SimulationResult result);
 
     @Override
-    public final Result<E> evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
+    public final Result evaluate(Map<String, List<Experiment.SimulationResult>> resultBins) {
         CSVWriter<E> csv = new CSVWriter<E>(getName());
 
         for (String runName : resultBins.keySet()) {
