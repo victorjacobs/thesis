@@ -15,7 +15,7 @@ import java.util.Random;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class RandomStateEvaluatorMultipleParcels extends StateEvaluator {
-    private final int percentage;
+    private final float percentage;
     private long nextReEvaluation = 50;
 	private Random rng;
 
@@ -24,7 +24,7 @@ public class RandomStateEvaluatorMultipleParcels extends StateEvaluator {
      * @param seed Seed for the internal RNG
      * @param percentage Percentage chance every parcel has to be re-auctioned (0-100).
      */
-	public RandomStateEvaluatorMultipleParcels(long seed, int percentage) {
+	public RandomStateEvaluatorMultipleParcels(long seed, float percentage) {
         this.percentage = percentage;
         rng = new Random(seed);
 	}
@@ -37,7 +37,7 @@ public class RandomStateEvaluatorMultipleParcels extends StateEvaluator {
         ImmutableSet.Builder<DefaultParcel> builder = new ImmutableSet.Builder<DefaultParcel>();
 
 		for (DefaultParcel par : getTruck().getParcels()) {
-            if (rng.nextInt(100) < percentage)
+            if (100 * rng.nextFloat() < percentage)
                 builder.add(par);
         }
 
@@ -55,7 +55,7 @@ public class RandomStateEvaluatorMultipleParcels extends StateEvaluator {
 		return false;
 	}
 
-	public static SupplierRng<? extends StateEvaluator> supplier(final int percentage) {
+	public static SupplierRng<? extends StateEvaluator> supplier(final float percentage) {
 		return new SupplierRng.DefaultSupplierRng<RandomStateEvaluatorMultipleParcels>() {
 			@Override
 			public RandomStateEvaluatorMultipleParcels get(long seed) {

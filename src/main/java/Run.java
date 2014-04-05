@@ -29,8 +29,12 @@ import java.util.List;
 public class Run {
 	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 	private static final long SEED = 123L;
+
     private final Cli c;
     private final ObjectiveFunction objectiveFunction;
+
+    // Top level results directory, add results to object
+    private final ResultDirectory topDir;
 
     public static void main(String[] args) throws Exception {
         new Run(new Cli(args));
@@ -40,22 +44,22 @@ public class Run {
         objectiveFunction = new Gendreau06ObjectiveFunction();
         this.c = c;
 
-
         final long startTime = System.currentTimeMillis();
+        topDir = new ResultDirectory(c.outDir());
 
-        //Result result = performRAExperiment();
-        //Result result = performRandomExperiments();
-        //Result result = performAdaptiveSlackExperiment();
-        //Result result = performAgentParcelExperiments();
-        //Result result = performExponentialBackoffExperiments();
-        Result result = performAllScenariosSeperated();
+        //performRAExperiment();
+        performRandomExperiments();
+        performAdaptiveSlackExperiment();
+        performAgentParcelExperiments();
+        performExponentialBackoffExperiments();
+        //performAllScenariosSeperated();
 
         System.out.println();
 
         if (c.outDir() == null) {
-            System.out.println(result);
+            System.out.println(topDir.toString());
         } else {
-            result.write();
+            topDir.write();
         }
 
         System.out.println();
@@ -63,41 +67,60 @@ public class Run {
                 + "s");
     }
 
-    private ResultsProcessor performAdaptiveSlackExperiment() throws Exception {
+    private void performAdaptiveSlackExperiment() throws Exception {
         System.out.println("Doing adaptive slack experiment");
 
         Experiment.Builder builder = getExperimentBuilder();
 
         // Do loop over int, than divide by 10 because floating point
-        for (int i = 30; i >= 0; i -= 2) {
+        for (int i = 300; i >= 200; i -= 5) {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
-                        .addStateEvaluator(AdaptiveSlackEvaluator.supplier((float) i / 10))
+                        .addStateEvaluator(AdaptiveSlackEvaluator.supplier((float) i / 100))
                         .build()
             );
         }
 
-        return new ResultsProcessor("adaptiveVaryingThreshold", builder.perform());
+        topDir.addResult(new ResultsProcessor("adaptiveVaryingThreshold", builder.perform()));
     }
 
-    private ResultsProcessor performRandomExperiments() throws Exception {
+    private void performRandomExperiments() throws Exception {
         System.out.println("Doing random experiment");
 
         Experiment.Builder builder = getExperimentBuilder();
 
-        for (int i = 0; i <= 50; i += 5) {
+        for (int i = 0; i <= 120; i += 6) {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
-                        .addStateEvaluator(RandomStateEvaluatorMultipleParcels.supplier(i))
+                        .addStateEvaluator(RandomStateEvaluatorMultipleParcels.supplier((float) i / 10))
                         .build()
             );
         }
 
-        return new ResultsProcessor("randomVaryingPercentages", builder.perform());
+        topDir.addResult(new ResultsProcessor("randomVaryingPercentages", builder.perform()));
     }
 
-    private ResultsProcessor performAgentParcelExperiments() throws Exception {
+    private void performAgentParcelExperiments() throws Exception {
         System.out.println("Doing agent parcel experiment");
+
+        Experiment.Builder builder = getExperimentBuilder();
+
+        // Do loop over int, than divide by 10 because floating point
+        // Go through negative values, to force more re-auctions
+        for (int i = 300; i >= 40; i -= 13) {
+            builder.addConfiguration(
+                    getTruckConfigurationBuilder()
+                        .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
+                        .withParcelCreator(AdaptiveSlackReAuctionableParcel.getCreator((float) i / 100))
+                        .build()
+            );
+        }
+
+        topDir.addResult(new ResultsProcessor("agentParcelVaryingThreshold", builder.perform()));
+    }
+
+    private void performExponentialBackoffExperiments() throws Exception {
+        System.out.println("Doing agent exponential backoff experiments");
 
         Experiment.Builder builder = getExperimentBuilder();
 
@@ -106,38 +129,18 @@ public class Run {
         for (int i = 30; i >= -10; i -= 2) {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
-                        .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
-                        .withParcelCreator(AdaptiveSlackReAuctionableParcel.getCreator((float) i / 10))
-                        .build()
+                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
+                            .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator((float) i / 10, 2))
+                            .build()
             );
         }
 
-        return new ResultsProcessor("agentParcelVaryingThreshold", builder.perform());
+        topDir.addResult(new ResultsProcessor("agentParcelExponentialBackoff", builder.perform()));
     }
 
-    private ResultsProcessor performExponentialBackoffExperiments() throws Exception {
-        System.out.println("Doing agent exponential backoff experiments");
-
-        Experiment.Builder builder = getExperimentBuilder();
-
-        // Do loop over int, than divide by 10 because floating point
-        // Go through negative values, to force more re-auctions
-        for (int i = 20; i >= 10; i -= 1) {
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                        .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
-                        .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator(1, (float) i / 10))
-                        .build()
-            );
-        }
-
-        return new ResultsProcessor("agentParcelExponentialBackoff", builder.perform());
-    }
-
-    private Result performAllScenariosSeperated() throws Exception {
+    private void performAllScenariosSeperated() throws Exception {
         System.out.println("WARNING: this might take a while");
 
-        ResultDirectory topDir = new ResultDirectory(c.outDir());
         Experiment.Builder builder;
         File d = new File(SCENARIOS_PATH);
 
@@ -165,14 +168,9 @@ public class Run {
 
             topDir.addResult(new ResultsProcessor(scenarioFile.getName(), builder.perform()));
         }
-
-
-        return topDir;
     }
 
-	private ResultsProcessor performRAExperiment() throws Exception {
-        final ObjectiveFunction objFunc = new Gendreau06ObjectiveFunction();
-
+	private void performRAExperiment() throws Exception {
 		Experiment.Builder builder = getExperimentBuilder()
                 /*.addConfiguration(
                         getTruckConfigurationBuilder(objFunc)
@@ -231,7 +229,7 @@ public class Run {
                             .build()
                 )*/;
 
-        return new ResultsProcessor("main", builder.perform());
+        topDir.addResult(new ResultsProcessor("main", builder.perform()));
 	}
 
     /**
