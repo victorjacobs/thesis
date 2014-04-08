@@ -152,9 +152,9 @@ public class TruckConfiguration extends DefaultMASConfiguration {
     public static class Builder {
         private SupplierRng<? extends RoutePlanner> routePlannerSupplier;
         private SupplierRng<? extends Bidder> bidderSupplier;
-        private ImmutableList.Builder<? extends SupplierRng<? extends Model<?>>> modelSuppliers;
-        private ImmutableList.Builder<? extends SupplierRng<? extends StateObserver>> stateObserverSuppliers;
-        private ImmutableList.Builder<? extends SupplierRng<? extends StateEvaluator>> stateEvaluatorSuppliers;
+        private ImmutableList.Builder<SupplierRng<? extends Model<?>>> modelSuppliers;
+        private ImmutableList.Builder<SupplierRng<? extends StateObserver>> stateObserverSuppliers;
+        private ImmutableList.Builder<SupplierRng<? extends StateEvaluator>> stateEvaluatorSuppliers;
         private DynamicPDPTWProblem.Creator<AddParcelEvent> parcelCreator;
 
         public Builder() {
