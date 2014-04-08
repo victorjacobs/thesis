@@ -73,7 +73,7 @@ public class Run {
         Experiment.Builder builder = getExperimentBuilder();
 
         // Do loop over int, than divide by 10 because floating point
-        for (int i = 300; i >= 200; i -= 5) {
+        for (int i = 300; i >= 120; i -= 9) {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
                         .addStateEvaluator(AdaptiveSlackEvaluator.supplier((float) i / 100))
