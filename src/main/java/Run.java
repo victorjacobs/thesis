@@ -83,7 +83,7 @@ public class Run {
             );
         }
 
-        topDir.addResult(new ResultsProcessor("adaptiveVaryingThreshold", builder.perform()));
+        topDir.addResult(new ResultsProcessor("adaptive", builder.perform()));
     }
 
     private void performRandomExperiments() throws Exception {
@@ -99,7 +99,7 @@ public class Run {
             );
         }
 
-        topDir.addResult(new ResultsProcessor("randomVaryingPercentages", builder.perform()));
+        topDir.addResult(new ResultsProcessor("random", builder.perform()));
     }
 
     private void performAgentParcelExperiments() throws Exception {
@@ -118,7 +118,7 @@ public class Run {
             );
         }
 
-        topDir.addResult(new ResultsProcessor("agentParcelVaryingThreshold", builder.perform()));
+        topDir.addResult(new ResultsProcessor("agentParcel", builder.perform()));
     }
 
     private void performExponentialBackoffExperiments() throws Exception {
@@ -137,7 +137,7 @@ public class Run {
             );
         }
 
-        topDir.addResult(new ResultsProcessor("agentParcelExponentialBackoff", builder.perform()));
+        topDir.addResult(new ResultsProcessor("agentParcelBackoff", builder.perform()));
     }
 
     private void performAllScenariosSeperated() throws Exception {
