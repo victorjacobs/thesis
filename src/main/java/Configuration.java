@@ -50,6 +50,7 @@ public class Configuration {
             if (cmd.hasOption("help")) {
                 printHelp();
                 stop = true;
+                return;
             }
 
             if (!cmd.hasOption("q") && !cmd.hasOption("o")) {
@@ -58,6 +59,7 @@ public class Configuration {
                 printHelp();
 
                 stop = true;
+                return;
             }
 
             quickRun = cmd.hasOption("q");
