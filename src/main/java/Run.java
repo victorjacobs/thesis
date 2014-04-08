@@ -27,25 +27,27 @@ import java.util.List;
  */
 // TODO this needs to be refactored
 public class Run {
-	private static final String SCENARIOS_PATH = "files/scenarios/gendreau06/";
 	private static final long SEED = 123L;
 
-    private final Cli c;
+    private final Configuration c;
     private final ObjectiveFunction objectiveFunction;
 
     // Top level results directory, add results to object
     private final ResultDirectory topDir;
 
     public static void main(String[] args) throws Exception {
-        new Run(new Cli(args));
+        new Run(new Configuration(args));
     }
 
-	private Run(Cli c) throws Exception {
+	private Run(Configuration c) throws Exception {
         objectiveFunction = new Gendreau06ObjectiveFunction();
         this.c = c;
 
         final long startTime = System.currentTimeMillis();
         topDir = new ResultDirectory(c.outDir());
+
+        if (c.stop())
+            return;
 
         //performRAExperiment();
         performRandomExperiments();
@@ -142,7 +144,7 @@ public class Run {
         System.out.println("WARNING: this might take a while");
 
         Experiment.Builder builder;
-        File d = new File(SCENARIOS_PATH);
+        File d = new File(c.scenarioDirectory());
 
         for (File scenarioFile : d.listFiles()) {
             System.out.println("Starting " + scenarioFile.getName());
@@ -240,7 +242,7 @@ public class Run {
      */
     private Experiment.Builder getExperimentBuilder() {
         final List<Gendreau06Scenario> onlineScenarios = Gendreau06Parser.parser()
-                .addDirectory(SCENARIOS_PATH)
+                .addDirectory(c.scenarioDirectory())
                 .filter(GendreauProblemClass.SHORT_LOW_FREQ)
                 .parse();
 
@@ -252,8 +254,8 @@ public class Run {
 
         if (c.quickrun()) {
             System.out.println("Doing fast run");
-            builder
-                    .addScenario(Gendreau06Parser.parse(new File(SCENARIOS_PATH + "req_rapide_1_240_24")))
+
+            builder.addScenario(Gendreau06Parser.parse(new File(c.scenarioDirectory() + "req_rapide_1_240_24")))
                     .repeat(1);
             if (c.showGui()) {
                 builder.showGui();

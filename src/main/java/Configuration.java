@@ -1,20 +1,26 @@
 import org.apache.commons.cli.*;
+import rinde.sim.pdptw.gendreau06.Gendreau06Parser;
+
+import java.io.File;
 
 /**
  * Handles CLI input and configuration in general. Provides sensible defaults for everything.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class Cli {
+public class Configuration {
     private Options options;
+
+    private boolean stop = false;
 
     private String outDir;
     private boolean showGui = false;
-    private int repetitions = 12;   // TODO
+    private int repetitions = 12;
     private int threads = Runtime.getRuntime().availableProcessors();
     private boolean quickRun = false;
+    private String scenarioDirectory = "files/scenarios/gendreau06/";
 
-    public Cli(String[] args) {
+    public Configuration(String[] args) {
         // Set up command line
         options = new Options();
 
@@ -31,7 +37,7 @@ public class Cli {
         options.addOption(OptionBuilder
                 .withArgName("repetitions")
                 .hasArg()
-                .withDescription("Number of repetitions, defaults to 10")
+                .withDescription("Number of repetitions, defaults to 12")
                 .create("r"));
         options.addOption(new Option("q", "Quick run: one repetition of one scenario"));
         options.addOption(new Option("help", "Print this message"));
@@ -43,7 +49,7 @@ public class Cli {
             CommandLine cmd = parser.parse(options, args);
             if (cmd.hasOption("help")) {
                 printHelp();
-                return;
+                stop = true;
             }
 
             if (!cmd.hasOption("q") && !cmd.hasOption("o")) {
@@ -51,7 +57,7 @@ public class Cli {
                 System.out.println();
                 printHelp();
 
-                return;
+                stop = true;
             }
 
             quickRun = cmd.hasOption("q");
@@ -76,6 +82,12 @@ public class Cli {
             }
 
             outDir = cmd.getOptionValue("o");
+
+            if (!isValidScenarioDirectory()) {
+                System.out.println("Invalid scenario directory " + scenarioDirectory());
+
+                stop = true;
+            }
         } catch (ParseException e) {
             System.out.println("Something went wrong parsing input");
             System.out.println();
@@ -133,5 +145,51 @@ public class Cli {
      */
     public String outDir() {
         return outDir;
+    }
+
+    /**
+     * Should the program stop execution or not. This might occur when required option is missing or something went
+     * wrong parsing the input.
+     *
+     * @return Should program end
+     */
+    public boolean stop() {
+        return stop;
+    }
+
+    /**
+     * Directory where scenario files are stored. Defaults to "files/scenarios/gendreau06/"
+     *
+     * @return Directory in which scenarios can be found
+     */
+    public String scenarioDirectory() {
+        return scenarioDirectory;
+    }
+
+    private void setScenarioDirectory(String dir) {
+        // Make sure it ends with a slash
+        scenarioDirectory = dir;
+    }
+
+    /**
+     * Checks whether a given scenario directory is a valid one. This is so when both exists and it contains some
+     * valid scenario.
+     *
+     * @return Whether or not the scenario directory is valid
+     */
+    public boolean isValidScenarioDirectory() {
+        File directory = new File(scenarioDirectory());
+        File aScenario = new File(scenarioDirectory() + "req_rapide_1_240_24");
+
+        if (directory.exists() && aScenario.exists()) {
+            try {
+                Gendreau06Parser.parse(aScenario);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        return false;
     }
 }
