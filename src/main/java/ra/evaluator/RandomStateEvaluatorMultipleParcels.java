@@ -1,6 +1,5 @@
 package ra.evaluator;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import common.truck.StateEvaluator;
 import rinde.sim.pdptw.common.DefaultParcel;

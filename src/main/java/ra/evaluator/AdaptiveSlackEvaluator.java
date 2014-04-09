@@ -1,7 +1,6 @@
 package ra.evaluator;
 
 import com.google.common.collect.ImmutableSet;
-import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
 

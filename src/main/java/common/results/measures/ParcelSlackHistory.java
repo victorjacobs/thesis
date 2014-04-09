@@ -44,7 +44,7 @@ public class ParcelSlackHistory extends Measure<String> {
                 csv.addColumn(par.toString(), Lists.transform(ap.getSlackHistory(), new Function<Double, String>() {
                     @Nullable
                     @Override
-                    public String apply(@Nullable Double aDouble) {
+                    public String apply(Double aDouble) {
                         return aDouble.toString();
                     }
                 }));

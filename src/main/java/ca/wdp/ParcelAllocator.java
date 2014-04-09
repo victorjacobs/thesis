@@ -3,7 +3,10 @@ package ca.wdp;
 import common.truck.Bid;
 import rinde.sim.pdptw.common.DefaultParcel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Represents an allocation of parcels according to some set of bids. This basically is a solver for the WDP. This

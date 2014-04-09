@@ -9,8 +9,6 @@ import rinde.sim.util.SupplierRng;
 
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkState;
-
 /**
  * This is a *dumb* state evaluator. It moves the responsability of deciding on a re-auction to the parcel itself.
  * Therefore the implementation of {@link #evaluateState(long)} simply returns all parcels. It therefore should be

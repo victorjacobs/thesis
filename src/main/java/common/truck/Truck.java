@@ -2,8 +2,8 @@ package common.truck;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import ra.parcel.ReAuctionableParcel;
 import common.truck.route.RoutePlanner;
+import ra.parcel.ReAuctionableParcel;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
 import rinde.sim.core.TimeLapse;
@@ -128,12 +128,12 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
      * @return Whether or not parcel was successfully removed
 	 */
     // TODO why the hell is this a DefaultParcel?
-	private boolean removeParcel(DefaultParcel par) {
+	private void removeParcel(DefaultParcel par) {
 		checkState(par instanceof ReAuctionableParcel, "Parcel needs to be re-auctionable in order to remove it from " +
 				"truck");
 		checkState(parcels.contains(par), "Parcel not assigned to truck");
 		if (fixedParcels.contains(par))
-            return false;
+            return;
 
         ReAuctionableParcel rParcel = (ReAuctionableParcel) par;
 
@@ -144,10 +144,6 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
             notifyChange();
 
             rParcel.changeOwner(getCurrentTime().getTime());
-
-            return true;
-        } else {
-            return false;
         }
 	}
 

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.core.model.AbstractModel;
 import rinde.sim.util.SupplierRng;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 

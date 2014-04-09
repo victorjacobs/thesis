@@ -1,10 +1,8 @@
 package common.results.measures;
 
 import common.results.Result;
-import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 

@@ -2,7 +2,6 @@ package common.results.measures;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import common.results.CSVWriter;
 import common.results.Result;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.common.ObjectiveFunction;
