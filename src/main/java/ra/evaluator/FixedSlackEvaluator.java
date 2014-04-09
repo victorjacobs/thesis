@@ -26,7 +26,7 @@ public class FixedSlackEvaluator extends SlackEvaluator {
     @Override
 	public ImmutableSet<DefaultParcel> evaluateState(long time) {
 		ImmutableSet.Builder<DefaultParcel> ret = ImmutableSet.builder();
-		Map<DefaultParcel, Double> slacks = calculateSlackForState();
+		Map<DefaultParcel, Double> slacks = calculateSlackForState(time);
 
 		for (DefaultParcel par : slacks.keySet()) {
 			if (slacks.get(par) <= 10000) {

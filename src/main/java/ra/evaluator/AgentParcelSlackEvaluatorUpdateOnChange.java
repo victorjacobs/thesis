@@ -33,7 +33,7 @@ public class AgentParcelSlackEvaluatorUpdateOnChange extends SlackEvaluator impl
 
     @Override
     public void notify(long time) {
-        Map<DefaultParcel, Double> slacks = calculateSlackForState();
+        Map<DefaultParcel, Double> slacks = calculateSlackForState(time);
         AgentParcel ap;
         // Should only update the parcels that changed
         if (oldSlacks == null) {

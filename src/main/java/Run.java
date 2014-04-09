@@ -50,11 +50,11 @@ public class Run {
             return;
 
         //performRAExperiment();
-        performRandomExperiments();
+        /*performRandomExperiments();
         performAdaptiveSlackExperiment();
         performAgentParcelExperiments();
-        performExponentialBackoffExperiments();
-        //performAllScenariosSeperated();
+        performExponentialBackoffExperiments();*/
+        performAllScenariosSeperated();
 
         System.out.println();
 
@@ -144,17 +144,25 @@ public class Run {
         System.out.println("WARNING: this might take a while");
 
         Experiment.Builder builder;
+        Gendreau06Scenario scen;
         File d = new File(c.scenarioDirectory());
 
         for (File scenarioFile : d.listFiles()) {
             System.out.println("Starting " + scenarioFile.getName());
+
+            try {
+                scen = Gendreau06Parser.parse(scenarioFile);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Ignored");
+                continue;
+            }
 
             builder = Experiment
                     .build(objectiveFunction)
                     .withRandomSeed(SEED)
                     .withThreads(c.threads())
                     .usePostProcessor(new ResultsPostProcessor())
-                    .addScenario(Gendreau06Parser.parse(scenarioFile))
+                    .addScenario(scen)
                     .repeat(c.repetitions())
                     .addConfiguration(
                             getTruckConfigurationBuilder()
@@ -193,13 +201,13 @@ public class Run {
                         getTruckConfigurationBuilder(objFunc)
                                 .addStateEvaluator(FixedSlackEvaluator.supplier())
                                 .build()
-                )
+                )*/
                 .addConfiguration(
-                        getTruckConfigurationBuilder(objFunc)
+                        getTruckConfigurationBuilder()
                                 .addStateEvaluator(AdaptiveSlackEvaluator.supplier())
                                 .build()
                 )
-                .addConfiguration(
+                /*.addConfiguration(
                         getTruckConfigurationBuilder(objFunc)
                                 .addStateEvaluator(AdaptiveSlackEvaluator.supplier())
                                 .withParcelCreator(LimitedAuctionReAuctionableParcel.getCreator())
@@ -218,12 +226,12 @@ public class Run {
                             .withParcelCreator(AdaptiveSlackReAuctionableParcel.getCreator())
                             .build()
                 )*/
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder(objFunc)
+                .addConfiguration(
+                        getTruckConfigurationBuilder()
                             .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
                             .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator())
                             .build()
-                )*/
+                )
                 /*.addConfiguration(
                         getTruckConfigurationBuilder(objFunc)
                             .addStateEvaluator(AgentParcelSlackEvaluator.supplier())

@@ -32,8 +32,8 @@ public abstract class SlackEvaluator extends StateEvaluator {
      *
      * @return Map containing the slack for every parcel in the truck
      */
-    Map<DefaultParcel, Double> calculateSlackForState() {
-        double curTime = 0;
+    Map<DefaultParcel, Double> calculateSlackForState(long time) {
+        double curTime = time;
 
         Map<DefaultParcel, Double> slacks = new HashMap<DefaultParcel, Double>();
         Set<Parcel> simulatedCargo = newLinkedHashSet(getTruck().getContents());
@@ -67,6 +67,10 @@ public abstract class SlackEvaluator extends StateEvaluator {
         }
 
         return slacks;
+    }
+
+    Map<DefaultParcel, Double> calculateSlackForState() {
+        return calculateSlackForState(0);
     }
 
     private double getTravelTimeBetween(Point orig, Point dest) {
