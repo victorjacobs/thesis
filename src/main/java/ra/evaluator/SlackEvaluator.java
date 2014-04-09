@@ -30,6 +30,7 @@ public abstract class SlackEvaluator extends StateEvaluator {
      * amount of time the parcel can be delayed in the current schedule for it to be still on time". If effectively
      * gives a measure for the flexibility of a certain parcel.
      *
+     * @param time Current simulation time
      * @return Map containing the slack for every parcel in the truck
      */
     Map<DefaultParcel, Double> calculateSlackForState(long time) {
@@ -47,9 +48,14 @@ public abstract class SlackEvaluator extends StateEvaluator {
                 // If arrive before timewindow, truck has to wait
                 curTime = (curTime < par.getDeliveryTimeWindow().begin) ? par.getDeliveryTimeWindow().begin : curTime;
 
-                // Don't bother adding slacks for parcels that are already in cargo
-                if (!getTruck().getContents().contains(par))
-                    slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
+                // Don't bother adding slacks for parcels that are already in cargo (they are fixed)
+                if (!getTruck().getContents().contains(par)) {
+                    if (!slacks.containsKey(par)) {
+                        slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
+                    } else {
+                        slacks.put(par, slacks.get(par) + par.getDeliveryTimeWindow().end - curTime);
+                    }
+                }
 
                 curTime += par.getDeliveryDuration();
                 simulatedCargo.remove(par);
@@ -60,6 +66,11 @@ public abstract class SlackEvaluator extends StateEvaluator {
 
                 curTime = (curTime < par.getPickupTimeWindow().begin) ? par.getPickupTimeWindow().begin : curTime;
 
+                // Don't bother adding slacks for parcels that are already in cargo (they are fixed)
+                if (!getTruck().getContents().contains(par)) {
+                    slacks.put(par, par.getPickupTimeWindow().end - curTime);
+                }
+
                 curTime += par.getPickupDuration();
                 simulatedCargo.add(par);
                 simulatedPosition = par.getPickupLocation();
@@ -69,6 +80,10 @@ public abstract class SlackEvaluator extends StateEvaluator {
         return slacks;
     }
 
+    /**
+     * @deprecated Is here for legacy reasons, use {@link #calculateSlackForState(long)} instead
+     */
+    @Deprecated
     Map<DefaultParcel, Double> calculateSlackForState() {
         return calculateSlackForState(0);
     }
