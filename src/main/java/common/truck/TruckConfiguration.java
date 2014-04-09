@@ -141,7 +141,6 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 
 	@Override
 	public String toString() {
-        // TODO
         return Joiner.on("-").join(seSuppliers.get(0), parcelCreator);
 	}
 

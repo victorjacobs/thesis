@@ -64,7 +64,6 @@ public class ResultsProcessor extends ResultDirectory {
 	 *
 	 * @param data List to be loaded
 	 */
-    // TODO: immutable map?
 	public void load(Experiment.ExperimentResults data) {
 		checkState(isEmpty(), "Data already loaded");
 		checkState(!measures.isEmpty(), "I need some measures to evaluate");

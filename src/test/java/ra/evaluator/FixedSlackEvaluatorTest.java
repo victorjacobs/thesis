@@ -61,7 +61,7 @@ public class FixedSlackEvaluatorTest {
 
 		buildRoute();
 
-		assertEquals(1.0, ev.calculateSlackForState().get(par), 0.0001);
+		assertEquals(1.0, ev.calculateSlackForState(0).get(par), 0.0001);
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class FixedSlackEvaluatorTest {
 
 		buildRoute();
 
-		assertEquals(1.0, ev.calculateSlackForState().get(par), 0.0001);
+		assertEquals(1.0, ev.calculateSlackForState(0).get(par), 0.0001);
 	}
 
 	@Test
@@ -97,8 +97,8 @@ public class FixedSlackEvaluatorTest {
 
 		buildRoute();
 
-		assertEquals(1.0, ev.calculateSlackForState().get(par1), 0.0001);
-		assertEquals(1.0, ev.calculateSlackForState().get(par2), 0.0001);
+		assertEquals(1.0, ev.calculateSlackForState(0).get(par1), 0.0001);
+		assertEquals(1.0, ev.calculateSlackForState(0).get(par2), 0.0001);
 	}
 
 	/**

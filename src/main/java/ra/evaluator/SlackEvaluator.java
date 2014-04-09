@@ -80,14 +80,7 @@ public abstract class SlackEvaluator extends StateEvaluator {
         return slacks;
     }
 
-    /**
-     * @deprecated Is here for legacy reasons, use {@link #calculateSlackForState(long)} instead
-     */
-    @Deprecated
-    Map<DefaultParcel, Double> calculateSlackForState() {
-        return calculateSlackForState(0);
-    }
-
+    // TODO this is also available somewhere else
     private double getTravelTimeBetween(Point orig, Point dest) {
         // TODO assume straight paths
         double dist = Math.sqrt(Math.pow(orig.x - dest.x, 2) + Math.pow(orig.y - dest.y, 2));

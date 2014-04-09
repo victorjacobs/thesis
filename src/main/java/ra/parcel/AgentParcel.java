@@ -14,7 +14,6 @@ import static com.google.common.collect.Lists.newLinkedList;
  */
 public abstract class AgentParcel extends ReAuctionableParcel {
     private List<Double> slackHistory;
-    private int updatesReceived = 0;
 
     public AgentParcel(ParcelDTO pDto) {
         super(pDto);
@@ -26,17 +25,19 @@ public abstract class AgentParcel extends ReAuctionableParcel {
     public abstract boolean shouldChangeOwner();
 
     /**
-     * Update the parcel with information from the state evaluator
-     * TODO might make this more general to support all kinds of heuristics
+     * Update the parcel with slack information from the state evaluator.
      *
      * @param slack Slack calculated by the state evaluator
      */
-    // TODO maybe change back to abstract
     public void update(double slack) {
         slackHistory.add(slack);
-        updatesReceived++;
     }
 
+    /**
+     * Gets the history of all slacks this parcel saw.
+     *
+     * @return List of all slacks seen by the parcel
+     */
     public ImmutableList<Double> getSlackHistory() {
         return ImmutableList.copyOf(slackHistory);
     }

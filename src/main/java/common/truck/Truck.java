@@ -40,8 +40,8 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
  */
 public class Truck extends RouteFollowingVehicle implements Listener, SimulatorUser {
 
-	// State TODO rename variable to something less ambiguous
-	private Set<DefaultParcel> state;			// All parcels that will be/are(!) being handled by this truck
+	// State
+	private Set<DefaultParcel> parcels;			// All parcels that will be/are(!) being handled by this truck
 	private Set<DefaultParcel> fixedParcels;	// Parcels (plural!) that shouldn't be removed from the state
 	// Components
 	private List<StateObserver> stateObservers;
@@ -61,7 +61,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		super(pDto, false);        // TODO no idea what this flag does
 		pdpModel = Optional.absent();
 
-		state = newLinkedHashSet();
+		parcels = newLinkedHashSet();
 		fixedParcels = newLinkedHashSet();
 		stateObservers = newLinkedList();
 		stateEvaluators = newLinkedList();
@@ -74,7 +74,6 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	}
 
 	// Setup
-	// TODO for now these are public since anything should be allowed to subscribe to the events (?)
 	public void addStateObserver(StateObserver l) {
 		stateObservers.add(l);
 	}
@@ -103,7 +102,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		checkState(this.routePlanner == null, "Route planner already bound to Truck");
 
 		routePlanner.setTruck(this);
-		this.routePlanner = routePlanner;    // TODO is this needed?
+		this.routePlanner = routePlanner;
 		addStateObserver(routePlanner);
 	}
 
@@ -116,8 +115,8 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * @param par Parcel that is to be added to the truck
 	 */
 	void addParcel(DefaultParcel par) {
-		checkArgument(!state.contains(par));
-		state.add(par);
+		checkArgument(!parcels.contains(par));
+		parcels.add(par);
 		notifyChange();
 	}
 
@@ -128,24 +127,19 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * @param par Parcel that was removed
      * @return Whether or not parcel was successfully removed
 	 */
-    // TODO do something with return value -> to reduce keep trying re-auction
     // TODO why the hell is this a DefaultParcel?
 	private boolean removeParcel(DefaultParcel par) {
 		checkState(par instanceof ReAuctionableParcel, "Parcel needs to be re-auctionable in order to remove it from " +
 				"truck");
-		checkState(state.contains(par), "Parcel not assigned to truck");
-		//checkState(!fixedParcels.contains(par), "Trying to re-auction parcel that's fixed");
-		// TODO
-		if (fixedParcels.contains(par)) {
-			//System.out.println("Warning: trying to remove fixed parcel");
-			return false;
-		}
+		checkState(parcels.contains(par), "Parcel not assigned to truck");
+		if (fixedParcels.contains(par))
+            return false;
 
-        ReAuctionableParcel rParcel = ((ReAuctionableParcel) par);
+        ReAuctionableParcel rParcel = (ReAuctionableParcel) par;
 
         if (rParcel.shouldChangeOwner()) {
             // First remove the parcel from local state + update route planner etc, then change owner
-            state.remove(par);
+            parcels.remove(par);
             fixedParcels.remove(par);
             notifyChange();
 
@@ -172,7 +166,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 	 * @return Immutable copy of internal state of this truck
 	 */
 	public ImmutableSet<DefaultParcel> getParcels() {
-		return ImmutableSet.copyOf(state);
+		return ImmutableSet.copyOf(parcels);
 	}
 
 	/**
@@ -227,7 +221,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 				// RouteFollowingVehicle is done servicing location, this might be when parcel is delivered or picked
 				// up. In both cases, inform route planner
 
-				Iterator<DefaultParcel> it = state.iterator();
+				Iterator<DefaultParcel> it = parcels.iterator();
 
 				while (it.hasNext()) {
 					if (pdpModel.get().getParcelState(it.next()) == PDPModel.ParcelState.DELIVERED)
@@ -237,7 +231,7 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 				// Inform routeplanner to go to next goal
 				// Since contents of this truck are added in the route planner, temporarily remove them here
 				// TODO only notify routePlanner -> this breaks the concept of observer pattern!!
-				Set<DefaultParcel> newState = new HashSet<DefaultParcel>(state);
+				Set<DefaultParcel> newState = new HashSet<DefaultParcel>(parcels);
 				newState.removeAll(getContents());
 
 				routePlanner.update(newState, getCurrentTime().getTime());
@@ -254,14 +248,10 @@ public class Truck extends RouteFollowingVehicle implements Listener, SimulatorU
 		api.register(routePlanner);
 	}
 
-	// TODO these next two are private in PDPObjectImpl, is there any problem just exposing them?
-	// These are only used for checking truck's contents, maybe better proxy them
-	@Deprecated
 	public PDPModel getPdpModel() {
 		return this.pdpModel.get();
 	}
 
-	@Deprecated
 	public RoadModel getRoadModel() {
 		return super.getRoadModel();
 	}
