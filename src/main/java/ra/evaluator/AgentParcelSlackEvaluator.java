@@ -24,7 +24,7 @@ public class AgentParcelSlackEvaluator extends SlackEvaluator {
     @Override
     public ImmutableSet<DefaultParcel> evaluateState(long time) {
         // Update slack in parcels and then simply return everything
-        Map<DefaultParcel,Double> slacks = calculateSlackForState();
+        Map<DefaultParcel,Double> slacks = calculateSlackForState(time);
         AgentParcel rp;
 
         for (DefaultParcel par : slacks.keySet()) {

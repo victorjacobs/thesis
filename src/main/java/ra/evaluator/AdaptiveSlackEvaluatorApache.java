@@ -35,7 +35,7 @@ public class AdaptiveSlackEvaluatorApache extends SlackEvaluator {
 	@Override
 	public ImmutableSet<DefaultParcel> evaluateState(long time) {
 		ImmutableSet.Builder<DefaultParcel> ret = new ImmutableSet.Builder<DefaultParcel>();
-		Map<DefaultParcel, Double> slacks = calculateSlackForState();
+		Map<DefaultParcel, Double> slacks = calculateSlackForState(time);
 		// Update local values
 		update(slacks.values());
 
