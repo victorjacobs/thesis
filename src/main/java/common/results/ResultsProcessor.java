@@ -46,7 +46,7 @@ public class ResultsProcessor extends ResultDirectory {
         addMeasure(new BasicMeasure.ComputationTime());
         addMeasure(new BasicMeasure.TotalReAuctions());
         addMeasure(new BasicMeasure.NumberReAuctions());
-        addMeasure(new BasicMeasure.AuctionOwnerRatio());
+        addMeasure(new BasicMeasure.AverageAuctionsPerParcel());
         addMeasure(new MaxEdgesOwnerGraph());
         addMeasure(new ParcelSlackHistory());
         //addMeasure(new AllWeighedOwnerGraph());

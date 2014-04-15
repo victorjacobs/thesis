@@ -12,6 +12,7 @@ import ra.evaluator.AgentParcelSlackEvaluator;
 import ra.evaluator.RandomStateEvaluatorMultipleParcels;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import ra.parcel.ExponentialBackoffSlackReAuctionableParcel;
+import ra.parcel.InhibitAfterLoop;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
@@ -57,9 +58,11 @@ public class Run {
         //performRAExperiment();
         /*performRandomExperiments();
         performAdaptiveSlackExperiment();
-        performAgentParcelExperiments();
-        performExponentialBackoffExperiments();*/
-        performAllScenariosSeperated();
+        performAgentParcelExperiments();*/
+        performExponentialBackoffExperiments();
+        //performAllScenariosSeperated();
+        //performBackoffStepExperiment();
+        //performInhibitExperiment();
 
         System.out.println();
 
@@ -72,6 +75,40 @@ public class Run {
         System.out.println();
         System.out.println("Simulation took " + Math.round(((double) System.currentTimeMillis() - startTime) / 1000)
                 + "s");
+    }
+
+    private void performInhibitExperiment() {
+        System.out.println("Doing inhibit experiment");
+
+        Experiment.Builder builder = getExperimentBuilder();
+
+        for (int i = 300; i >= -100; i -= 20) {
+            builder.addConfiguration(
+                    getTruckConfigurationBuilder()
+                        .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
+                        .withParcelCreator(InhibitAfterLoop.getCreator((float) i / 100))
+                        .build()
+            );
+        }
+
+        topDir.addResult(new ResultsProcessor("inhibitExp", builder.perform()));
+    }
+
+    private void performBackoffStepExperiment() throws Exception {
+        System.out.println("Doing backoff step experiment");
+
+        Experiment.Builder builder = getExperimentBuilder();
+
+        for (int i = 0; i <= 40; i += 2) {
+            builder.addConfiguration(
+                    getTruckConfigurationBuilder()
+                        .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
+                        .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator(1f, (float) i / 10))
+                        .build()
+            );
+        }
+
+        topDir.addResult(new ResultsProcessor("backoffStep", builder.perform()));
     }
 
     private void performAdaptiveSlackExperiment() throws Exception {
@@ -176,7 +213,7 @@ public class Run {
                     )
                     .addConfiguration(
                             getTruckConfigurationBuilder()
-                                    .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator())
+                                    .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator(-0.2f, 2))
                                     .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
                                     .build()
                     );
@@ -207,7 +244,7 @@ public class Run {
                                 .addStateEvaluator(FixedSlackEvaluator.supplier())
                                 .build()
                 )*/
-                .addConfiguration(
+                /*.addConfiguration(
                         getTruckConfigurationBuilder()
                                 .addStateEvaluator(AdaptiveSlackEvaluator.supplier())
                                 .build()
@@ -218,7 +255,7 @@ public class Run {
                                 .withParcelCreator(LimitedAuctionReAuctionableParcel.getCreator())
                                 .build()
                 )*/
-                .addConfiguration(
+                /*.addConfiguration(
                         getTruckConfigurationBuilder()
                                 .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
                                 .withParcelCreator(AdaptiveSlackReAuctionableParcel.getCreator())
@@ -235,6 +272,12 @@ public class Run {
                         getTruckConfigurationBuilder()
                             .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
                             .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator())
+                            .build()
+                )
+                .addConfiguration(
+                        getTruckConfigurationBuilder()
+                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
+                            .withParcelCreator(InhibitAfterLoop.getCreator())
                             .build()
                 )
                 /*.addConfiguration(

@@ -16,7 +16,7 @@ import rinde.sim.pdptw.common.ParcelDTO;
 public class ExponentialBackoffSlackReAuctionableParcel extends AdaptiveSlackReAuctionableParcel {
     private int backoff;
     private float nextBackoff;
-    private float step;
+    private final float step;
 
     public ExponentialBackoffSlackReAuctionableParcel(ParcelDTO pDto, float numberStandardDeviations,
                                                       float backoffStep) {
@@ -41,6 +41,7 @@ public class ExponentialBackoffSlackReAuctionableParcel extends AdaptiveSlackReA
             return backoff == 0;
         }
 
+        // TODO this seems too convoluted, why not simply check history[last] == history[last - 1]?
         int loopCount = 0;
         int i = getOwnerHistory().size() - 2;
         Bidder currentBidder = getOwnerHistory().get(getOwnerHistory().size() - 1);
