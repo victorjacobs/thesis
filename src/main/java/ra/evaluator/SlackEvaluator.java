@@ -1,6 +1,8 @@
 package ra.evaluator;
 
 import common.truck.StateEvaluator;
+import ra.evaluator.heuristic.ReAuctionHeuristic;
+import ra.evaluator.heuristic.SlackHeuristic;
 import rinde.sim.core.graph.Point;
 import rinde.sim.core.model.pdp.Parcel;
 import rinde.sim.pdptw.common.DefaultParcel;
@@ -20,9 +22,15 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
 public abstract class SlackEvaluator extends StateEvaluator {
     protected Random rng;
     private long nextReEvaluation = 50;
+    private final ReAuctionHeuristic heuristic;
+
+    public SlackEvaluator(ReAuctionHeuristic h, long seed) {
+        this.heuristic = h;
+        this.rng = new Random(seed);
+    }
 
     public SlackEvaluator(long seed) {
-        this.rng = new Random(seed);
+        this(new SlackHeuristic(), seed);
     }
 
     /**
@@ -34,58 +42,7 @@ public abstract class SlackEvaluator extends StateEvaluator {
      * @return Map containing the slack for every parcel in the truck
      */
     Map<DefaultParcel, Double> calculateSlackForState(long time) {
-        double curTime = time;
-
-        Map<DefaultParcel, Double> slacks = new HashMap<DefaultParcel, Double>();
-        Set<Parcel> simulatedCargo = newLinkedHashSet(getTruck().getContents());
-        Point simulatedPosition = getTruck().getPosition();
-
-        for (DefaultParcel par : getTruck().getRoute()) {
-            if (simulatedCargo.contains(par)) {
-                // Delivering
-                curTime += getTravelTimeBetween(simulatedPosition, par.getDestination());
-
-                // If arrive before timewindow, truck has to wait
-                curTime = (curTime < par.getDeliveryTimeWindow().begin) ? par.getDeliveryTimeWindow().begin : curTime;
-
-                // Don't bother adding slacks for parcels that are already in cargo (they are fixed)
-                if (!getTruck().getContents().contains(par)) {
-                    if (!slacks.containsKey(par)) {
-                        slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
-                    } else {
-                        slacks.put(par, slacks.get(par) + par.getDeliveryTimeWindow().end - curTime);
-                    }
-                }
-
-                curTime += par.getDeliveryDuration();
-                simulatedCargo.remove(par);
-                simulatedPosition = par.getDestination();
-            } else {
-                // Picking up
-                curTime += getTravelTimeBetween(simulatedPosition, par.getPickupLocation());
-
-                curTime = (curTime < par.getPickupTimeWindow().begin) ? par.getPickupTimeWindow().begin : curTime;
-
-                // Don't bother adding slacks for parcels that are already in cargo (they are fixed)
-                if (!getTruck().getContents().contains(par)) {
-                    slacks.put(par, par.getPickupTimeWindow().end - curTime);
-                }
-
-                curTime += par.getPickupDuration();
-                simulatedCargo.add(par);
-                simulatedPosition = par.getPickupLocation();
-            }
-        }
-
-        return slacks;
-    }
-
-    // TODO this is also available somewhere else
-    private double getTravelTimeBetween(Point orig, Point dest) {
-        // TODO assume straight paths
-        double dist = Math.sqrt(Math.pow(orig.x - dest.x, 2) + Math.pow(orig.y - dest.y, 2));
-
-        return dist / getTruck().getSpeed();
+        return heuristic.evaluate(getTruck(), time);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package ra.evaluator;
 
 import com.google.common.collect.ImmutableSet;
+import ra.evaluator.heuristic.ReAuctionHeuristic;
+import ra.evaluator.heuristic.SlackHeuristic;
 import ra.parcel.AgentParcel;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
@@ -17,8 +19,8 @@ import static com.google.common.base.Preconditions.checkState;
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class AgentParcelSlackEvaluator extends SlackEvaluator {
-    public AgentParcelSlackEvaluator(long seed) {
-        super(seed);
+    public AgentParcelSlackEvaluator(ReAuctionHeuristic h, long seed) {
+        super(h, seed);
     }
 
     @Override
@@ -40,10 +42,19 @@ public class AgentParcelSlackEvaluator extends SlackEvaluator {
     }
 
     public static SupplierRng<? extends AgentParcelSlackEvaluator> supplier() {
+        return supplier(new SlackHeuristic());
+    }
+
+    public static SupplierRng<? extends AgentParcelSlackEvaluator> supplier(final ReAuctionHeuristic h) {
         return new SupplierRng.DefaultSupplierRng<AgentParcelSlackEvaluator>() {
             @Override
             public AgentParcelSlackEvaluator get(long seed) {
-                return new AgentParcelSlackEvaluator(seed);
+                return new AgentParcelSlackEvaluator(h, seed);
+            }
+
+            @Override
+            public String toString() {
+                return super.toString() + "-" + h.getClass().getSimpleName();
             }
         };
     }
