@@ -66,4 +66,9 @@ public class ResultDirectory extends Result {
 
         return sb.toString();
     }
+
+    @Override
+    public String toString() {
+        return prettyPrint();
+    }
 }

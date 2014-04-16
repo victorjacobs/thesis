@@ -6,7 +6,8 @@ import rinde.sim.pdptw.common.DynamicPDPTWProblem;
 import rinde.sim.pdptw.common.ParcelDTO;
 
 /**
- * Parcel based off the adaptive slack parcel that simply inhibits re-auctions afer
+ * Parcel based off the adaptive slack parcel that simply inhibits re-auctions afer a loop has occurred. Just for
+ * benchmarking and testing, not a very useful strategy
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
