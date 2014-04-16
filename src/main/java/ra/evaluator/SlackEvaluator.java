@@ -1,16 +1,12 @@
 package ra.evaluator;
 
 import common.truck.StateEvaluator;
+import ra.evaluator.heuristic.NegativePriorityHeuristic;
 import ra.evaluator.heuristic.ReAuctionHeuristic;
-import ra.evaluator.heuristic.SlackHeuristic;
-import rinde.sim.core.graph.Point;
-import rinde.sim.core.model.pdp.Parcel;
 import rinde.sim.pdptw.common.DefaultParcel;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import static com.google.common.collect.Sets.newLinkedHashSet;
 
@@ -30,7 +26,7 @@ public abstract class SlackEvaluator extends StateEvaluator {
     }
 
     public SlackEvaluator(long seed) {
-        this(new SlackHeuristic(), seed);
+        this(new NegativePriorityHeuristic(), seed);
     }
 
     /**

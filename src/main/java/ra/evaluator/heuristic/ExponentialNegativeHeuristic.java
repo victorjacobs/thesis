@@ -14,7 +14,7 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
 /**
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class SlackHeuristic implements ReAuctionHeuristic {
+public class ExponentialNegativeHeuristic implements ReAuctionHeuristic {
     @Override
     public Map<DefaultParcel, Double> evaluate(Truck truck, long time) {
         double curTime = time;
@@ -36,7 +36,20 @@ public class SlackHeuristic implements ReAuctionHeuristic {
                     if (!slacks.containsKey(par)) {
                         slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
                     } else {
-                        slacks.put(par, slacks.get(par) + par.getDeliveryTimeWindow().end - curTime);
+                        double oldValue = slacks.get(par);
+                        double deliverySlack = exponentify(par.getDeliveryTimeWindow().end - curTime);
+                        double newValue;
+
+                        if (oldValue < 0 && deliverySlack < 0)
+                            newValue = oldValue + deliverySlack;
+                        else if (oldValue < 0)
+                            newValue = oldValue;
+                        else if (deliverySlack < 0)
+                            newValue = deliverySlack;
+                        else
+                            newValue = oldValue + deliverySlack;
+
+                        slacks.put(par, newValue);
                     }
                 }
 
@@ -51,7 +64,7 @@ public class SlackHeuristic implements ReAuctionHeuristic {
 
                 // Don't bother adding slacks for parcels that are already in cargo (they are fixed)
                 if (!truck.getContents().contains(par)) {
-                    slacks.put(par, par.getPickupTimeWindow().end - curTime);
+                    slacks.put(par, exponentify(par.getPickupTimeWindow().end - curTime));
                 }
 
                 curTime += par.getPickupDuration();
@@ -70,8 +83,12 @@ public class SlackHeuristic implements ReAuctionHeuristic {
         return dist / truck.getSpeed();
     }
 
+    private double exponentify(double in) {
+        return (Math.signum(in) < 0) ? in * in * in : in;
+    }
+
     @Override
     public String toString() {
-        return "SlackHeuristic";
+        return "ExponentialNegativeHeuristic";
     }
 }

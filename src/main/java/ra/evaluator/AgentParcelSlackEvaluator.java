@@ -2,7 +2,7 @@ package ra.evaluator;
 
 import com.google.common.collect.ImmutableSet;
 import ra.evaluator.heuristic.ReAuctionHeuristic;
-import ra.evaluator.heuristic.SlackHeuristic;
+import ra.evaluator.heuristic.NegativePriorityHeuristic;
 import ra.parcel.AgentParcel;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
@@ -42,7 +42,7 @@ public class AgentParcelSlackEvaluator extends SlackEvaluator {
     }
 
     public static SupplierRng<? extends AgentParcelSlackEvaluator> supplier() {
-        return supplier(new SlackHeuristic());
+        return supplier(new NegativePriorityHeuristic());
     }
 
     public static SupplierRng<? extends AgentParcelSlackEvaluator> supplier(final ReAuctionHeuristic h) {

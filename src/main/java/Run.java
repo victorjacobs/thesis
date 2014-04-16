@@ -10,10 +10,10 @@ import common.truck.route.SolverRoutePlanner;
 import ra.evaluator.AdaptiveSlackEvaluator;
 import ra.evaluator.AgentParcelSlackEvaluator;
 import ra.evaluator.RandomStateEvaluatorMultipleParcels;
-import ra.evaluator.heuristic.ImprovedSlackHeuristic;
+import ra.evaluator.heuristic.ExponentialNegativeHeuristic;
+import ra.evaluator.heuristic.SlackHeuristic;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import ra.parcel.ExponentialBackoffSlackReAuctionableParcel;
-import ra.parcel.InhibitAfterLoop;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
@@ -66,7 +66,7 @@ public class Run {
         //performInhibitExperiment();
 
         performExponentialBackoffExperiments();
-        performImprovedSlackHeuristic();
+        performOtherHeuristicExperiment();
 
         System.out.println();
 
@@ -81,7 +81,7 @@ public class Run {
                 + "s");
     }
 
-    private void performImprovedSlackHeuristic() {
+    private void performOtherHeuristicExperiment() {
         System.out.println("Doing agent exponential backoff experiments w improved heuristic");
 
         Experiment.Builder builder = getExperimentBuilder();
@@ -91,7 +91,7 @@ public class Run {
         for (int i = 30; i >= -10; i -= 2) {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new ImprovedSlackHeuristic()))
+                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new ExponentialNegativeHeuristic()))
                             .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator((float) i / 10, 2))
                             .build()
             );
@@ -282,7 +282,7 @@ public class Run {
                 )
                 .addConfiguration(
                         getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new ImprovedSlackHeuristic()))
+                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new SlackHeuristic()))
                             .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator())
                             .build()
                 )
