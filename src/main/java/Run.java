@@ -14,6 +14,7 @@ import ra.evaluator.heuristic.ExponentialNegativeHeuristic;
 import ra.evaluator.heuristic.NegativePriorityHeuristic;
 import ra.evaluator.heuristic.SlackHeuristic;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
+import ra.parcel.ExponentialBackoffReAuctionableParcel;
 import ra.parcel.ExponentialBackoffSlackReAuctionableParcel;
 import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
@@ -57,7 +58,7 @@ public class Run {
         if (c.stop())
             return;
 
-        //performRAExperiment();
+        performRAExperiment();
         /*performRandomExperiments();
         performAdaptiveSlackExperiment();
         performAgentParcelExperiments();*/
@@ -66,8 +67,10 @@ public class Run {
         //performBackoffStepExperiment();
         //performInhibitExperiment();
 
-        performExponentialBackoffExperiments();
-        performOtherHeuristicExperiment();
+        /*performExponentialBackoffExperiments();
+        performOtherHeuristicExperiment();*/
+
+        //performTruckExponentialBackoff();
 
         System.out.println();
 
@@ -80,6 +83,25 @@ public class Run {
         System.out.println();
         System.out.println("Simulation took " + Math.round(((double) System.currentTimeMillis() - startTime) / 1000)
                 + "s");
+    }
+
+    private void performTruckExponentialBackoff() {
+        System.out.println("Doing truck exponential backoff experiment");
+
+        Experiment.Builder builder = getExperimentBuilder();
+
+        // Do loop over int, than divide by 10 because floating point
+        // Go through negative values, to force more re-auctions
+        for (int i = 30; i >= -10; i -= 2) {
+            builder.addConfiguration(
+                    getTruckConfigurationBuilder()
+                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new NegativePriorityHeuristic()))
+                            .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator((float) i / 10, 2))
+                            .build()
+            );
+        }
+
+        topDir.addResult(new ResultsProcessor("truckExponentialBackoff", builder.perform()));
     }
 
     private void performOtherHeuristicExperiment() {
@@ -275,7 +297,7 @@ public class Run {
                             .withParcelCreator(AdaptiveSlackReAuctionableParcel.getCreator())
                             .build()
                 )*/
-                .addConfiguration(
+                /*.addConfiguration(
                         getTruckConfigurationBuilder()
                             .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
                             .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator())
@@ -292,7 +314,13 @@ public class Run {
                             .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
                             .withParcelCreator(ExponentialBackoffRandomSelectionReAuctionableParcel.getCreator(2, 2))
                             .build()
-                )*/;
+                )*/
+                .addConfiguration(
+                        getTruckConfigurationBuilder()
+                            .addStateEvaluator(AdaptiveSlackEvaluator.supplier())
+                            .withParcelCreator(ExponentialBackoffReAuctionableParcel.getCreator())
+                            .build()
+                );
 
         topDir.addResult(new ResultsProcessor("main", builder.perform()));
 	}
