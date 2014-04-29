@@ -98,7 +98,7 @@ public class Run {
             );
         }
 
-        topDir.addResult(new ResultsProcessor("agentParcelExponentialBackoffOtherHeuristic", builder.perform()));
+        topDir.addResult(new ResultsProcessor("agentParcelExponentialBackoffNegativePriority", builder.perform()));
     }
 
     private void performBackoffStepExperiment() throws Exception {
