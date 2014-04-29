@@ -11,6 +11,7 @@ import ra.evaluator.AdaptiveSlackEvaluator;
 import ra.evaluator.AgentParcelSlackEvaluator;
 import ra.evaluator.RandomStateEvaluatorMultipleParcels;
 import ra.evaluator.heuristic.ExponentialNegativeHeuristic;
+import ra.evaluator.heuristic.NegativePriorityHeuristic;
 import ra.evaluator.heuristic.SlackHeuristic;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import ra.parcel.ExponentialBackoffSlackReAuctionableParcel;
@@ -91,13 +92,13 @@ public class Run {
         for (int i = 30; i >= -10; i -= 2) {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new ExponentialNegativeHeuristic()))
+                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new NegativePriorityHeuristic()))
                             .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator((float) i / 10, 2))
                             .build()
             );
         }
 
-        topDir.addResult(new ResultsProcessor("agentParcelExponentialBackoffImproved", builder.perform()));
+        topDir.addResult(new ResultsProcessor("agentParcelExponentialBackoffOtherHeuristic", builder.perform()));
     }
 
     private void performBackoffStepExperiment() throws Exception {
