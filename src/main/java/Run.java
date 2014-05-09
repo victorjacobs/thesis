@@ -12,6 +12,7 @@ import ra.evaluator.AgentParcelSlackEvaluator;
 import ra.evaluator.RandomStateEvaluatorMultipleParcels;
 import ra.evaluator.heuristic.ExponentialNegativeHeuristic;
 import ra.evaluator.heuristic.NegativePriorityHeuristic;
+import ra.evaluator.heuristic.RandomHeuristic;
 import ra.evaluator.heuristic.SlackHeuristic;
 import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import ra.parcel.ExponentialBackoffReAuctionableParcel;
@@ -58,7 +59,7 @@ public class Run {
         if (c.stop())
             return;
 
-        performRAExperiment();
+        //performRAExperiment();
         /*performRandomExperiments();
         performAdaptiveSlackExperiment();
         performAgentParcelExperiments();*/
@@ -67,10 +68,10 @@ public class Run {
         //performBackoffStepExperiment();
         //performInhibitExperiment();
 
-        /*performExponentialBackoffExperiments();
-        performOtherHeuristicExperiment();*/
+        /*performExponentialBackoffExperiments();*/
+        //performOtherHeuristicExperiment();
 
-        //performTruckExponentialBackoff();
+        performTruckExponentialBackoff();
 
         System.out.println();
 
@@ -95,7 +96,7 @@ public class Run {
         for (int i = 30; i >= -10; i -= 2) {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new NegativePriorityHeuristic()))
+                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
                             .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator((float) i / 10, 2))
                             .build()
             );
@@ -105,7 +106,7 @@ public class Run {
     }
 
     private void performOtherHeuristicExperiment() {
-        System.out.println("Doing agent exponential backoff experiments w improved heuristic");
+        System.out.println("Doing agent exponential backoff experiments w other heuristic");
 
         Experiment.Builder builder = getExperimentBuilder();
 
@@ -114,13 +115,13 @@ public class Run {
         for (int i = 30; i >= -10; i -= 2) {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new NegativePriorityHeuristic()))
-                            .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator((float) i / 10, 2))
+                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new RandomHeuristic()))
+                            .withParcelCreator(AdaptiveSlackReAuctionableParcel.getCreator((float) i / 10))
                             .build()
             );
         }
 
-        topDir.addResult(new ResultsProcessor("agentParcelExponentialBackoffNegativePriority", builder.perform()));
+        topDir.addResult(new ResultsProcessor("agentParcelRandomHeuristic", builder.perform()));
     }
 
     private void performBackoffStepExperiment() throws Exception {
@@ -315,10 +316,18 @@ public class Run {
                             .withParcelCreator(ExponentialBackoffRandomSelectionReAuctionableParcel.getCreator(2, 2))
                             .build()
                 )*/
-                .addConfiguration(
+                // Exponential backoff on truck adaptive slack
+                /*.addConfiguration(
                         getTruckConfigurationBuilder()
                             .addStateEvaluator(AdaptiveSlackEvaluator.supplier())
                             .withParcelCreator(ExponentialBackoffReAuctionableParcel.getCreator())
+                            .build()
+                )*/
+                // Random heuristic without backoff
+                .addConfiguration(
+                        getTruckConfigurationBuilder()
+                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new RandomHeuristic()))
+                            .withParcelCreator(ReAuctionableParcel.getCreator())
                             .build()
                 );
 

@@ -12,6 +12,8 @@ import java.util.Set;
 import static com.google.common.collect.Sets.newLinkedHashSet;
 
 /**
+ * TODO code duplication
+ *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
 public class NegativePriorityHeuristic implements ReAuctionHeuristic {
