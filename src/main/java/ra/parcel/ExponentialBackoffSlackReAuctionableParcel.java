@@ -66,6 +66,10 @@ public class ExponentialBackoffSlackReAuctionableParcel extends AdaptiveSlackReA
         return getCreator(1, 2);
     }
 
+    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(float numberStandardDeviations) {
+        return getCreator(numberStandardDeviations, 2);
+    }
+
     /**
      * Gets a creator for this parcel.
      *

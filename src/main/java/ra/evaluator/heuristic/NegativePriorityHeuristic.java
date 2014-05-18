@@ -38,18 +38,16 @@ public class NegativePriorityHeuristic implements ReAuctionHeuristic {
                     if (!slacks.containsKey(par)) {
                         slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
                     } else {
-                        double oldValue = slacks.get(par);
+                        double pickupSlack = slacks.get(par);
                         double deliverySlack = par.getDeliveryTimeWindow().end - curTime;
                         double newValue;
 
-                        if (oldValue < 0 && deliverySlack < 0)
-                            newValue = oldValue + deliverySlack;
-                        else if (oldValue < 0)
-                            newValue = oldValue;
-                        else if (deliverySlack < 0)
-                            newValue = deliverySlack;
+                        if ((pickupSlack < 0 && deliverySlack < 0) || (pickupSlack >= 0 && deliverySlack >= 0))
+                            newValue = pickupSlack + deliverySlack;
+                        else if (pickupSlack < 0)
+                            newValue = pickupSlack;
                         else
-                            newValue = oldValue + deliverySlack;
+                            newValue = deliverySlack;
 
                         slacks.put(par, newValue);
                     }

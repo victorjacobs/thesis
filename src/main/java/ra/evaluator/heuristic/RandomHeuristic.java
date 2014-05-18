@@ -22,7 +22,7 @@ public class RandomHeuristic implements ReAuctionHeuristic {
         ImmutableMap.Builder<DefaultParcel, Double> ret = ImmutableMap.builder();
 
         for (DefaultParcel par : truck.getParcels()) {
-            ret.put(par, (double) rng.nextInt(1000));
+            ret.put(par, (double) rng.nextInt(10000));
         }
 
         return ret.build();

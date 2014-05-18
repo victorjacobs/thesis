@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class Stub implements ReAuctionHeuristic {
+public class StubHeuristic implements ReAuctionHeuristic {
     @Override
     public Map<DefaultParcel, Double> evaluate(Truck truck, long time) {
         Map<DefaultParcel, Double> ret = new HashMap<DefaultParcel, Double>();

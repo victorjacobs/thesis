@@ -152,7 +152,7 @@ public abstract class BasicMeasure<E> extends Measure<E> {
                 total += par.getNumberReAuctions();
             }
 
-            return Collections.singletonList(Double.toString(total / getParcelsFromRun(result).size()));
+            return Collections.singletonList(Double.toString((float) total / getParcelsFromRun(result).size()));
         }
     }
 }
