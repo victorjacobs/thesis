@@ -12,7 +12,7 @@ import java.util.Random;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class RandomStateEvaluator extends StateEvaluator {
+public class RandomEvaluator extends StateEvaluator {
     private final int percentage;
     private long nextReEvaluation = 50;
 	private Random rng;
@@ -22,7 +22,7 @@ public class RandomStateEvaluator extends StateEvaluator {
      * @param seed Seed for the internal RNG
      * @param percentage Percentage chance every parcel has to be re-auctioned (0-100).
      */
-	public RandomStateEvaluator(long seed, int percentage) {
+	public RandomEvaluator(long seed, int percentage) {
         this.percentage = percentage;
         rng = new Random(seed);
 	}
@@ -53,10 +53,10 @@ public class RandomStateEvaluator extends StateEvaluator {
 	}
 
 	public static SupplierRng<? extends StateEvaluator> supplier(final int percentage) {
-		return new SupplierRng.DefaultSupplierRng<RandomStateEvaluator>() {
+		return new SupplierRng.DefaultSupplierRng<RandomEvaluator>() {
 			@Override
-			public RandomStateEvaluator get(long seed) {
-				return new RandomStateEvaluator(seed, percentage);
+			public RandomEvaluator get(long seed) {
+				return new RandomEvaluator(seed, percentage);
 			}
 
             @Override

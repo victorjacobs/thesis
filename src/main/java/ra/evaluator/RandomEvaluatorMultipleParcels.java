@@ -8,12 +8,12 @@ import rinde.sim.util.SupplierRng;
 import java.util.Random;
 
 /**
- * Identical to {@link ra.evaluator.RandomStateEvaluator}, but every {@link #evaluateState(long)} can return more parcels instead of
+ * Identical to {@link RandomEvaluator}, but every {@link #evaluateState(long)} can return more parcels instead of
  * just one
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class RandomStateEvaluatorMultipleParcels extends StateEvaluator {
+public class RandomEvaluatorMultipleParcels extends StateEvaluator {
     private final float percentage;
     private long nextReEvaluation = 50;
 	private Random rng;
@@ -23,7 +23,7 @@ public class RandomStateEvaluatorMultipleParcels extends StateEvaluator {
      * @param seed Seed for the internal RNG
      * @param percentage Percentage chance every parcel has to be re-auctioned (0-100).
      */
-	public RandomStateEvaluatorMultipleParcels(long seed, float percentage) {
+	public RandomEvaluatorMultipleParcels(long seed, float percentage) {
         this.percentage = percentage;
         rng = new Random(seed);
 	}
@@ -55,10 +55,10 @@ public class RandomStateEvaluatorMultipleParcels extends StateEvaluator {
 	}
 
 	public static SupplierRng<? extends StateEvaluator> supplier(final float percentage) {
-		return new SupplierRng.DefaultSupplierRng<RandomStateEvaluatorMultipleParcels>() {
+		return new SupplierRng.DefaultSupplierRng<RandomEvaluatorMultipleParcels>() {
 			@Override
-			public RandomStateEvaluatorMultipleParcels get(long seed) {
-				return new RandomStateEvaluatorMultipleParcels(seed, percentage);
+			public RandomEvaluatorMultipleParcels get(long seed) {
+				return new RandomEvaluatorMultipleParcels(seed, percentage);
 			}
 
             @Override

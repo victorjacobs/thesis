@@ -9,7 +9,7 @@ import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import ra.evaluator.AdaptiveHeuristicEvaluator;
 import ra.evaluator.AgentParcelHeuristicEvaluator;
-import ra.evaluator.RandomStateEvaluatorMultipleParcels;
+import ra.evaluator.RandomEvaluatorMultipleParcels;
 import ra.evaluator.heuristic.NegativePriorityHeuristic;
 import ra.evaluator.heuristic.RandomHeuristic;
 import ra.evaluator.heuristic.SlackHeuristic;
@@ -81,7 +81,7 @@ public class Run {
         for (int i = 0; i <= 360; i += 18) {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
-                            .addStateEvaluator(RandomStateEvaluatorMultipleParcels.supplier((float) i / 10))
+                            .addStateEvaluator(RandomEvaluatorMultipleParcels.supplier((float) i / 10))
                             .withParcelCreator(ExponentialBackoffReAuctionableParcel.getCreator())
                             .build()
             );
@@ -212,7 +212,7 @@ public class Run {
         for (int i = 0; i <= 120; i += 6) {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
-                        .addStateEvaluator(RandomStateEvaluatorMultipleParcels.supplier((float) i / 10))
+                        .addStateEvaluator(RandomEvaluatorMultipleParcels.supplier((float) i / 10))
                         .build()
             );
         }
