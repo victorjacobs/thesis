@@ -1,9 +1,6 @@
 package common.results;
 
-import common.results.measures.BasicMeasure;
-import common.results.measures.MaxEdgesOwnerGraph;
-import common.results.measures.Measure;
-import common.results.measures.ParcelSlackHistory;
+import common.results.measures.*;
 import rinde.sim.pdptw.experiment.Experiment;
 
 import java.util.LinkedHashMap;

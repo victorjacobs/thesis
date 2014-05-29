@@ -6,7 +6,7 @@ import rinde.sim.pdptw.common.DynamicPDPTWProblem;
 import rinde.sim.pdptw.common.ParcelDTO;
 
 /**
- * ReAuctionableParcel that mimics {@link ra.evaluator.AdaptiveSlackEvaluator}. Meaning that instead of the Truck keeping
+ * ReAuctionableParcel that mimics {@link ra.evaluator.AdaptiveHeuristicEvaluator}. Meaning that instead of the Truck keeping
  * track of the slack, the parcel will.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>

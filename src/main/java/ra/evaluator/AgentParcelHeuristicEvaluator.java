@@ -2,7 +2,6 @@ package ra.evaluator;
 
 import com.google.common.collect.ImmutableSet;
 import ra.evaluator.heuristic.ReAuctionHeuristic;
-import ra.evaluator.heuristic.NegativePriorityHeuristic;
 import ra.evaluator.heuristic.SlackHeuristic;
 import ra.parcel.AgentParcel;
 import rinde.sim.pdptw.common.DefaultParcel;
@@ -19,8 +18,8 @@ import static com.google.common.base.Preconditions.checkState;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class AgentParcelSlackEvaluator extends SlackEvaluator {
-    public AgentParcelSlackEvaluator(ReAuctionHeuristic h, long seed) {
+public class AgentParcelHeuristicEvaluator extends HeuristicEvaluator {
+    public AgentParcelHeuristicEvaluator(ReAuctionHeuristic h, long seed) {
         super(h, seed);
     }
 
@@ -42,15 +41,15 @@ public class AgentParcelSlackEvaluator extends SlackEvaluator {
         return ImmutableSet.copyOf(slacks.keySet());
     }
 
-    public static SupplierRng<? extends AgentParcelSlackEvaluator> supplier() {
+    public static SupplierRng<? extends AgentParcelHeuristicEvaluator> supplier() {
         return supplier(new SlackHeuristic());
     }
 
-    public static SupplierRng<? extends AgentParcelSlackEvaluator> supplier(final ReAuctionHeuristic h) {
-        return new SupplierRng.DefaultSupplierRng<AgentParcelSlackEvaluator>() {
+    public static SupplierRng<? extends AgentParcelHeuristicEvaluator> supplier(final ReAuctionHeuristic h) {
+        return new SupplierRng.DefaultSupplierRng<AgentParcelHeuristicEvaluator>() {
             @Override
-            public AgentParcelSlackEvaluator get(long seed) {
-                return new AgentParcelSlackEvaluator(h, seed);
+            public AgentParcelHeuristicEvaluator get(long seed) {
+                return new AgentParcelHeuristicEvaluator(h, seed);
             }
 
             @Override

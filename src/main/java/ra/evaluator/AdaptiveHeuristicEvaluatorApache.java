@@ -10,21 +10,21 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * This is exactly the same as {@link ra.evaluator.AdaptiveSlackEvaluator}, except that it uses Apache math commons
+ * This is exactly the same as {@link AdaptiveHeuristicEvaluator}, except that it uses Apache math commons
  * library to compute mean and standard deviation. Mainly for comparative purposes.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class AdaptiveSlackEvaluatorApache extends SlackEvaluator {
+public class AdaptiveHeuristicEvaluatorApache extends HeuristicEvaluator {
     private final float numberStandardDeviations;
     private StandardDeviation standardDeviation;
     private Mean mean;
 
-    public AdaptiveSlackEvaluatorApache(long seed) {
+    public AdaptiveHeuristicEvaluatorApache(long seed) {
         this(seed, 1);
     }
 
-	public AdaptiveSlackEvaluatorApache(long seed, float numberStandardDeviations) {
+	public AdaptiveHeuristicEvaluatorApache(long seed, float numberStandardDeviations) {
 		super(seed);
         this.numberStandardDeviations = numberStandardDeviations;
 
@@ -69,7 +69,7 @@ public class AdaptiveSlackEvaluatorApache extends SlackEvaluator {
 		}
 	}
 
-    public static SupplierRng<? extends AdaptiveSlackEvaluatorApache> supplier() {
+    public static SupplierRng<? extends AdaptiveHeuristicEvaluatorApache> supplier() {
         return supplier(1);
     }
 
@@ -80,11 +80,11 @@ public class AdaptiveSlackEvaluatorApache extends SlackEvaluator {
      * @param numberStandardDeviations
      * @return
      */
-	public static SupplierRng<? extends AdaptiveSlackEvaluatorApache> supplier(final float numberStandardDeviations) {
-		return new SupplierRng.DefaultSupplierRng<AdaptiveSlackEvaluatorApache>() {
+	public static SupplierRng<? extends AdaptiveHeuristicEvaluatorApache> supplier(final float numberStandardDeviations) {
+		return new SupplierRng.DefaultSupplierRng<AdaptiveHeuristicEvaluatorApache>() {
 			@Override
-			public AdaptiveSlackEvaluatorApache get(long seed) {
-				return new AdaptiveSlackEvaluatorApache(seed, numberStandardDeviations);
+			public AdaptiveHeuristicEvaluatorApache get(long seed) {
+				return new AdaptiveHeuristicEvaluatorApache(seed, numberStandardDeviations);
 			}
 
             @Override

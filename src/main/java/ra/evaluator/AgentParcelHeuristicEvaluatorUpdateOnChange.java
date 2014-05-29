@@ -16,10 +16,10 @@ import java.util.Map;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class AgentParcelSlackEvaluatorUpdateOnChange extends SlackEvaluator implements StateObserver {
+public class AgentParcelHeuristicEvaluatorUpdateOnChange extends HeuristicEvaluator implements StateObserver {
     Map<DefaultParcel, Double> oldSlacks;
 
-    public AgentParcelSlackEvaluatorUpdateOnChange(long seed) {
+    public AgentParcelHeuristicEvaluatorUpdateOnChange(long seed) {
         super(seed);
     }
 
@@ -51,11 +51,11 @@ public class AgentParcelSlackEvaluatorUpdateOnChange extends SlackEvaluator impl
         }
     }
 
-    public static SupplierRng<? extends AgentParcelSlackEvaluatorUpdateOnChange> supplier() {
-        return new SupplierRng.DefaultSupplierRng<AgentParcelSlackEvaluatorUpdateOnChange>() {
+    public static SupplierRng<? extends AgentParcelHeuristicEvaluatorUpdateOnChange> supplier() {
+        return new SupplierRng.DefaultSupplierRng<AgentParcelHeuristicEvaluatorUpdateOnChange>() {
             @Override
-            public AgentParcelSlackEvaluatorUpdateOnChange get(long seed) {
-                return new AgentParcelSlackEvaluatorUpdateOnChange(seed);
+            public AgentParcelHeuristicEvaluatorUpdateOnChange get(long seed) {
+                return new AgentParcelHeuristicEvaluatorUpdateOnChange(seed);
             }
         };
     }

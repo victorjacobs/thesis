@@ -15,17 +15,17 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public abstract class SlackEvaluator extends StateEvaluator {
+public abstract class HeuristicEvaluator extends StateEvaluator {
     protected Random rng;
     private long nextReEvaluation = 50;
     private final ReAuctionHeuristic heuristic;
 
-    public SlackEvaluator(ReAuctionHeuristic h, long seed) {
+    public HeuristicEvaluator(ReAuctionHeuristic h, long seed) {
         this.heuristic = h;
         this.rng = new Random(seed);
     }
 
-    public SlackEvaluator(long seed) {
+    public HeuristicEvaluator(long seed) {
         this(new NegativePriorityHeuristic(), seed);
     }
 

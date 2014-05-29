@@ -10,8 +10,8 @@ import java.util.Map;
  * This state evaluator goes over all the parcels in the state and computes the slack for every one.
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class FixedSlackEvaluator extends SlackEvaluator {
-    public FixedSlackEvaluator(long seed) {
+public class FixedHeuristicEvaluator extends HeuristicEvaluator {
+    public FixedHeuristicEvaluator(long seed) {
         super(seed);
     }
 
@@ -30,11 +30,11 @@ public class FixedSlackEvaluator extends SlackEvaluator {
 		return ret.build();
 	}
 
-	public static SupplierRng<? extends FixedSlackEvaluator> supplier() {
-		return new SupplierRng.DefaultSupplierRng<FixedSlackEvaluator>() {
+	public static SupplierRng<? extends FixedHeuristicEvaluator> supplier() {
+		return new SupplierRng.DefaultSupplierRng<FixedHeuristicEvaluator>() {
 			@Override
-			public FixedSlackEvaluator get(long seed) {
-				return new FixedSlackEvaluator(seed);
+			public FixedHeuristicEvaluator get(long seed) {
+				return new FixedHeuristicEvaluator(seed);
 			}
 		};
 	}
