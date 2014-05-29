@@ -11,7 +11,7 @@ import rinde.sim.pdptw.common.ParcelDTO;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
+public class AdaptiveThresholdAgentParcel extends AgentParcel {
     private final float numberStandardDeviations;
     private double mean;
     private int n;
@@ -20,7 +20,7 @@ public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
 
     private double lastSlack;
 
-    public AdaptiveSlackReAuctionableParcel(ParcelDTO pDto, float numberStandardDeviations) {
+    public AdaptiveThresholdAgentParcel(ParcelDTO pDto, float numberStandardDeviations) {
         super(pDto);
         this.numberStandardDeviations = numberStandardDeviations;
 
@@ -62,7 +62,7 @@ public class AdaptiveSlackReAuctionableParcel extends AgentParcel {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new AdaptiveSlackReAuctionableParcel(event.parcelDTO, numberStandardDeviations));
+                sim.register(new AdaptiveThresholdAgentParcel(event.parcelDTO, numberStandardDeviations));
                 return true;
             }
 

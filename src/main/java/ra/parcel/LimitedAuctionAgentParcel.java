@@ -10,14 +10,14 @@ import rinde.sim.pdptw.common.ParcelDTO;
  *
  * Created by victor on 10/03/14.
  */
-public class LimitedAuctionReAuctionableParcel extends AgentParcel {
+public class LimitedAuctionAgentParcel extends AgentParcel {
     private final int threshold;
 
-    public LimitedAuctionReAuctionableParcel(ParcelDTO pDto) {
+    public LimitedAuctionAgentParcel(ParcelDTO pDto) {
         this(pDto, 20);
     }
 
-    public LimitedAuctionReAuctionableParcel(ParcelDTO pDto, int threshold) {
+    public LimitedAuctionAgentParcel(ParcelDTO pDto, int threshold) {
         super(pDto);
         this.threshold = threshold;
     }
@@ -35,7 +35,7 @@ public class LimitedAuctionReAuctionableParcel extends AgentParcel {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new LimitedAuctionReAuctionableParcel(event.parcelDTO, threshold));
+                sim.register(new LimitedAuctionAgentParcel(event.parcelDTO, threshold));
                 return true;
             }
 

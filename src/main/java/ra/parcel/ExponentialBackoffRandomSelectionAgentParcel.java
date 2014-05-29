@@ -6,31 +6,35 @@ import rinde.sim.pdptw.common.AddParcelEvent;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem;
 import rinde.sim.pdptw.common.ParcelDTO;
 
+import java.util.Random;
+
 /**
- * This parcel extends the {@link ra.parcel.AdaptiveSlackReAuctionableParcel} in such a way that it implements an
+ * This parcel extends the {@link AdaptiveThresholdAgentParcel} in such a way that it implements an
  * exponential backoff scheme when auctioning. I.e. when the parcel is repeatedly auctioned and won by the same
  * agent, it will try to auction itself less.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ExponentialBackoffSlackReAuctionableParcel extends AdaptiveSlackReAuctionableParcel {
+public class ExponentialBackoffRandomSelectionAgentParcel extends AdaptiveThresholdAgentParcel {
     private int backoff;
     private float nextBackoff;
-    private final float step;
+    private float step;
+    private Random rng;
+    private int randomPercentage;
 
-    public ExponentialBackoffSlackReAuctionableParcel(ParcelDTO pDto, float numberStandardDeviations,
-                                                      float backoffStep) {
-        super(pDto, numberStandardDeviations);
+    public ExponentialBackoffRandomSelectionAgentParcel(ParcelDTO pDto, float backoffStep, int randPercentage) {
+        super(pDto, 1);
         backoff = 0;
         step = backoffStep;
 
         nextBackoff = step;
+        rng = new Random();
+        this.randomPercentage = randPercentage;
     }
 
     @Override
     public boolean shouldChangeOwner() {
-        // If super doesn't allow to re-auction, neither should we
-        if (!super.shouldChangeOwner())
+        if (rng.nextInt(100) >= randomPercentage)
             return false;
 
         // Backing off
@@ -41,7 +45,6 @@ public class ExponentialBackoffSlackReAuctionableParcel extends AdaptiveSlackReA
             return backoff == 0;
         }
 
-        // TODO this seems too convoluted, why not simply check history[last] == history[last - 1]?
         int loopCount = 0;
         int i = getOwnerHistory().size() - 2;
         Bidder currentBidder = getOwnerHistory().get(getOwnerHistory().size() - 1);
@@ -63,33 +66,27 @@ public class ExponentialBackoffSlackReAuctionableParcel extends AdaptiveSlackReA
     }
 
     public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {
-        return getCreator(1, 2);
-    }
-
-    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(float numberStandardDeviations) {
-        return getCreator(numberStandardDeviations, 2);
+        return getCreator(1);
     }
 
     /**
      * Gets a creator for this parcel.
      *
-     * @param numberStandardDeviations Number of standard deviations used as threshold for re-auctioning
      * @param backoffStep Step for exponential backoff
      * @return Creator for this parcel
      */
-    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(final float numberStandardDeviations,
-                                                                         final float backoffStep) {
+    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(final float backoffStep,
+                                                                         final int randPercentage) {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new ExponentialBackoffSlackReAuctionableParcel(event.parcelDTO,
-                        numberStandardDeviations, backoffStep));
+                sim.register(new ExponentialBackoffRandomSelectionAgentParcel(event.parcelDTO, backoffStep, randPercentage));
                 return true;
             }
 
             @Override
             public String toString() {
-                return "ExponentialBackoff" + numberStandardDeviations + "STD" + backoffStep + "step";
+                return "ExponentialBackoffRandom" + randPercentage + "Selection" + backoffStep + "step";
             }
         };
     }

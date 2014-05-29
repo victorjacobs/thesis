@@ -11,10 +11,10 @@ import rinde.sim.pdptw.common.ParcelDTO;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class InhibitAfterLoop extends AdaptiveSlackReAuctionableParcel {
+public class InhibitAfterLoopAdaptiveThresholdAgentParcel extends AdaptiveThresholdAgentParcel {
     private boolean inhibit = false;
 
-    public InhibitAfterLoop(ParcelDTO pDto, float standardDeviation) {
+    public InhibitAfterLoopAdaptiveThresholdAgentParcel(ParcelDTO pDto, float standardDeviation) {
         super(pDto, standardDeviation);
     }
 
@@ -40,7 +40,7 @@ public class InhibitAfterLoop extends AdaptiveSlackReAuctionableParcel {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new InhibitAfterLoop(event.parcelDTO, numberStandardDeviations));
+                sim.register(new InhibitAfterLoopAdaptiveThresholdAgentParcel(event.parcelDTO, numberStandardDeviations));
                 return true;
             }
 

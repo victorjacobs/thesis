@@ -11,12 +11,12 @@ import rinde.sim.pdptw.common.ParcelDTO;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ExponentialBackoffReAuctionableParcel extends AgentParcel {
+public class ExponentialBackoffAgentParcel extends AgentParcel {
     private int backoff;
     private float nextBackoff;
     private float step;
 
-    public ExponentialBackoffReAuctionableParcel(ParcelDTO pDto) {
+    public ExponentialBackoffAgentParcel(ParcelDTO pDto) {
         super(pDto);
 
         step = 2;
@@ -57,7 +57,7 @@ public class ExponentialBackoffReAuctionableParcel extends AgentParcel {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new ExponentialBackoffReAuctionableParcel(event.parcelDTO));
+                sim.register(new ExponentialBackoffAgentParcel(event.parcelDTO));
                 return true;
             }
 

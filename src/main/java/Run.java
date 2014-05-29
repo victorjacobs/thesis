@@ -13,10 +13,9 @@ import ra.evaluator.RandomEvaluatorMultipleParcels;
 import ra.evaluator.heuristic.NegativePriorityHeuristic;
 import ra.evaluator.heuristic.RandomHeuristic;
 import ra.evaluator.heuristic.SlackHeuristic;
-import ra.parcel.AdaptiveSlackReAuctionableParcel;
-import ra.parcel.ExponentialBackoffReAuctionableParcel;
-import ra.parcel.ExponentialBackoffSlackReAuctionableParcel;
-import ra.parcel.ReAuctionableParcel;
+import ra.parcel.*;
+import ra.parcel.AdaptiveThresholdAgentParcel;
+import ra.parcel.ExponentialBackoffAdaptiveThresholdAgentParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -82,7 +81,7 @@ public class Run {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
                             .addStateEvaluator(RandomEvaluatorMultipleParcels.supplier((float) i / 10))
-                            .withParcelCreator(ExponentialBackoffReAuctionableParcel.getCreator())
+                            .withParcelCreator(ExponentialBackoffAgentParcel.getCreator())
                             .build()
             );
         }
@@ -109,7 +108,7 @@ public class Run {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
                             .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier((float) i / 10))
-                            .withParcelCreator(ExponentialBackoffReAuctionableParcel.getCreator())
+                            .withParcelCreator(ExponentialBackoffAgentParcel.getCreator())
                             .build()
             );
         }
@@ -128,7 +127,7 @@ public class Run {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
                             .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new RandomHeuristic()))
-                            .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator((float) i / 10))
+                            .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator((float) i / 10))
                             .build()
             );
         }
@@ -144,7 +143,7 @@ public class Run {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
                             .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new NegativePriorityHeuristic()))
-                            .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator((float) i / 10))
+                            .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator((float) i / 10))
                             .build()
             );
         }
@@ -160,7 +159,7 @@ public class Run {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
                             .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new SlackHeuristic()))
-                            .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator((float) i / 10))
+                            .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator((float) i / 10))
                             .build()
             );
         }
@@ -179,7 +178,7 @@ public class Run {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
                         .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier())
-                        .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator(1f, (float) i / 10))
+                        .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator(1f, (float) i / 10))
                         .build()
             );
         }
@@ -231,7 +230,7 @@ public class Run {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
                         .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier())
-                        .withParcelCreator(AdaptiveSlackReAuctionableParcel.getCreator((float) i / 100))
+                        .withParcelCreator(AdaptiveThresholdAgentParcel.getCreator((float) i / 100))
                         .build()
             );
         }
@@ -250,7 +249,7 @@ public class Run {
             builder.addConfiguration(
                     getTruckConfigurationBuilder()
                             .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier())
-                            .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator((float) i / 10, 2))
+                            .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator((float) i / 10, 2))
                             .build()
             );
         }
@@ -289,7 +288,7 @@ public class Run {
                     )
                     .addConfiguration(
                             getTruckConfigurationBuilder()
-                                    .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator(-0.2f, 2))
+                                    .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator(-0.2f, 2))
                                     .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new NegativePriorityHeuristic()))
                                     .build()
                     );
@@ -338,7 +337,7 @@ public class Run {
                 .addConfiguration(
                         getTruckConfigurationBuilder()
                             .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new SlackHeuristic()))
-                            .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator())
+                            .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator())
                             .build()
                 )
                 /*.addConfiguration(
