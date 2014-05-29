@@ -2,7 +2,7 @@ library(igraph)
 
 lapply(list.files(pattern = ".csv", recursive = T), function(p){
   g <- read.graph(p, format="ncol", directed=T)
-  if (length(V(g)) < 3) return()
+  #if (length(V(g)) < 3) return()
 
   pdf(sub(".csv", ".pdf", p), width = 8)
   V(g)$label <- ""    # Don't need labels on vertices

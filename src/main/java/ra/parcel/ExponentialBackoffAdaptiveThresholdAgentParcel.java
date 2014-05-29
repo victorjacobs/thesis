@@ -6,35 +6,31 @@ import rinde.sim.pdptw.common.AddParcelEvent;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem;
 import rinde.sim.pdptw.common.ParcelDTO;
 
-import java.util.Random;
-
 /**
- * This parcel extends the {@link AdaptiveSlackReAuctionableParcel} in such a way that it implements an
+ * This parcel extends the {@link AdaptiveThresholdAgentParcel} in such a way that it implements an
  * exponential backoff scheme when auctioning. I.e. when the parcel is repeatedly auctioned and won by the same
  * agent, it will try to auction itself less.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class ExponentialBackoffRandomSelectionReAuctionableParcel extends AdaptiveSlackReAuctionableParcel {
+public class ExponentialBackoffAdaptiveThresholdAgentParcel extends AdaptiveThresholdAgentParcel {
     private int backoff;
     private float nextBackoff;
-    private float step;
-    private Random rng;
-    private int randomPercentage;
+    private final float step;
 
-    public ExponentialBackoffRandomSelectionReAuctionableParcel(ParcelDTO pDto, float backoffStep, int randPercentage) {
-        super(pDto, 1);
+    public ExponentialBackoffAdaptiveThresholdAgentParcel(ParcelDTO pDto, float numberStandardDeviations,
+                                                          float backoffStep) {
+        super(pDto, numberStandardDeviations);
         backoff = 0;
         step = backoffStep;
 
         nextBackoff = step;
-        rng = new Random();
-        this.randomPercentage = randPercentage;
     }
 
     @Override
     public boolean shouldChangeOwner() {
-        if (rng.nextInt(100) >= randomPercentage)
+        // If super doesn't allow to re-auction, neither should we
+        if (!super.shouldChangeOwner())
             return false;
 
         // Backing off
@@ -45,6 +41,7 @@ public class ExponentialBackoffRandomSelectionReAuctionableParcel extends Adapti
             return backoff == 0;
         }
 
+        // TODO this seems too convoluted, why not simply check history[last] == history[last - 1]?
         int loopCount = 0;
         int i = getOwnerHistory().size() - 2;
         Bidder currentBidder = getOwnerHistory().get(getOwnerHistory().size() - 1);
@@ -66,27 +63,33 @@ public class ExponentialBackoffRandomSelectionReAuctionableParcel extends Adapti
     }
 
     public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {
-        return getCreator(1);
+        return getCreator(1, 2);
+    }
+
+    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(float numberStandardDeviations) {
+        return getCreator(numberStandardDeviations, 2);
     }
 
     /**
      * Gets a creator for this parcel.
      *
+     * @param numberStandardDeviations Number of standard deviations used as threshold for re-auctioning
      * @param backoffStep Step for exponential backoff
      * @return Creator for this parcel
      */
-    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(final float backoffStep,
-                                                                         final int randPercentage) {
+    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(final float numberStandardDeviations,
+                                                                         final float backoffStep) {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new ExponentialBackoffRandomSelectionReAuctionableParcel(event.parcelDTO, backoffStep, randPercentage));
+                sim.register(new ExponentialBackoffAdaptiveThresholdAgentParcel(event.parcelDTO,
+                        numberStandardDeviations, backoffStep));
                 return true;
             }
 
             @Override
             public String toString() {
-                return "ExponentialBackoffRandom" + randPercentage + "Selection" + backoffStep + "step";
+                return "ExponentialBackoff" + numberStandardDeviations + "STD" + backoffStep + "step";
             }
         };
     }

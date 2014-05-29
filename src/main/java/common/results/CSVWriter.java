@@ -15,6 +15,7 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
+// TODO not completely safe yet when mixing the different add* methods
 public class CSVWriter<E> extends Result {
     private Map<String, List<E>> data;
     private boolean writeHeaders;
@@ -71,7 +72,6 @@ public class CSVWriter<E> extends Result {
 
     /**
      * Add a row to the CSV file. For now don't try to mix this with the {@link #addToColumn(String, Object)} calls.
-     * TODO
      *
      * @param d
      */

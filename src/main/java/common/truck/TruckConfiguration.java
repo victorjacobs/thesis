@@ -3,19 +3,15 @@ package common.truck;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import common.auctioning.Auctioneer;
-import common.baseline.SolverBidder;
-import common.results.ParcelTrackerModel;
 import common.truck.route.RoutePlanner;
-import common.truck.route.SolverRoutePlanner;
-import ra.evaluator.AgentParcelSlackEvaluator;
-import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import rinde.logistics.pdptw.mas.comm.Communicator;
-import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.core.Simulator;
 import rinde.sim.core.model.Model;
-import rinde.sim.pdptw.common.*;
+import rinde.sim.pdptw.common.AddParcelEvent;
+import rinde.sim.pdptw.common.AddVehicleEvent;
+import rinde.sim.pdptw.common.DynamicPDPTWProblem;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem.Creator;
+import rinde.sim.pdptw.common.VehicleDTO;
 import rinde.sim.pdptw.experiment.DefaultMASConfiguration;
 import rinde.sim.util.SupplierRng;
 
@@ -141,8 +137,7 @@ public class TruckConfiguration extends DefaultMASConfiguration {
 
 	@Override
 	public String toString() {
-        // TODO
-        return Joiner.on("-").join(seSuppliers.get(0), parcelCreator);
+        return Joiner.on("-").join(bSupplier, seSuppliers.get(0), parcelCreator);
 	}
 
     /**

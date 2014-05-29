@@ -1,5 +1,6 @@
 package common.results.measures;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Multimap;
 import common.results.CSVWriter;
 import common.results.Result;
@@ -7,9 +8,9 @@ import common.results.ResultDirectory;
 import ra.parcel.ReAuctionableParcel;
 import rinde.sim.pdptw.experiment.Experiment;
 
-import java.util.*;
-
-import static com.google.common.collect.Lists.newLinkedList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Calculates the raw edge list (in NCol format) of the owner graph.
@@ -28,26 +29,28 @@ public class MaxEdgesOwnerGraph extends Measure<String> {
         ResultDirectory configDir;
 
         int maxReAuctions;
-        ReAuctionableParcel maxPar;
+        Optional<ReAuctionableParcel> maxPar;
 
         for (String config : resultBins.keySet()) {
             configDir = new ResultDirectory(config);
             topDir.addResult(configDir);
 
             maxReAuctions = Integer.MIN_VALUE;
-            maxPar = null;
+            maxPar = Optional.absent();
 
             for (Experiment.SimulationResult res : resultBins.get(config)) {
                 for (ReAuctionableParcel par : getParcelsFromRun(res)) {
                     if (par.getOwnerHistory().size() > maxReAuctions) {
                         maxReAuctions = par.getOwnerHistory().size();
-                        maxPar = par;
+                        maxPar = Optional.of(par);
                     }
                 }
             }
 
-            configDir.addResult(getWriter("weighed", maxPar.getWeighedEdgeListOwnerGraph()));
-            configDir.addResult(getWriter("regular", maxPar.getEdgeList()));
+            if (maxPar.isPresent()) {
+                configDir.addResult(getWriter("weighed", maxPar.get().getWeighedEdgeListOwnerGraph()));
+                configDir.addResult(getWriter("regular", maxPar.get().getEdgeList()));
+            }
         }
 
         return topDir;

@@ -138,4 +138,21 @@ public abstract class BasicMeasure<E> extends Measure<E> {
             return ret;
         }
     }
+
+    public static class AverageAuctionsPerParcel extends BasicMeasure<String> {
+        public AverageAuctionsPerParcel() {
+            super("averageAuctionsPerParcel", null);
+        }
+
+        @Override
+        protected List<String> calculate(Experiment.SimulationResult result) {
+            int total = 0;
+
+            for (ReAuctionableParcel par : getParcelsFromRun(result)) {
+                total += par.getNumberReAuctions();
+            }
+
+            return Collections.singletonList(Double.toString((float) total / getParcelsFromRun(result).size()));
+        }
+    }
 }

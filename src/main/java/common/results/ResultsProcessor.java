@@ -3,9 +3,10 @@ package common.results;
 import common.results.measures.*;
 import rinde.sim.pdptw.experiment.Experiment;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
@@ -42,7 +43,7 @@ public class ResultsProcessor extends ResultDirectory {
         addMeasure(new BasicMeasure.ComputationTime());
         addMeasure(new BasicMeasure.TotalReAuctions());
         addMeasure(new BasicMeasure.NumberReAuctions());
-        addMeasure(new BasicMeasure.AuctionOwnerRatio());
+        addMeasure(new BasicMeasure.AverageAuctionsPerParcel());
         addMeasure(new MaxEdgesOwnerGraph());
         addMeasure(new ParcelSlackHistory());
         //addMeasure(new AllWeighedOwnerGraph());
@@ -64,7 +65,6 @@ public class ResultsProcessor extends ResultDirectory {
 	 *
 	 * @param data List to be loaded
 	 */
-    // TODO: immutable map?
 	public void load(Experiment.ExperimentResults data) {
 		checkState(isEmpty(), "Data already loaded");
 		checkState(!measures.isEmpty(), "I need some measures to evaluate");

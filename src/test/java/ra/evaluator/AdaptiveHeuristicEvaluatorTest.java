@@ -15,15 +15,15 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class AdaptiveSlackEvaluatorTest {
+public class AdaptiveHeuristicEvaluatorTest {
 
 	private Random rng;
-	private AdaptiveSlackEvaluator ev;
+	private AdaptiveHeuristicEvaluator ev;
 
 	@Before
 	public void setup() {
 		rng = new Random(42);
-		ev = new AdaptiveSlackEvaluator(42);
+		ev = new AdaptiveHeuristicEvaluator(42);
 	}
 
 	@Test

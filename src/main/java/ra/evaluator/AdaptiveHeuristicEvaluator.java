@@ -1,7 +1,6 @@
 package ra.evaluator;
 
 import com.google.common.collect.ImmutableSet;
-import ra.parcel.AdaptiveSlackReAuctionableParcel;
 import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.util.SupplierRng;
 
@@ -9,23 +8,23 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * This variant of {@link FixedSlackEvaluator} adapts the threshold for re-auctioning. It keeps a running mean and
+ * This variant of {@link FixedHeuristicEvaluator} adapts the threshold for re-auctioning. It keeps a running mean and
  * variance to determine whether a certain value is too high or too low.
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class AdaptiveSlackEvaluator extends SlackEvaluator {
+public class AdaptiveHeuristicEvaluator extends HeuristicEvaluator {
     private final float numberStandardDeviations;
     private double mean;
 	private int n;
 	private double M2;
 	private double variance;
 
-    public AdaptiveSlackEvaluator(long seed) {
+    public AdaptiveHeuristicEvaluator(long seed) {
         this(seed, 1);
     }
 
-	public AdaptiveSlackEvaluator(long seed, float numberStandardDeviations) {
+	public AdaptiveHeuristicEvaluator(long seed, float numberStandardDeviations) {
 		super(seed);
         this.numberStandardDeviations = numberStandardDeviations;
 
@@ -75,15 +74,15 @@ public class AdaptiveSlackEvaluator extends SlackEvaluator {
 		return Math.sqrt(variance);
 	}
 
-    public static SupplierRng<? extends AdaptiveSlackEvaluator> supplier() {
+    public static SupplierRng<? extends AdaptiveHeuristicEvaluator> supplier() {
         return supplier(1);
     }
 
-	public static SupplierRng<? extends AdaptiveSlackEvaluator> supplier(final float numberStandardDeviations) {
-		return new SupplierRng.DefaultSupplierRng<AdaptiveSlackEvaluator>() {
+	public static SupplierRng<? extends AdaptiveHeuristicEvaluator> supplier(final float numberStandardDeviations) {
+		return new SupplierRng.DefaultSupplierRng<AdaptiveHeuristicEvaluator>() {
 			@Override
-			public AdaptiveSlackEvaluator get(long seed) {
-				return new AdaptiveSlackEvaluator(seed, numberStandardDeviations);
+			public AdaptiveHeuristicEvaluator get(long seed) {
+				return new AdaptiveHeuristicEvaluator(seed, numberStandardDeviations);
 			}
 
             @Override

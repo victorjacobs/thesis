@@ -1,55 +1,38 @@
-package ra.evaluator;
+package ra.evaluator.heuristic;
 
-import common.truck.StateEvaluator;
+import common.truck.Truck;
 import rinde.sim.core.graph.Point;
 import rinde.sim.core.model.pdp.Parcel;
 import rinde.sim.pdptw.common.DefaultParcel;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newLinkedHashSet;
 
 /**
- * Base class for all {@link StateEvaluator}s that use the slack measure as heuristic for re-auctioning.
- *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public abstract class SlackEvaluator extends StateEvaluator {
-    protected Random rng;
-    private long nextReEvaluation = 50;
-
-    public SlackEvaluator(long seed) {
-        this.rng = new Random(seed);
-    }
-
-    /**
-     * This method calculates the slack for every parcel owned by the truck. With "slack" is meant "the maximum
-     * amount of time the parcel can be delayed in the current schedule for it to be still on time". If effectively
-     * gives a measure for the flexibility of a certain parcel.
-     *
-     * @param time Current simulation time
-     * @return Map containing the slack for every parcel in the truck
-     */
-    Map<DefaultParcel, Double> calculateSlackForState(long time) {
+public class SlackHeuristic implements ReAuctionHeuristic {
+    @Override
+    public Map<DefaultParcel, Double> evaluate(Truck truck, long time) {
         double curTime = time;
 
         Map<DefaultParcel, Double> slacks = new HashMap<DefaultParcel, Double>();
-        Set<Parcel> simulatedCargo = newLinkedHashSet(getTruck().getContents());
-        Point simulatedPosition = getTruck().getPosition();
+        Set<Parcel> simulatedCargo = newLinkedHashSet(truck.getContents());
+        Point simulatedPosition = truck.getPosition();
 
-        for (DefaultParcel par : getTruck().getRoute()) {
+        for (DefaultParcel par : truck.getRoute()) {
             if (simulatedCargo.contains(par)) {
                 // Delivering
-                curTime += getTravelTimeBetween(simulatedPosition, par.getDestination());
+                curTime += getTravelTimeBetween(truck, simulatedPosition, par.getDestination());
 
                 // If arrive before timewindow, truck has to wait
                 curTime = (curTime < par.getDeliveryTimeWindow().begin) ? par.getDeliveryTimeWindow().begin : curTime;
 
                 // Don't bother adding slacks for parcels that are already in cargo (they are fixed)
-                if (!getTruck().getContents().contains(par)) {
+                if (!truck.getContents().contains(par)) {
                     if (!slacks.containsKey(par)) {
                         slacks.put(par, par.getDeliveryTimeWindow().end - curTime);
                     } else {
@@ -62,12 +45,12 @@ public abstract class SlackEvaluator extends StateEvaluator {
                 simulatedPosition = par.getDestination();
             } else {
                 // Picking up
-                curTime += getTravelTimeBetween(simulatedPosition, par.getPickupLocation());
+                curTime += getTravelTimeBetween(truck, simulatedPosition, par.getPickupLocation());
 
                 curTime = (curTime < par.getPickupTimeWindow().begin) ? par.getPickupTimeWindow().begin : curTime;
 
                 // Don't bother adding slacks for parcels that are already in cargo (they are fixed)
-                if (!getTruck().getContents().contains(par)) {
+                if (!truck.getContents().contains(par)) {
                     slacks.put(par, par.getPickupTimeWindow().end - curTime);
                 }
 
@@ -80,30 +63,15 @@ public abstract class SlackEvaluator extends StateEvaluator {
         return slacks;
     }
 
-    /**
-     * @deprecated Is here for legacy reasons, use {@link #calculateSlackForState(long)} instead
-     */
-    @Deprecated
-    Map<DefaultParcel, Double> calculateSlackForState() {
-        return calculateSlackForState(0);
-    }
-
-    private double getTravelTimeBetween(Point orig, Point dest) {
+    private double getTravelTimeBetween(Truck truck, Point orig, Point dest) {
         // TODO assume straight paths
         double dist = Math.sqrt(Math.pow(orig.x - dest.x, 2) + Math.pow(orig.y - dest.y, 2));
 
-        return dist / getTruck().getSpeed();
+        return dist / truck.getSpeed();
     }
 
     @Override
-    public boolean shouldReEvaluate(long ticks) {
-        // TODO placeholder
-        if (ticks >= nextReEvaluation) {
-            nextReEvaluation += rng.nextInt(50);
-
-            return true;
-        }
-
-        return false;
+    public String toString() {
+        return "SlackHeuristic";
     }
 }

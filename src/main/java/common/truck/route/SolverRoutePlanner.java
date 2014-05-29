@@ -5,7 +5,6 @@ package common.truck.route;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import rinde.sim.core.SimulatorAPI;
 import rinde.sim.core.SimulatorUser;
 import rinde.sim.pdptw.central.GlobalStateObject;

@@ -12,7 +12,7 @@ import rinde.sim.pdptw.common.DefaultParcel;
 import rinde.sim.pdptw.common.DynamicPDPTWProblem;
 import rinde.sim.pdptw.common.ParcelDTO;
 
-import java.util.*;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newLinkedList;
@@ -68,23 +68,18 @@ public class ReAuctionableParcel extends DefaultParcel {
     }
 
     /**
-     * Attempt to change owner of the parcel.
-     * NOTE: FIRST update local state BEFORE calling this.
+     * Attempt to change owner of the parcel. Be warned: this method doesn't check anything but just does the
+     * re-auction. Checklist before calling this:
+     * <ul>
+     *     <li>{@link #shouldChangeOwner()} called and returns true</li>
+     *     <li>This parcel is removed from its current owner</li>
+     * </ul>
      *
      * @param time Simulation time
-     * @return Whether re-auction is allowed or not (decided by the parcel itself)
      */
-	public final boolean changeOwner(long time) {
-        // TODO FIX THIS
-        /*if (this.reAuctionPrevented || !shouldChangeOwner()) {
-            this.reAuctionPrevented = true;
-            return false;
-        }*/
-
-		checkState(auctioneer.isPresent(), "Auctioneer needed to change owner");
+	public final void changeOwner(long time) {
+        checkState(auctioneer.isPresent(), "Auctioneer needed to change owner");
 		auctioneer.get().auction(this, time);
-
-        return true;
 	}
 
     /**
