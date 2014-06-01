@@ -13,6 +13,7 @@ import java.util.Map;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
+// TODO This is not adapted to generic heuristics yet
 public class AdaptiveHeuristicEvaluator extends HeuristicEvaluator {
     private final float numberStandardDeviations;
     private double mean;

@@ -85,7 +85,7 @@ public class ReAuctionableParcel extends DefaultParcel {
     /**
      * Returns the edge list representing the owner graph.
      *
-     * @return Linked list multimap containing all edges in the owner graph. The keys are sorted in order of occurence.
+     * @return Linked list multimap containing all edges in the owner graph. The keys are sorted in order of occurrence.
      */
     public final Multimap<String, Integer> getEdgeList() {
         // Loop over owner history
@@ -158,6 +158,11 @@ public class ReAuctionableParcel extends DefaultParcel {
         return ImmutableList.copyOf(ownerHistory);
     }
 
+    /**
+     * Gets the number of reauctions that occurred for this parcel. Don't use getOwnerHistory().size() !
+     *
+     * @return Number of reauctions that occurred for this parcel
+     */
     public final int getNumberReAuctions() {
         return ownerHistory.size() - 1; // -1 because see above
     }

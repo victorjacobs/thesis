@@ -9,6 +9,7 @@ import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import ra.evaluator.AdaptiveHeuristicEvaluator;
 import ra.evaluator.AgentParcelHeuristicEvaluator;
+import ra.evaluator.HeuristicEvaluator;
 import ra.evaluator.RandomEvaluatorMultipleParcels;
 import ra.evaluator.heuristic.NegativePriorityHeuristic;
 import ra.evaluator.heuristic.RandomHeuristic;
@@ -57,7 +58,8 @@ public class Run {
         if (c.stop())
             return;
 
-        performBackoffStepExperiment();
+        //performBackoffStepExperiment();
+        performRAExperiment();
 
         System.out.println();
 
@@ -299,46 +301,29 @@ public class Run {
 
 	private void performRAExperiment() throws Exception {
 		Experiment.Builder builder = getExperimentBuilder()
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder(objFunc)
-                                .addStateEvaluator(RandomStateEvaluatorMultipleParcels.supplier(5))
-                                .build()
-                )
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder()
-                                .addStateEvaluator(AdaptiveSlackEvaluator.supplier())
-                                .build()
-                )
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder(objFunc)
-                                .addStateEvaluator(AdaptiveSlackEvaluator.supplier())
-                                .withParcelCreator(LimitedAuctionReAuctionableParcel.getCreator())
-                                .build()
-                )*/
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder()
-                                .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
-                                .withParcelCreator(AdaptiveSlackReAuctionableParcel.getCreator())
-                                .build()
-                )
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder(objFunc)
-                            .addStateEvaluator(AgentParcelSlackEvaluatorUpdateOnChange.supplier())
-                            .addStateObserver(AgentParcelSlackEvaluatorUpdateOnChange.supplier())
-                            .withParcelCreator(AdaptiveSlackReAuctionableParcel.getCreator())
-                            .build()
-                )*/
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
-                            .withParcelCreator(ExponentialBackoffSlackReAuctionableParcel.getCreator())
-                            .build()
-                )*/
                 .addConfiguration(
                         getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new SlackHeuristic()))
-                            .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator())
-                            .build()
+                                .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier())
+                                .withParcelCreator(ReAuctionableParcel.getCreator())
+                                .build()
+                )
+                .addConfiguration(
+                        getTruckConfigurationBuilder()
+                                .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier())
+                                .withParcelCreator(ExponentialBackoffAgentParcel.getCreator())
+                                .build()
+                )
+                .addConfiguration(
+                        getTruckConfigurationBuilder()
+                                .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new SlackHeuristic()))
+                                .withParcelCreator(AdaptiveThresholdAgentParcel.getCreator())
+                                .build()
+                )
+                .addConfiguration(
+                        getTruckConfigurationBuilder()
+                                .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new SlackHeuristic()))
+                                .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator())
+                                .build()
                 )
                 /*.addConfiguration(
                         getTruckConfigurationBuilder(objFunc)

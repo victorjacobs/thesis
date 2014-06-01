@@ -139,6 +139,9 @@ public abstract class BasicMeasure<E> extends Measure<E> {
         }
     }
 
+    /**
+     * Calculate the average number of re-auctions per parcel in a run
+     */
     public static class AverageAuctionsPerParcel extends BasicMeasure<String> {
         public AverageAuctionsPerParcel() {
             super("averageAuctionsPerParcel", null);
@@ -153,6 +156,31 @@ public abstract class BasicMeasure<E> extends Measure<E> {
             }
 
             return Collections.singletonList(Double.toString((float) total / getParcelsFromRun(result).size()));
+        }
+    }
+
+    public static class PercentageUsefulReAuctions extends BasicMeasure<String> {
+        public PercentageUsefulReAuctions() {
+            super("percentageUsefulReAuction", null);
+        }
+
+        @Override
+        protected List<String> calculate(Experiment.SimulationResult result) {
+            int nbLoops = 0, nbReAuctions = 0;
+            String[] split;
+
+            for (ReAuctionableParcel par : getParcelsFromRun(result)) {
+                for (String edge : par.getEdgeList().keys()) {
+                    split = edge.split("-");
+                    if (split[0].equals(split[1])) {
+                        // Loop
+                        nbLoops++;
+                    }
+                    nbReAuctions += par.getEdgeList().keys().size();
+                }
+            }
+
+            return Collections.singletonList(Float.toString((float) (nbReAuctions - nbLoops) / nbReAuctions));
         }
     }
 }
