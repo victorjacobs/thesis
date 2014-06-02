@@ -11,19 +11,15 @@ import rinde.sim.pdptw.common.ParcelDTO;
  *
  * @author Victor Jacobs <victor.jacobs@me.com>
  */
-public class InhibitAfterLoopAdaptiveThresholdAgentParcel extends AdaptiveThresholdAgentParcel {
+public class InhibitAfterLoopAgentParcel extends AgentParcel {
     private boolean inhibit = false;
 
-    public InhibitAfterLoopAdaptiveThresholdAgentParcel(ParcelDTO pDto, float standardDeviation) {
-        super(pDto, standardDeviation);
+    public InhibitAfterLoopAgentParcel(ParcelDTO pDto) {
+        super(pDto);
     }
 
     @Override
     public boolean shouldChangeOwner() {
-        // If super doesn't allow to re-auction, neither should we
-        if (!super.shouldChangeOwner())
-            return false;
-
         if (inhibit)
             return false;
 
@@ -37,20 +33,16 @@ public class InhibitAfterLoopAdaptiveThresholdAgentParcel extends AdaptiveThresh
     }
 
     public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator() {
-        return getCreator(1);
-    }
-
-    public static DynamicPDPTWProblem.Creator<AddParcelEvent> getCreator(final float numberStandardDeviations) {
         return new DynamicPDPTWProblem.Creator<AddParcelEvent>() {
             @Override
             public boolean create(Simulator sim, AddParcelEvent event) {
-                sim.register(new InhibitAfterLoopAdaptiveThresholdAgentParcel(event.parcelDTO, numberStandardDeviations));
+                sim.register(new InhibitAfterLoopAgentParcel(event.parcelDTO));
                 return true;
             }
 
             @Override
             public String toString() {
-                return "InhibitAfterLoop" + numberStandardDeviations + "STD";
+                return "InhibitAfterLoop";
             }
         };
     }

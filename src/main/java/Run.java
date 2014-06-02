@@ -74,6 +74,25 @@ public class Run {
                 + "s");
     }
 
+    private void performInhibitAfterLoopExperiments() {
+        System.out.println("Doing inhibit after loop experiments");
+
+        Experiment.Builder builder = getExperimentBuilder();
+
+        // Do loop over int, than divide by 10 because floating point
+        // Go through negative values, to force more re-auctions
+        for (int i = 30; i >= -10; i -= 5) {
+            builder.addConfiguration(
+                    getTruckConfigurationBuilder()
+                            .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier())
+                            .withParcelCreator(InhibitAfterLoopAdaptiveThresholdAgentParcel.getCreator((float) i / 10))
+                            .build()
+            );
+        }
+
+        topDir.addResult(new ResultsProcessor("truckExponentialBackoffFull", builder.perform()));
+    }
+
     private void performRandomWithExponentialBackoff() {
         System.out.println("Doing random evaluator + exponential backoff");
 
@@ -304,10 +323,10 @@ public class Run {
                 .addConfiguration(
                         getTruckConfigurationBuilder()
                                 .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier())
-                                .withParcelCreator(ReAuctionableParcel.getCreator())
+                                .withParcelCreator(ExponentialBackoffAgentParcel.getCreator())
                                 .build()
                 )
-                .addConfiguration(
+                /*.addConfiguration(
                         getTruckConfigurationBuilder()
                                 .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier())
                                 .withParcelCreator(ExponentialBackoffAgentParcel.getCreator())

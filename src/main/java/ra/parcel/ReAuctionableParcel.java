@@ -166,4 +166,21 @@ public class ReAuctionableParcel extends DefaultParcel {
     public final int getNumberReAuctions() {
         return ownerHistory.size() - 1; // -1 because see above
     }
+
+    public final float getPercentageUsefulReAuctions() {
+        int nbLoops = 0;
+        String[] split;
+
+        for (String edge : getEdgeList().keys()) {
+            split = edge.split("-");
+            if (split[0].equals(split[1])) {
+                // Loop
+                nbLoops++;
+            }
+        }
+
+        float nbReAuctions = getEdgeList().keys().size();
+
+        return (float) (nbReAuctions - nbLoops) / nbReAuctions;
+    }
 }

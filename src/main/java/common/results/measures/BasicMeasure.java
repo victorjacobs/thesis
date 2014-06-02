@@ -159,9 +159,9 @@ public abstract class BasicMeasure<E> extends Measure<E> {
         }
     }
 
-    public static class PercentageUsefulReAuctions extends BasicMeasure<String> {
-        public PercentageUsefulReAuctions() {
-            super("percentageUsefulReAuction", null);
+    public static class PercentageUsefulReAuctionsOverall extends BasicMeasure<String> {
+        public PercentageUsefulReAuctionsOverall() {
+            super("percentageUsefulReAuctionOverall", null);
         }
 
         @Override
@@ -176,11 +176,28 @@ public abstract class BasicMeasure<E> extends Measure<E> {
                         // Loop
                         nbLoops++;
                     }
-                    nbReAuctions += par.getEdgeList().keys().size();
                 }
+                nbReAuctions += par.getEdgeList().keys().size();
             }
 
             return Collections.singletonList(Float.toString((float) (nbReAuctions - nbLoops) / nbReAuctions));
+        }
+    }
+
+    public static class PercentageUsefulReAuctionsPerParcel extends BasicMeasure<String> {
+        public PercentageUsefulReAuctionsPerParcel() {
+            super("percentageUsefulReAuctionPerParcel", null);
+        }
+
+        @Override
+        protected List<String> calculate(Experiment.SimulationResult result) {
+            List<String> ret = newLinkedList();
+
+            for (ReAuctionableParcel par : getParcelsFromRun(result)) {
+                ret.add(Float.toString(par.getPercentageUsefulReAuctions()));
+            }
+
+            return ret;
         }
     }
 }
