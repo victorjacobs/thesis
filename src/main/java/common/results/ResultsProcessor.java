@@ -40,7 +40,7 @@ public class ResultsProcessor extends ResultDirectory {
 
 		// What data to extract
         addMeasure(new BasicMeasure.Fitness(data.objectiveFunction));
-        addMeasure(new BasicMeasure.ComputationTime());
+        /*addMeasure(new BasicMeasure.ComputationTime());
         addMeasure(new BasicMeasure.TotalReAuctions());
         addMeasure(new BasicMeasure.NumberReAuctions());
         addMeasure(new BasicMeasure.AverageAuctionsPerParcel());
@@ -48,7 +48,7 @@ public class ResultsProcessor extends ResultDirectory {
         addMeasure(new ParcelSlackHistory());
         //addMeasure(new AllWeighedOwnerGraph());
         addMeasure(new BasicMeasure.PercentageUsefulReAuctionsOverall());
-        addMeasure(new BasicMeasure.PercentageUsefulReAuctionsPerParcel());
+        addMeasure(new BasicMeasure.PercentageUsefulReAuctionsPerParcel());*/
 
 		load(data);
 	}

@@ -9,7 +9,6 @@ import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
 import ra.evaluator.AdaptiveHeuristicEvaluator;
 import ra.evaluator.AgentParcelHeuristicEvaluator;
-import ra.evaluator.HeuristicEvaluator;
 import ra.evaluator.RandomEvaluatorMultipleParcels;
 import ra.evaluator.heuristic.NegativePriorityHeuristic;
 import ra.evaluator.heuristic.RandomHeuristic;
@@ -320,7 +319,12 @@ public class Run {
 
 	private void performRAExperiment() throws Exception {
 		Experiment.Builder builder = getExperimentBuilder()
-                .addConfiguration(
+                /*.addConfiguration(
+                        getTruckConfigurationBuilder()
+                            .addStateEvaluator(StubStateEvaluator.supplier())
+                            .build()
+                )
+                /*.addConfiguration(
                         getTruckConfigurationBuilder()
                                 .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier())
                                 .withParcelCreator(ExponentialBackoffAgentParcel.getCreator())
@@ -331,13 +335,13 @@ public class Run {
                                 .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier())
                                 .withParcelCreator(ExponentialBackoffAgentParcel.getCreator())
                                 .build()
-                )
-                .addConfiguration(
+                )*/
+                /*.addConfiguration(
                         getTruckConfigurationBuilder()
                                 .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new SlackHeuristic()))
                                 .withParcelCreator(AdaptiveThresholdAgentParcel.getCreator())
                                 .build()
-                )
+                )*/
                 .addConfiguration(
                         getTruckConfigurationBuilder()
                                 .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new SlackHeuristic()))
@@ -388,7 +392,7 @@ public class Run {
                 .usePostProcessor(new ResultsPostProcessor());
 
         if (c.quickrun()) {
-            System.out.println("Doing fast run");
+            //System.out.println("Doing fast run");
 
             builder.addScenario(Gendreau06Parser.parse(new File(c.scenarioDirectory() + "req_rapide_1_240_24")))
                     .repeat(1);
