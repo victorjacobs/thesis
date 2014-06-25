@@ -7,15 +7,10 @@ import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
-import ra.evaluator.AdaptiveHeuristicEvaluator;
 import ra.evaluator.AgentParcelHeuristicEvaluator;
-import ra.evaluator.RandomEvaluatorMultipleParcels;
-import ra.evaluator.heuristic.NegativePriorityHeuristic;
-import ra.evaluator.heuristic.RandomHeuristic;
 import ra.evaluator.heuristic.SlackHeuristic;
-import ra.parcel.*;
-import ra.parcel.AdaptiveThresholdAgentParcel;
 import ra.parcel.ExponentialBackoffAdaptiveThresholdAgentParcel;
+import ra.parcel.ReAuctionableParcel;
 import rinde.logistics.pdptw.solver.MultiVehicleHeuristicSolver;
 import rinde.sim.pdptw.common.ObjectiveFunction;
 import rinde.sim.pdptw.experiment.Experiment;
@@ -58,8 +53,39 @@ public class Run {
         if (c.stop())
             return;
 
-        //performBackoffStepExperiment();
-        performRAExperiment();
+        if (!c.demoSetup().isPresent()) {
+            System.err.println("This is a demo build, please supply demo setup");
+            return;
+        }
+
+        Experiment.Builder b;
+
+        switch (c.demoSetup().get()) {
+            case 1:
+                b = getExperimentBuilder("Parcel Exponential Backoff")
+                        .addConfiguration(
+                                getTruckConfigurationBuilder()
+                                        .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new SlackHeuristic()))
+                                        .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator())
+                                        .build()
+                        );
+                break;
+
+            case 2:
+                b = getExperimentBuilder("Everything disabled")
+                        .addConfiguration(
+                                getTruckConfigurationBuilder()
+                                        .addStateEvaluator(StubStateEvaluator.supplier())
+                                        .build()
+                        );
+                break;
+
+            default:
+                System.err.println("Invalid setup selector");
+                return;
+        }
+
+        topDir.addResult(new ResultsProcessor("main", b.perform()));
 
         System.out.println();
 
@@ -74,306 +100,6 @@ public class Run {
                 + "s");
     }
 
-    private void performInhibitAfterLoopExperiments() {
-        System.out.println("Doing inhibit after loop experiments");
-
-        Experiment.Builder builder = getExperimentBuilder();
-
-        // Do loop over int, than divide by 10 because floating point
-        // Go through negative values, to force more re-auctions
-        for (int i = 30; i >= -10; i -= 5) {
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier())
-                            .withParcelCreator(InhibitAfterLoopAdaptiveThresholdAgentParcel.getCreator((float) i / 10))
-                            .build()
-            );
-        }
-
-        topDir.addResult(new ResultsProcessor("truckExponentialBackoffFull", builder.perform()));
-    }
-
-    private void performRandomWithExponentialBackoff() {
-        System.out.println("Doing random evaluator + exponential backoff");
-
-        Experiment.Builder builder = getExperimentBuilder();
-
-        for (int i = 0; i <= 360; i += 18) {
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                            .addStateEvaluator(RandomEvaluatorMultipleParcels.supplier((float) i / 10))
-                            .withParcelCreator(ExponentialBackoffAgentParcel.getCreator())
-                            .build()
-            );
-        }
-
-        topDir.addResult(new ResultsProcessor("randomWithExponentialBackoff", builder.perform()));
-    }
-
-    private void performGodFigureExperiments() throws Exception {
-        performRandomExperiments();
-        performAdaptiveSlackExperiment();
-        performAgentParcelExperiments();
-        performExponentialBackoffExperiments();
-        performTruckExponentialBackoff();
-    }
-
-    private void performTruckExponentialBackoff() {
-        System.out.println("Doing truck exponential backoff experiment");
-
-        Experiment.Builder builder = getExperimentBuilder();
-
-        // Do loop over int, than divide by 10 because floating point
-        // Go through negative values, to force more re-auctions
-        for (int i = 30; i >= -10; i -= 2) {
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                            .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier((float) i / 10))
-                            .withParcelCreator(ExponentialBackoffAgentParcel.getCreator())
-                            .build()
-            );
-        }
-
-        topDir.addResult(new ResultsProcessor("truckExponentialBackoffFull", builder.perform()));
-    }
-
-    private void performOtherHeuristicExperiments() {
-        System.out.println("Doing agent exponential backoff experiments w other heuristics");
-
-        Experiment.Builder builder = getExperimentBuilder();
-
-        // Do loop over int, than divide by 10 because floating point
-        // Go through negative values, to force more re-auctions
-        for (int i = 30; i >= -10; i -= 2) { // was i -= 2
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new RandomHeuristic()))
-                            .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator((float) i / 10))
-                            .build()
-            );
-        }
-
-        topDir.addResult(new ResultsProcessor("agentParcelRandomHeuristic", builder.perform()));
-
-        System.out.println("Random done");
-
-        builder = getExperimentBuilder();
-        // Do loop over int, than divide by 10 because floating point
-        // Go through negative values, to force more re-auctions
-        for (int i = 30; i >= -10; i -= 2) { // was i -= 2
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new NegativePriorityHeuristic()))
-                            .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator((float) i / 10))
-                            .build()
-            );
-        }
-
-        topDir.addResult(new ResultsProcessor("negativePriorityHeuristic", builder.perform()));
-
-        System.out.println("Negative priority done");
-
-        builder = getExperimentBuilder();
-        // Do loop over int, than divide by 10 because floating point
-        // Go through negative values, to force more re-auctions
-        for (int i = 30; i >= -10; i -= 2) { // was i -= 2
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new SlackHeuristic()))
-                            .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator((float) i / 10))
-                            .build()
-            );
-        }
-
-        topDir.addResult(new ResultsProcessor("slackHeuristic", builder.perform()));
-
-        System.out.println("All done!");
-    }
-
-    private void performBackoffStepExperiment() throws Exception {
-        System.out.println("Doing backoff step experiment");
-
-        Experiment.Builder builder = getExperimentBuilder();
-
-        for (int i = 0; i <= 40; i += 2) {
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                        .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier())
-                        .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator(1f, (float) i / 10))
-                        .build()
-            );
-        }
-
-        topDir.addResult(new ResultsProcessor("backoffStep", builder.perform()));
-    }
-
-    private void performAdaptiveSlackExperiment() throws Exception {
-        System.out.println("Doing adaptive slack experiment");
-
-        Experiment.Builder builder = getExperimentBuilder();
-
-        // Do loop over int, than divide by 10 because floating point
-        for (int i = 300; i >= 120; i -= 9) {
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                        .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier((float) i / 100))
-                        .build()
-            );
-        }
-
-        topDir.addResult(new ResultsProcessor("adaptiveVaryingThreshold", builder.perform()));
-    }
-
-    private void performRandomExperiments() throws Exception {
-        System.out.println("Doing random experiment");
-
-        Experiment.Builder builder = getExperimentBuilder();
-
-        for (int i = 0; i <= 120; i += 6) {
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                        .addStateEvaluator(RandomEvaluatorMultipleParcels.supplier((float) i / 10))
-                        .build()
-            );
-        }
-
-        topDir.addResult(new ResultsProcessor("randomVaryingPercentages", builder.perform()));
-    }
-
-    private void performAgentParcelExperiments() throws Exception {
-        System.out.println("Doing agent parcel experiment");
-
-        Experiment.Builder builder = getExperimentBuilder();
-
-        // Do loop over int, than divide by 10 because floating point
-        // Go through negative values, to force more re-auctions
-        for (int i = 300; i >= 40; i -= 13) {
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                        .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier())
-                        .withParcelCreator(AdaptiveThresholdAgentParcel.getCreator((float) i / 100))
-                        .build()
-            );
-        }
-
-        topDir.addResult(new ResultsProcessor("agentParcelVaryingThreshold", builder.perform()));
-    }
-
-    private void performExponentialBackoffExperiments() throws Exception {
-        System.out.println("Doing agent exponential backoff experiments");
-
-        Experiment.Builder builder = getExperimentBuilder();
-
-        // Do loop over int, than divide by 10 because floating point
-        // Go through negative values, to force more re-auctions
-        for (int i = 30; i >= -10; i -= 2) {
-            builder.addConfiguration(
-                    getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier())
-                            .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator((float) i / 10, 2))
-                            .build()
-            );
-        }
-
-        topDir.addResult(new ResultsProcessor("agentParcelExponentialBackoff", builder.perform()));
-    }
-
-    private void performAllScenariosSeperated() throws Exception {
-        System.out.println("WARNING: this might take a while");
-
-        Experiment.Builder builder;
-        Gendreau06Scenario scen;
-        File d = new File(c.scenarioDirectory());
-
-        for (File scenarioFile : d.listFiles()) {
-            System.out.println("Starting " + scenarioFile.getName());
-
-            try {
-                scen = Gendreau06Parser.parse(scenarioFile);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Ignored");
-                continue;
-            }
-
-            builder = Experiment
-                    .build(objectiveFunction)
-                    .withRandomSeed(SEED)
-                    .withThreads(c.threads())
-                    .usePostProcessor(new ResultsPostProcessor())
-                    .addScenario(scen)
-                    .repeat(c.repetitions())
-                    .addConfiguration(
-                            getTruckConfigurationBuilder()
-                                    .addStateEvaluator(StubStateEvaluator.supplier())
-                                    .build()
-                    )
-                    .addConfiguration(
-                            getTruckConfigurationBuilder()
-                                    .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator(-0.2f, 2))
-                                    .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new NegativePriorityHeuristic()))
-                                    .build()
-                    );
-
-            topDir.addResult(new ResultsProcessor(scenarioFile.getName(), builder.perform()));
-        }
-    }
-
-	private void performRAExperiment() throws Exception {
-		Experiment.Builder builder = getExperimentBuilder()
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder()
-                            .addStateEvaluator(StubStateEvaluator.supplier())
-                            .build()
-                )
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder()
-                                .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier())
-                                .withParcelCreator(ExponentialBackoffAgentParcel.getCreator())
-                                .build()
-                )
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder()
-                                .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier())
-                                .withParcelCreator(ExponentialBackoffAgentParcel.getCreator())
-                                .build()
-                )*/
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder()
-                                .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new SlackHeuristic()))
-                                .withParcelCreator(AdaptiveThresholdAgentParcel.getCreator())
-                                .build()
-                )*/
-                .addConfiguration(
-                        getTruckConfigurationBuilder()
-                                .addStateEvaluator(AgentParcelHeuristicEvaluator.supplier(new SlackHeuristic()))
-                                .withParcelCreator(ExponentialBackoffAdaptiveThresholdAgentParcel.getCreator())
-                                .build()
-                )
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder(objFunc)
-                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier())
-                            .withParcelCreator(ExponentialBackoffRandomSelectionReAuctionableParcel.getCreator(2, 2))
-                            .build()
-                )*/
-                // Exponential backoff on truck adaptive slack
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder()
-                            .addStateEvaluator(AdaptiveSlackEvaluator.supplier())
-                            .withParcelCreator(ExponentialBackoffReAuctionableParcel.getCreator())
-                            .build()
-                )
-                // Random heuristic without backoff
-                /*.addConfiguration(
-                        getTruckConfigurationBuilder()
-                            .addStateEvaluator(AgentParcelSlackEvaluator.supplier(new RandomHeuristic()))
-                            .withParcelCreator(ReAuctionableParcel.getCreator())
-                            .build()
-                )*/
-                ;
-
-        topDir.addResult(new ResultsProcessor("main", builder.perform()));
-	}
-
     /**
      * Creates basic experiment builder, shared between different test setups. Takes a flag which toggles a shorter
      * run (only one scenario and one repetition).
@@ -381,6 +107,10 @@ public class Run {
      * @return Experiment builder object entirely setup, only need to add configurations and run it
      */
     private Experiment.Builder getExperimentBuilder() {
+        return getExperimentBuilder("null");
+    }
+
+    private Experiment.Builder getExperimentBuilder(String setup) {
         final List<Gendreau06Scenario> onlineScenarios = Gendreau06Parser.parser()
                 .addDirectory(c.scenarioDirectory())
                 .filter(GendreauProblemClass.SHORT_LOW_FREQ)
@@ -392,13 +122,13 @@ public class Run {
                 .withThreads(c.threads())
                 .usePostProcessor(new ResultsPostProcessor());
 
-        if (c.quickrun()) {
+        if (c.quickrun() || c.demoSetup().isPresent()) {
             //System.out.println("Doing fast run");
 
             builder.addScenario(Gendreau06Parser.parse(new File(c.scenarioDirectory() + "req_rapide_1_240_24")))
                     .repeat(1);
-            if (c.showGui()) {
-                builder.showGui(new DemoUICreator("aa"));   // TODO pass configuration here
+            if (c.showGui() && c.demoSetup().isPresent()) {
+                builder.showGui(new DemoUICreator(setup));
             }
 
             return builder;

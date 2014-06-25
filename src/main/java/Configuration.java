@@ -1,3 +1,4 @@
+import com.google.common.base.Optional;
 import org.apache.commons.cli.*;
 import rinde.sim.pdptw.gendreau06.Gendreau06Parser;
 
@@ -19,8 +20,11 @@ public class Configuration {
     private int threads = Runtime.getRuntime().availableProcessors();
     private boolean quickRun = false;
     private String scenarioDirectory = "files/scenarios/gendreau06/";
+    private Optional<Integer> demo;
 
     public Configuration(String[] args) {
+        demo = Optional.absent();
+
         // Set up command line
         options = new Options();
 
@@ -42,6 +46,11 @@ public class Configuration {
         options.addOption(new Option("q", "Quick run: one repetition of one scenario"));
         options.addOption(new Option("help", "Print this message"));
         options.addOption(new Option("g", "Show gui"));
+        options.addOption(OptionBuilder
+                .withArgName("setup")
+                .hasArg()
+                .withDescription("Select demo setup")
+                .create("d"));
 
         CommandLineParser parser = new BasicParser();
 
@@ -50,6 +59,19 @@ public class Configuration {
             if (cmd.hasOption("help")) {
                 printHelp();
                 stop = true;
+                return;
+            }
+
+            if (cmd.hasOption("d")) {
+                try {
+                    demo = Optional.of(Integer.parseInt(cmd.getOptionValue("d")));
+                    threads = 1;
+                    showGui = true;
+                    repetitions = 1;
+                } catch (NumberFormatException e) {
+                    System.out.println("Warning: -d " + cmd.getOptionValue("d") + " not valid option");
+                }
+
                 return;
             }
 
@@ -193,5 +215,9 @@ public class Configuration {
         }
 
         return false;
+    }
+
+    public Optional<Integer> demoSetup() {
+        return demo;
     }
 }

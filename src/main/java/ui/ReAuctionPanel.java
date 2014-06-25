@@ -1,6 +1,7 @@
 package ui;
 
 import com.google.common.base.Optional;
+import common.results.ParcelTrackerModel;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -12,37 +13,38 @@ import rinde.sim.core.Simulator;
 import rinde.sim.core.TickListener;
 import rinde.sim.core.TimeLapse;
 import rinde.sim.core.model.Model;
-import rinde.sim.core.model.pdp.PDPModel;
 import rinde.sim.core.model.pdp.Parcel;
 import rinde.sim.ui.renderers.PanelRenderer;
 
+import java.text.Collator;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Maps.newHashMap;
 
-final class ReAuctionPanel implements PanelRenderer, TickListener {
+class ReAuctionPanel implements PanelRenderer, TickListener {
     private static final int PREFERRED_SIZE = 300;
 
-    Optional<Table> statsTable;
+    private Optional<Table> statsTable;
     private Map<String,ReAuctionableParcel> trackedParcels;
-    private Optional<PDPModel> pdpModel;
+    private Optional<ParcelTrackerModel> parcelTracker;
 
     public ReAuctionPanel(Simulator sim) {
-        pdpModel = Optional.absent();
+        parcelTracker = Optional.absent();
         trackedParcels = newHashMap();
 
         for (Model<?> mod : sim.getModels()) {
-            if (mod instanceof PDPModel) {
-                pdpModel = Optional.of((PDPModel) mod);
+            if (mod instanceof ParcelTrackerModel) {
+                parcelTracker = Optional.of((ParcelTrackerModel) mod);
                 break;
             }
         }
 
-        checkState(pdpModel.isPresent(), "There should be a pdpmodel here");
-        ReAuctionableParcel casted;
+        checkState(parcelTracker.isPresent(), "There should be a pdpmodel here");
 
-        for (Parcel p : pdpModel.get().getParcels(PDPModel.ParcelState.values())) {
+        ReAuctionableParcel casted;
+        for (Parcel p : parcelTracker.get().getParcels()) {
             try {
                 casted = (ReAuctionableParcel) p;
                 trackedParcels.put(casted.toString(), casted);
@@ -52,23 +54,6 @@ final class ReAuctionPanel implements PanelRenderer, TickListener {
         }
 
         statsTable = Optional.absent();
-
-        /*sim.getEventAPI().addListener(new Listener() {
-            @Override
-            public void handleEvent(Event e) {
-                PDPModelEvent ev = (PDPModelEvent) e;
-                try {
-                    ReAuctionableParcel casted = (ReAuctionableParcel) ev.parcel;
-
-                    trackedParcels.put(casted.toString(), casted);
-                    final TableItem ti = new TableItem(statsTable.get(), 0);
-                    ti.setText(0, casted.toString());
-                    ti.setText(1, Integer.toString(casted.getNumberReAuctions()));
-                } catch (ClassCastException ex) {
-                    System.err.println("StatsPanel only useable with ReAuctionableParcels");
-                }
-            }
-        }, PDPModel.PDPModelEventType.NEW_PARCEL);*/
     }
 
     @Override
@@ -79,12 +64,12 @@ final class ReAuctionPanel implements PanelRenderer, TickListener {
         layout.type = SWT.VERTICAL;
         parent.setLayout(layout);
 
-        final Table table = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION
-                | SWT.V_SCROLL | SWT.H_SCROLL);
+        final Table table = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.H_SCROLL);
         statsTable = Optional.of(table);
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
-        final String[] statsTitles = new String[] { "Parcel", "ReAuctions" };
+
+        final String[] statsTitles = new String[] { "Parcel                  ", "ReAuctions" };
         for (String statsTitle : statsTitles) {
             final TableColumn column = new TableColumn(table, SWT.NONE);
             column.setText(statsTitle);
@@ -93,6 +78,9 @@ final class ReAuctionPanel implements PanelRenderer, TickListener {
         for (int i = 0; i < statsTitles.length; i++) {
             table.getColumn(i).pack();
         }
+
+        statsTable.get().setSortColumn(statsTable.get().getColumn(1));
+        statsTable.get().setSortDirection(1);
     }
 
     @Override
@@ -107,7 +95,7 @@ final class ReAuctionPanel implements PanelRenderer, TickListener {
 
     @Override
     public String getName() {
-        return "Statistics";
+        return "ReAuctionStats";
     }
 
     @Override
@@ -130,25 +118,53 @@ final class ReAuctionPanel implements PanelRenderer, TickListener {
                     return;
                 }
 
+                boolean changed = false;
+
                 // First update existing
                 for (int i = 0; i < trackedParcels.size(); i++) {
                     TableItem it = statsTable.get().getItem(i);
-                    it.setText(1, Integer.toString(trackedParcels.get(it.getText(0)).getNumberReAuctions()));
+                    int newValue = trackedParcels.get(it.getText(0)).getNumberReAuctions();
+
+                    if (Integer.parseInt(it.getText(1)) != newValue) {
+                        it.setText(1, Integer.toString(newValue));
+                        changed = true;
+                    }
                 }
 
-                // Add diff
-                for (Parcel par : pdpModel.get().getParcels(PDPModel.ParcelState.values())) {
+                // Add new parcels (this works because both are *lists*
+                while (trackedParcels.size() != parcelTracker.get().getParcels().size()) {
                     try {
-                        ReAuctionableParcel casted = (ReAuctionableParcel) par;
+                        // Get parcel
+                        ReAuctionableParcel casted = (ReAuctionableParcel) parcelTracker.get().getParcels().get(trackedParcels.size());
+                        trackedParcels.put(Integer.toString(casted.hashCode()), casted);
 
-                        if (!trackedParcels.values().contains(casted)) {
-                            trackedParcels.put(casted.toString(), casted);
-                            final TableItem ti = new TableItem(statsTable.get(), 0);
-                            ti.setText(0, par.toString());
-                            ti.setText(1, Integer.toString(casted.getNumberReAuctions()));
-                        }
+                        final TableItem ti = new TableItem(statsTable.get(), 0);
+                        ti.setText(0, Integer.toString(casted.hashCode()));
+                        ti.setText(1, Integer.toString(casted.getNumberReAuctions()));
+                        changed = true;
                     } catch (ClassCastException e) {
-                        System.err.println("StatsPanel only useable with ReAuctionableParcels");
+                        System.err.println("ReAuctionPanel only useable with ReAuctionableParcels");
+                    }
+                }
+
+                // Sort
+                if (changed) {
+                    TableItem[] items = statsTable.get().getItems();
+                    Collator collator = Collator.getInstance(Locale.getDefault());
+                    int index = 1;
+                    for (int i = 1; i < items.length; i++) {
+                        String value1 = items[i].getText(index);
+                        for (int j = 0; j < i; j++){
+                            String value2 = items[j].getText(index);
+                            if (collator.compare(value1, value2) > 0) {
+                                String[] values = {items[i].getText(0), items[i].getText(1)};
+                                items[i].dispose();
+                                TableItem item = new TableItem(statsTable.get(), SWT.NONE, j);
+                                item.setText(values);
+                                items = statsTable.get().getItems();
+                                break;
+                            }
+                        }
                     }
                 }
             }

@@ -5,6 +5,7 @@ import rinde.sim.core.Simulator;
 import rinde.sim.core.model.pdp.Depot;
 import rinde.sim.core.model.pdp.Parcel;
 import rinde.sim.core.model.pdp.Vehicle;
+import rinde.sim.pdptw.common.RouteRenderer;
 import rinde.sim.scenario.ScenarioController;
 import rinde.sim.ui.View;
 import rinde.sim.ui.renderers.PDPModelRenderer;
@@ -33,8 +34,10 @@ public class DemoUICreator implements ScenarioController.UICreator {
         b.setTitleAppendix(title)
                 .with(new RoadUserRenderer(roadUserSchema, false))
                 .with(new PDPModelRenderer(false))
+                .with(new RouteRenderer())
                 .with(new PlaneRoadModelRenderer(0.05))
                 .with(new ReAuctionPanel(sim))
+                .with(new StatsPanel(sim))
                 .setSpeedUp(5)
                 .show();
     }
