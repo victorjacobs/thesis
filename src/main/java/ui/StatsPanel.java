@@ -38,7 +38,7 @@ public class StatsPanel implements PanelRenderer, TickListener {
         statsTable = Optional.of(table);
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
-        final String[] statsTitles = new String[] { "Parcel", "ReAuctions" };
+        final String[] statsTitles = new String[] { "Variable", "Value" };
         for (String statsTitle : statsTitles) {
             final TableColumn column = new TableColumn(table, SWT.NONE);
             column.setText(statsTitle);

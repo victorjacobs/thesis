@@ -16,8 +16,6 @@ import rinde.sim.core.model.Model;
 import rinde.sim.core.model.pdp.Parcel;
 import rinde.sim.ui.renderers.PanelRenderer;
 
-import java.text.Collator;
-import java.util.Locale;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -69,7 +67,7 @@ class ReAuctionPanel implements PanelRenderer, TickListener {
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
 
-        final String[] statsTitles = new String[] { "Parcel                  ", "ReAuctions" };
+        final String[] statsTitles = new String[] { "Parcel                  ", "ReAuctions", "Useful % " };
         for (String statsTitle : statsTitles) {
             final TableColumn column = new TableColumn(table, SWT.NONE);
             column.setText(statsTitle);
@@ -105,11 +103,9 @@ class ReAuctionPanel implements PanelRenderer, TickListener {
 
     @Override
     public void afterTick(TimeLapse timeLapse) {
-        if (statsTable.get().isDisposed()
-                || statsTable.get().getDisplay().isDisposed()) {
+        if (statsTable.get().isDisposed() || statsTable.get().getDisplay().isDisposed()) {
             return;
         }
-
 
         statsTable.get().getDisplay().syncExec(new Runnable() {
             @Override
@@ -118,29 +114,35 @@ class ReAuctionPanel implements PanelRenderer, TickListener {
                     return;
                 }
 
+                // Don't sort when nothing changed
                 boolean changed = false;
 
                 // First update existing
                 for (int i = 0; i < trackedParcels.size(); i++) {
                     TableItem it = statsTable.get().getItem(i);
-                    int newValue = trackedParcels.get(it.getText(0)).getNumberReAuctions();
+                    ReAuctionableParcel par = trackedParcels.get(it.getText(0));
+                    int newReAuctionValue = par.getNumberReAuctions();
+                    float newPercentage =  par.getPercentageUsefulReAuctions();
 
-                    if (Integer.parseInt(it.getText(1)) != newValue) {
-                        it.setText(1, Integer.toString(newValue));
+                    if (Integer.parseInt(it.getText(1)) != newReAuctionValue) {
+                        it.setText(1, Integer.toString(newReAuctionValue));
                         changed = true;
                     }
+
+                    it.setText(2, Integer.toString(Math.round(newPercentage * 100)));
                 }
 
                 // Add new parcels (this works because both are *lists*
                 while (trackedParcels.size() != parcelTracker.get().getParcels().size()) {
                     try {
                         // Get parcel
-                        ReAuctionableParcel casted = (ReAuctionableParcel) parcelTracker.get().getParcels().get(trackedParcels.size());
-                        trackedParcels.put(Integer.toString(casted.hashCode()), casted);
+                        ReAuctionableParcel par = parcelTracker.get().getParcels().get(trackedParcels.size());
+                        trackedParcels.put(Integer.toString(par.hashCode()), par);
 
                         final TableItem ti = new TableItem(statsTable.get(), 0);
-                        ti.setText(0, Integer.toString(casted.hashCode()));
-                        ti.setText(1, Integer.toString(casted.getNumberReAuctions()));
+                        ti.setText(0, Integer.toString(par.hashCode()));
+                        ti.setText(1, Integer.toString(par.getNumberReAuctions()));
+                        ti.setText(2, Integer.toString(Math.round(par.getPercentageUsefulReAuctions() * 100)));
                         changed = true;
                     } catch (ClassCastException e) {
                         System.err.println("ReAuctionPanel only useable with ReAuctionableParcels");
@@ -150,13 +152,12 @@ class ReAuctionPanel implements PanelRenderer, TickListener {
                 // Sort
                 if (changed) {
                     TableItem[] items = statsTable.get().getItems();
-                    Collator collator = Collator.getInstance(Locale.getDefault());
                     int index = 1;
                     for (int i = 1; i < items.length; i++) {
                         String value1 = items[i].getText(index);
                         for (int j = 0; j < i; j++){
                             String value2 = items[j].getText(index);
-                            if (collator.compare(value1, value2) > 0) {
+                            if (Integer.parseInt(value1) > Integer.parseInt(value2)) {
                                 String[] values = {items[i].getText(0), items[i].getText(1)};
                                 items[i].dispose();
                                 TableItem item = new TableItem(statsTable.get(), SWT.NONE, j);

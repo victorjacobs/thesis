@@ -7,6 +7,7 @@ import common.results.ResultsPostProcessor;
 import common.results.ResultsProcessor;
 import common.truck.TruckConfiguration;
 import common.truck.route.SolverRoutePlanner;
+import ra.evaluator.AdaptiveHeuristicEvaluator;
 import ra.evaluator.AgentParcelHeuristicEvaluator;
 import ra.evaluator.heuristic.SlackHeuristic;
 import ra.parcel.ExponentialBackoffAdaptiveThresholdAgentParcel;
@@ -80,8 +81,17 @@ public class Run {
                         );
                 break;
 
+            case 3:
+                b = getExperimentBuilder("Truck adaptive")
+                        .addConfiguration(
+                                getTruckConfigurationBuilder()
+                                        .addStateEvaluator(AdaptiveHeuristicEvaluator.supplier())
+                                        .build()
+                        );
+                break;
+
             default:
-                System.err.println("Invalid setup selector");
+                System.err.println("Invalid setup selector " + c.demoSetup().get());
                 return;
         }
 
