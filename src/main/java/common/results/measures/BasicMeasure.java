@@ -66,6 +66,29 @@ public abstract class BasicMeasure<E> extends Measure<E> {
     }
 
     /**
+     * Returns the ratio of fitness to auctions per parcel for a simulation result.
+     */
+    public static class FitnessToAuctionsPerParcel extends BasicMeasure<String> {
+        public FitnessToAuctionsPerParcel(ObjectiveFunction objectiveFunction) {
+            super("fitnessPerAuction", objectiveFunction);
+        }
+
+        @Override
+        protected List<String> calculate(Experiment.SimulationResult result) {
+            int count = 0;
+
+            for (ReAuctionableParcel par : getParcelsFromRun(result)) {
+                count += par.getNumberReAuctions();
+            }
+
+            double divider = count / getParcelsFromRun(result).size();
+
+            return Collections.singletonList(
+                    Double.toString(getObjectiveFunction().computeCost(result.stats) / divider));
+        }
+    }
+
+    /**
      * Returns the computation time for a simulation result.
      */
     public static class ComputationTime extends BasicMeasure<String> {

@@ -39,8 +39,9 @@ public class ResultsProcessor extends ResultDirectory {
 		this(experimentName);
 
 		// What data to extract
-        addMeasure(new BasicMeasure.Fitness(data.objectiveFunction));
-        /*addMeasure(new BasicMeasure.ComputationTime());
+        addMeasure(new BasicMeasure.FitnessToAuctionsPerParcel(data.objectiveFunction));
+        /*addMeasure(new BasicMeasure.Fitness(data.objectiveFunction));
+        addMeasure(new BasicMeasure.ComputationTime());
         addMeasure(new BasicMeasure.TotalReAuctions());
         addMeasure(new BasicMeasure.NumberReAuctions());
         addMeasure(new BasicMeasure.AverageAuctionsPerParcel());
