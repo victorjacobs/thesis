@@ -23,6 +23,7 @@ import rinde.sim.pdptw.gendreau06.Gendreau06ObjectiveFunction;
 import rinde.sim.pdptw.gendreau06.Gendreau06Parser;
 import rinde.sim.pdptw.gendreau06.Gendreau06Scenario;
 import rinde.sim.pdptw.gendreau06.GendreauProblemClass;
+import ui.DemoUICreator;
 
 import java.io.File;
 import java.util.List;
@@ -397,7 +398,7 @@ public class Run {
             builder.addScenario(Gendreau06Parser.parse(new File(c.scenarioDirectory() + "req_rapide_1_240_24")))
                     .repeat(1);
             if (c.showGui()) {
-                builder.showGui();
+                builder.showGui(new DemoUICreator("aa"));   // TODO pass configuration here
             }
 
             return builder;
