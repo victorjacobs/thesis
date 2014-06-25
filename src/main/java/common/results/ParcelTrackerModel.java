@@ -56,6 +56,24 @@ public class ParcelTrackerModel extends AbstractModel<ReAuctionableParcel> {
         return total;
     }
 
+    public float getOverallEfficiency() {
+        float sum = 0;
+        int divider = 0;
+
+        for (ReAuctionableParcel p : parcels) {
+            if (Float.isNaN(p.getPercentageUsefulReAuctions()) || p.getNumberReAuctions() == 0) continue;
+
+            sum += p.getPercentageUsefulReAuctions();
+            divider++;
+        }
+
+        return sum / divider;
+    }
+
+    public float getReAuctionsPerParcel() {
+        return (float) getTotalReAuctions() / parcels.size();
+    }
+
 	public static SupplierRng<ParcelTrackerModel> supplier() {
 		return new SupplierRng.DefaultSupplierRng<ParcelTrackerModel>() {
 			@Override

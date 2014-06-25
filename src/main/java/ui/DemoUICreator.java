@@ -32,13 +32,14 @@ public class DemoUICreator implements ScenarioController.UICreator {
 
         View.Builder b = View.create(sim);
         b.setTitleAppendix(title)
+                .with(new RouteRenderer())
                 .with(new RoadUserRenderer(roadUserSchema, false))
                 .with(new PDPModelRenderer(false))
-                .with(new RouteRenderer())
                 .with(new PlaneRoadModelRenderer(0.05))
                 .with(new ReAuctionPanel(sim))
                 .with(new StatsPanel(sim))
                 .setSpeedUp(5)
+                .enableAutoPlay()
                 .show();
     }
 }

@@ -93,7 +93,7 @@ class ReAuctionPanel implements PanelRenderer, TickListener {
 
     @Override
     public String getName() {
-        return "ReAuctionStats";
+        return "ReAuctions";
     }
 
     @Override
